@@ -1,0 +1,10 @@
+export type AttendanceStatus = "Present" | "Absent" | "Excused";
+export type BehaviorType = "Positive" | "Negative";
+export type Day = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
+export type FeeStatus = "Paid" | "Unpaid";
+export type FeeType = "Tuition" | "Exam" | "Other";
+export type Gender = "Male" | "Female";
+export type LeaveStatus = "Pending" | "Approved" | "Rejected";
+export type ParentType = "Mother" | "Father" | "Guardian";
+export type StaffRole = "Librarian" | "Accountant";
+export type TermStatus = "Active" | "Inactive";
