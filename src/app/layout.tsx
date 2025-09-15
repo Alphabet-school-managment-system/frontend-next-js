@@ -19,10 +19,15 @@ export default function RootLayout({
       <body>
         <ConfigProvider
           theme={{
-            token: { colorPrimary: "#F54927" },
+            components: {
+              Button: {
+                defaultBg: "#13C110",
+                defaultActiveBg: "#13C110",
+              },
+            },
           }}
         >
-          {children}
+         {children}
         </ConfigProvider>
       </body>
     </html>

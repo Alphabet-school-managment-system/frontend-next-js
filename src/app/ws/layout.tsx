@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Index from "@/components/layout/MainLayout/Index";
+import { ConfirmationModalProvider } from "@/store/confirmationModalContext";
 
 export default function RootLayout({
   children,
@@ -17,5 +18,9 @@ export default function RootLayout({
     }
   }, [children, router]);
 
-  return <Index>{children}</Index>;
+  return (
+    <ConfirmationModalProvider>
+      <Index>{children}</Index>
+    </ConfirmationModalProvider>
+  );
 }
