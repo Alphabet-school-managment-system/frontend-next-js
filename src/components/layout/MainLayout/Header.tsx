@@ -63,7 +63,7 @@ const Header = ({ pageTitle, pageTitleDescription }: HeaderProps) => {
   return (
     <>
       <header
-        className={`flex justify-between items-center m-0 bg-white shadow-lg z-0 px-4 py-2 rounded-none`}
+        className={`flex justify-between items-center m-0 bg-white shadow-lg shadow-gray-200 z-1 px-4 py-2 rounded-none`}
       >
         <div className="flex flex-col">
           <div className="text-lg  text-gray-800 text-left font-semibold">
