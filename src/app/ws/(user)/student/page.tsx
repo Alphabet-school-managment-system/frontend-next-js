@@ -4,13 +4,13 @@ import { useStudent } from "./hook/useStudent";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
   const { getTableColumns } = useStudent();
-
-  const List = dynamic(() => import("@/components/list/index"), {
-    ssr: false,
-    loading: () => <TableSkeleton />,
-  });
 
   return (
     <>

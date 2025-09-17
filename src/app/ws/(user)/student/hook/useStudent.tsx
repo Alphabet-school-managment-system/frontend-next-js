@@ -1,4 +1,5 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
+import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
 
 export const useStudent = () => {
@@ -59,17 +60,19 @@ export const useStudent = () => {
         title: "Email",
         dataIndex: "email",
         key: "email",
-        render: (_: string, record: any) => (
-          <div className="flex items-center gap-2">
-            <Icon
-              icon="mdi:email"
-              width={20}
-              height={20}
-              className="text-gray-700"
-            />
-            <span className="text-sm">{record?.email || "-"}</span>
-          </div>
-        ),
+        render: (_: string, record: any) => {
+          return (
+            <div className="flex items-center gap-2">
+              <Icon
+                icon="mdi:email"
+                width={20}
+                height={20}
+                className="text-gray-700"
+              />
+              <span className="text-sm">{record?.email || "-"}</span>
+            </div>
+          );
+        },
       },
       {
         title: "Address",
@@ -80,7 +83,118 @@ export const useStudent = () => {
     ];
   };
 
+  const getFormFields = (): FieldConfig[] => {
+    return [
+      {
+        name: "first_name",
+        label: "First Name",
+        type: FieldType.Input,
+        placeholder: "e.g. John",
+        rules: [{ required: true, message: "" }],
+        prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="material-symbols:person-outline"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
+      },
+      {
+        name: "last_name",
+        label: "Last Name",
+        type: FieldType.Input,
+        placeholder: "e.g. Doe",
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "full_name_local",
+        label: "Full Name (Local)",
+        type: FieldType.Input,
+        placeholder: "e.g. አበበ ከበደ",
+        rules: [{ required: true, message: "" }],
+        prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="famicons:language"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
+      },
+      {
+        name: "gender",
+        label: "Sex",
+        type: FieldType.Select,
+        placeholder: "e.g. Male",
+        prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="icons8:gender"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
+        options: [
+          { label: "Male", value: "Male" },
+          { label: "Female", value: "Female" },
+        ],
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "phone",
+        label: "Phone Number",
+        type: FieldType.Phone,
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "email",
+        label: "Email",
+        type: FieldType.email,
+        placeholder: "e.g. someone@example.com",
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "address",
+        label: "Address",
+        type: FieldType.Textarea,
+        placeholder: "1234, Main St, City, Country",
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "note",
+        label: "Note",
+        type: FieldType.Textarea,
+        placeholder: "additional information about the student",
+      },
+      {
+        name: "dob",
+        label: "Date of Birth",
+        type: FieldType.Date,
+        rules: [{ required: true, message: "" }],
+        suffix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="picon:birthday"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
+        placeholder: "Select date of birth",
+      },
+    ];
+  };
+
   return {
     getTableColumns,
+    getFormFields,
   };
 };
