@@ -35,7 +35,7 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
 
   return (
     <aside
-      className={`h-screen bg-white shadow-lg transition-all duration-300 ease-in-out fixed top-0 left-0 z-10 ${
+      className={`h-screen bg-white shadow-lg transition-all duration-300 ease-in-out fixed top-0 left-0 z-1 ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
