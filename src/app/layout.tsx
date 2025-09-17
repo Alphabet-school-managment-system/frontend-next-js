@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import "antd/dist/reset.css";
 import "@ant-design/v5-patch-for-react-19";
 import { ConfigProvider } from "antd";
+import QueryProvider from "@/store/query-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,13 +22,13 @@ export default function RootLayout({
           theme={{
             components: {
               Button: {
-                defaultBg: "#13C110",
-                defaultActiveBg: "#13C110",
+                // defaultBg: "#13C110",
+                // defaultActiveBg: "#13C110",
               },
             },
           }}
         >
-         {children}
+          <QueryProvider>{children}</QueryProvider>
         </ConfigProvider>
       </body>
     </html>
