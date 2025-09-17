@@ -75,6 +75,7 @@ export default function Home() {
         fields={FormFields}
         onSubmit={(values) => console.log("Staff form submitted:", values)}
         title="Staff Registration Form"
+        apiRoute="staff"
       />
     </div>
   );

@@ -99,6 +99,7 @@ export default function Home() {
         fields={FormFields}
         onSubmit={(values) => console.log("Teacher form submitted:", values)}
         title="Teacher Registration Form"
+        apiRoute="teacher"
       />
     </div>
   );

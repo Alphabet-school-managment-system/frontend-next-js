@@ -76,6 +76,7 @@ export default function Home() {
         fields={FormFields}
         onSubmit={(values) => console.log("Parent form submitted:", values)}
         title="Parent Registration Form"
+        apiRoute="parent"
       />
     </div>
   );
