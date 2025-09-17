@@ -1,9 +1,11 @@
+"use client";
+
 import React, {
   createContext,
   useState,
   type ReactElement,
   type ReactNode,
-} from 'react';
+} from "react";
 
 export type ConfirmationModalPropsType = {
   show?: boolean;
@@ -25,10 +27,10 @@ export type ConfirmationModalContextType = {
 export const ConfirmationModalContext =
   createContext<ConfirmationModalContextType>({
     confirmationModalProps: {
-      title: '',
-      content: '',
-      okButtonText: '',
-      cancelButtonText: '',
+      title: "",
+      content: "",
+      okButtonText: "",
+      cancelButtonText: "",
       show: false,
       onOk: () => {},
       onCancel: () => {},
@@ -37,10 +39,10 @@ export const ConfirmationModalContext =
   });
 
 export const defaultConfirmationModalProps: ConfirmationModalPropsType = {
-  title: 'Confirmation',
-  content: 'Are you sure want to delete this?',
-  okButtonText: 'Yes, delete',
-  cancelButtonText: 'No, leave it that.',
+  title: "Confirmation",
+  content: "Are you sure want to delete this item ?",
+  okButtonText: "Yes, delete",
+  cancelButtonText: "No, leave it that.",
   show: false,
   onOk: () => {},
   onCancel: () => {},

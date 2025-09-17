@@ -1,10 +1,12 @@
-import { useContext, useEffect } from 'react';
-import { Modal } from 'antd';
+"use client";
+
+import { useContext, useEffect } from "react";
+import { Modal } from "antd";
 import {
   ConfirmationModalContext,
   defaultConfirmationModalProps,
   type ConfirmationModalPropsType,
-} from '../../store/confirmationModalContext';
+} from "../../store/confirmationModalContext";
 
 const ConfirmationModal = () => {
   const [modal, contextHolder] = Modal.useModal();
@@ -36,8 +38,8 @@ const ConfirmationModal = () => {
       },
       okText: cmProps?.okButtonText,
       cancelText: cmProps?.cancelButtonText,
-      okButtonProps: { danger: true, type: 'default' },
-      cancelButtonProps: { type: 'primary' },
+      okButtonProps: { danger: true, type: "primary" },
+      cancelButtonProps: { type: "default" },
       icon: null,
     });
   }, [cmProps?.show]);
