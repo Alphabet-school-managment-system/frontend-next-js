@@ -39,7 +39,7 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
         collapsed ? "w-20" : "w-64"
       }`}
     >
-      {/* Collapse Icon */}
+      {/* Collapse Icon button */}
       <span className="flex justify-between items-center p-3 px-5">
         <span
           className={`text-gray-800 font-bold ${collapsed ? "hidden" : ""} `}
