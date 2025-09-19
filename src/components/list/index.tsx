@@ -17,7 +17,12 @@ type props = {
   columns: any[];
   searchByCols: string[];
   searchInputPlaceholderText: string;
-  route: string;
+  route:
+    | string
+    | {
+        api: string;
+        page: string;
+      };
   addButtonTitle?: string;
   showAddButton?: boolean;
   actionPrevilage?: {
@@ -42,7 +47,7 @@ const Index = ({
   actionPrevilage = {
     edit: true,
     delete: true,
-    detail: false
+    detail: false,
   },
 }: props) => {
   const router = useRouter();
@@ -52,10 +57,14 @@ const Index = ({
   const [selectedRow, setSelectedRow] = useState<any>(null);
   const [searchValue, setSearchValue] = useState("");
 
-  const { data, isLoading } = useApiQuery([route], `${route}`);
+  const isRouteString = typeof route === "string";
+  const apiRoute = isRouteString ? route : route.api;
+  const pageRoute = isRouteString ? route : route.page;
+
+  const { data, isLoading } = useApiQuery([apiRoute], `${apiRoute}`);
   const { mutate: Delete, isPending: deleting } = useApiMutation(
-    [route],
-    `${route}/${selectedRow?.id}/delete`,
+    [apiRoute],
+    `${apiRoute}/${selectedRow?.id}/delete`,
     "DELETE"
   );
 
@@ -108,7 +117,7 @@ const Index = ({
         title: "Action",
         dataIndex: "action",
         key: "action",
-        width:150,
+        width: 150,
         render: (_: string, record: any) => (
           <div className="flex justify-between items-center">
             {actionPrevilage?.edit && (
@@ -116,7 +125,7 @@ const Index = ({
                 className="flex p-2 hover:cursor-pointer"
                 title="edit"
                 onClick={() => {
-                  router.push(`/ws/${route}/${record.id}/update`);
+                  router.push(`/ws/${pageRoute}/${record.id}/update`);
                 }}
               >
                 <Icon
@@ -178,7 +187,7 @@ const Index = ({
         }}
         placeholderText={searchInputPlaceholderText}
         onAddButtonClicked={() => {
-          router.push(`/ws/${route}/new`);
+          router.push(`/ws/${pageRoute}/new`);
         }}
         addButtonTitle={addButtonTitle}
         showAddButton={showAddButton}
