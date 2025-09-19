@@ -1,28 +1,40 @@
 export const apiEndpoint: string = "http://localhost:4000/api/v1";
+import axios, { AxiosRequestConfig } from "axios";
+const token = process.env.NEXT_PUBLIC_API_TOKEN || null;
 
 export const apiRequest = async <T>(
   url: string,
-  options?: RequestInit
+  options?: AxiosRequestConfig
 ): Promise<T> => {
-  const token = process.env.NEXT_PUBLIC_API_TOKEN || null;
+  try {
+    const response = await axios({
+      url: `${apiEndpoint}/${url}`,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options?.headers,
+      },
+      ...options,
+    });
 
-  const res = await fetch(`${apiEndpoint}/${url}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { authorization: `Bearer ${token}` } : {}),
-      ...options?.headers,
-    },
-    ...options,
-  });
-
-  if (!res.ok) throw new Error(`API error: ${res.statusText}`);
-  return res.json();
+    return response.data as T;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(
+        error.response.data?.message ||
+          error.response.data?.error ||
+          "Backend error occurred"
+      );
+    } else {
+      throw new Error(error.message);
+    }
+  }
 };
 
 export const getData = <T>(url: string) => apiRequest<T>(url);
 
-export const postData = <T>(url: string, body: unknown) =>
+export const postData = <T>(url: string, body: unknown, method = "POST") =>
   apiRequest<T>(url, {
-    method: "POST",
-    body: JSON.stringify(body),
+    method,
+    data: JSON.stringify(body),
   });
