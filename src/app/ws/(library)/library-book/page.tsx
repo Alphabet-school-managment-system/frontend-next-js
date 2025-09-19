@@ -1,9 +1,36 @@
+"use client";
+
+import { useLibraryBook } from "./hook/useLibraryBook";
+import dynamic from "next/dynamic";
+import TableSkeleton from "@/components/forms/TableSkeleton";
+
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
+  const { getTableColumns } = useLibraryBook();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Library book list</h1>
-      </div>
-    </div>
+    <>
+      <List
+        columns={getTableColumns()}
+        searchByCols={["title", "author", "isbn"]}
+        searchInputPlaceholderText={
+          "Search by book information (title, author & isbn)"
+        }
+        route={{
+          api: "library-book",
+          page: "library-book",
+        }}
+        addButtonTitle={"Add new book"}
+        actionPrevilage={{
+          edit: true,
+          delete: true,
+          detail: true,
+        }}
+      />
+    </>
   );
 }
