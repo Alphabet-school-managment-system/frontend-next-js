@@ -17,6 +17,7 @@ export enum FieldType {
   Textarea = "textarea",
   Phone = "phone",
   email = "email",
+  number = "number",
   hidden = "hidden",
 }
 
@@ -31,6 +32,8 @@ export interface FieldConfig {
   suffix?: ReactElement;
   rows?: number;
   hidden?: boolean;
+  min?: number;
+  max?: number;
 }
 
 interface FormGeneratorProps {
@@ -159,6 +162,29 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             }
           />
         );
+      case "number":
+        return (
+          <Input
+            type="number"
+            className="w-full"
+            size="large"
+            placeholder={field.placeholder}
+            min={field?.min ?? 0}
+            max={field?.max ?? 1}
+            prefix={
+              field?.prefix ?? (
+                <span className="flex items-center justify-center h-full">
+                  <Icon
+                    icon="ant-design:number-outlined"
+                    className="text-gray-800"
+                    width={22}
+                    height={22}
+                  />
+                </span>
+              )
+            }
+          />
+        );
       default:
         return null;
     }
@@ -222,21 +248,19 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                   columns === 2 ? "md:grid-cols-2" : "md:grid-cols-1"
                 }`}
               >
-                {fields.map(
-                  (field: FieldConfig, index: number) =>
-                      <Form.Item
-                        key={index}
-                        name={field.name}
-                        label={
-                          <span className=" text-gray-900">{field.label}</span>
-                        }
-                        rules={field.rules}
-                        hidden={field.hidden}
-                      >
-                        {renderField(field)}
-                      </Form.Item>
-                    
-                )}
+                {fields.map((field: FieldConfig, index: number) => (
+                  <Form.Item
+                    key={index}
+                    name={field.name}
+                    label={
+                      <span className=" text-gray-900">{field.label}</span>
+                    }
+                    rules={field.rules}
+                    hidden={field.hidden}
+                  >
+                    {renderField(field)}
+                  </Form.Item>
+                ))}
               </div>
 
               {/* form submit button */}
