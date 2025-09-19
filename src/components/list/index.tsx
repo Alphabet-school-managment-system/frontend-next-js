@@ -20,6 +20,11 @@ type props = {
   route: string;
   addButtonTitle?: string;
   showAddButton?: boolean;
+  actionPrevilage?: {
+    edit?: boolean;
+    delete?: boolean;
+    detail?: boolean;
+  };
 };
 
 const Table = dynamic(() => import("@/components/common/Table"), {
@@ -34,6 +39,11 @@ const Index = ({
   route,
   addButtonTitle,
   showAddButton = true,
+  actionPrevilage = {
+    edit: true,
+    delete: true,
+    detail: false
+  },
 }: props) => {
   const router = useRouter();
 
@@ -98,51 +108,58 @@ const Index = ({
         title: "Action",
         dataIndex: "action",
         key: "action",
+        width:150,
         render: (_: string, record: any) => (
           <div className="flex justify-between items-center">
-            <span
-              className="flex p-2 hover:cursor-pointer"
-              title="edit"
-              onClick={() => {
-                router.push(`/ws/${route}/${record.id}/update`);
-              }}
-            >
-              <Icon
-                icon="line-md:edit"
-                width={22}
-                height={22}
-                className="text-gray-900"
-              />
-            </span>
-            <span
-              className="flex p-2 hover:cursor-pointer"
-              title="delete"
-              onClick={() => {
-                setcmProps((prev: ConfirmationModalPropsType) => ({
-                  ...prev,
-                  show: true,
-                  onOk: () => {
-                    setSelectedRow(record);
-                    handleDelete();
-                  },
-                }));
-              }}
-            >
-              <Icon
-                icon="mdi:trash-outline"
-                width={22}
-                height={22}
-                className="text-gray-900"
-              />
-            </span>
-            <span className="flex p-2 hover:cursor-pointer" title="detail">
-              <Icon
-                icon="bx:detail"
-                width={22}
-                height={22}
-                className="text-gray-900"
-              />
-            </span>
+            {actionPrevilage?.edit && (
+              <span
+                className="flex p-2 hover:cursor-pointer"
+                title="edit"
+                onClick={() => {
+                  router.push(`/ws/${route}/${record.id}/update`);
+                }}
+              >
+                <Icon
+                  icon="line-md:edit"
+                  width={22}
+                  height={22}
+                  className="text-gray-900"
+                />
+              </span>
+            )}
+            {actionPrevilage?.delete && (
+              <span
+                className="flex p-2 hover:cursor-pointer"
+                title="delete"
+                onClick={() => {
+                  setcmProps((prev: ConfirmationModalPropsType) => ({
+                    ...prev,
+                    show: true,
+                    onOk: () => {
+                      setSelectedRow(record);
+                      handleDelete();
+                    },
+                  }));
+                }}
+              >
+                <Icon
+                  icon="mdi:trash-outline"
+                  width={22}
+                  height={22}
+                  className="text-gray-900"
+                />
+              </span>
+            )}
+            {actionPrevilage?.detail && (
+              <span className="flex p-2 hover:cursor-pointer" title="detail">
+                <Icon
+                  icon="bx:detail"
+                  width={22}
+                  height={22}
+                  className="text-gray-900"
+                />
+              </span>
+            )}
           </div>
         ),
       },

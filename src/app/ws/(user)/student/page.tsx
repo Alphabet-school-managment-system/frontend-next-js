@@ -22,6 +22,11 @@ export default function Home() {
         }
         route={"student"}
         addButtonTitle={"Add new student"}
+        actionPrevilage={{
+          edit: true,
+          delete: true,
+          detail: true,
+        }}
       />
     </>
   );
