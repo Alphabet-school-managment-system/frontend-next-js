@@ -92,11 +92,21 @@ export const useTeacher = () => {
     return [
       {
         name: "subject_specialization",
-        label: "Subject",
+        label: "Subject Specialization",
         type: FieldType.Select,
         placeholder: "Select subject specialization",
         options: subjectOptions,
         rules: [{ required: true, message: "" }],
+         prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="material-symbols:subject"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
       },
       {
         name: "note",
