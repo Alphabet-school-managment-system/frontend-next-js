@@ -20,9 +20,11 @@ export default function Home() {
       <FormGenerator
         columns={2}
         fields={getFormFields()}
-        onSubmit={(values) => console.log("Student form submitted:", values)}
         title="Create new Student"
         apiRoute="student"
+        data={{
+          branch_id: "lvers",
+        }}
       />
     </div>
   );

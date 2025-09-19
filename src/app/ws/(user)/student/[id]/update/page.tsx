@@ -41,11 +41,11 @@ export default function Update() {
       <FormGenerator
         columns={2}
         fields={getFormFields()}
-        onSubmit={(values) => console.log("Student form submitted:", values)}
         title="Update Student Information"
         apiRoute="student"
         data={data}
         isFetching={isLoading}
+        isCreate={false}
       />
     </div>
   );

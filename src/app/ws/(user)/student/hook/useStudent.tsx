@@ -83,7 +83,7 @@ export const useStudent = () => {
     ];
   };
 
-  const getFormFields = (): FieldConfig[] => {
+  const getCommonFormFields = (): FieldConfig[] => {
     return [
       {
         name: "first_name",
@@ -108,23 +108,6 @@ export const useStudent = () => {
         type: FieldType.Input,
         placeholder: "e.g. Doe",
         rules: [{ required: true, message: "" }],
-      },
-      {
-        name: "full_name_local",
-        label: "Full Name (Local)",
-        type: FieldType.Input,
-        placeholder: "e.g. አበበ ከበደ",
-        rules: [{ required: true, message: "" }],
-        prefix: (
-          <span className="flex items-center justify-center h-full">
-            <Icon
-              icon="famicons:language"
-              className="text-gray-500"
-              width={22}
-              height={22}
-            />
-          </span>
-        ),
       },
       {
         name: "gender",
@@ -159,6 +142,35 @@ export const useStudent = () => {
         type: FieldType.email,
         placeholder: "e.g. someone@example.com",
         rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "branch_id",
+        label: "",
+        type: FieldType.Input,
+        hidden: true,
+      },
+    ];
+  };
+
+  const getFormFields = (): FieldConfig[] => {
+    return [
+      ...getCommonFormFields(),
+      {
+        name: "full_name_local",
+        label: "Full Name (Local)",
+        type: FieldType.Input,
+        placeholder: "e.g. አበበ ከበደ",
+        rules: [{ required: true, message: "" }],
+        prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="famicons:language"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
       },
       {
         name: "address",
@@ -196,5 +208,6 @@ export const useStudent = () => {
   return {
     getTableColumns,
     getFormFields,
+    getCommonFormFields
   };
 };
