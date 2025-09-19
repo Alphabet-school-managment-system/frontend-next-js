@@ -57,9 +57,10 @@ const Index = ({
   }, [data]);
 
   useEffect(() => {
-    if (datas.length > 0) {
+    if (datasCopy.length > 0) {
       if (searchValue) {
         const result = ArraySearch({ searchValue }, datas, searchByCols);
+
         setDatas(result);
       } else {
         setDatas(datasCopy);
