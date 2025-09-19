@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { Form, Input, Select, DatePicker, Button, Spin } from "antd";
 import { Icon } from "@iconify-icon/react";
 import PhoneNumberInput, {
@@ -8,6 +8,7 @@ import PhoneNumberInput, {
 } from "../common/PhoneNumberInput";
 import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks/useApi";
+import toast from "react-hot-toast";
 
 export enum FieldType {
   Input = "input",
@@ -16,6 +17,7 @@ export enum FieldType {
   Textarea = "textarea",
   Phone = "phone",
   email = "email",
+  hidden = "hidden",
 }
 
 export interface FieldConfig {
@@ -28,14 +30,15 @@ export interface FieldConfig {
   prefix?: ReactElement;
   suffix?: ReactElement;
   rows?: number;
+  hidden?: boolean;
 }
 
 interface FormGeneratorProps {
   fields: FieldConfig[];
   columns?: number;
-  onSubmit: (values: any) => void;
+  onSubmit?: (values: any) => void;
   initialValues?: Record<string, any>;
-  submitText?: string;
+  isCreate?: boolean;
   title: string;
   subTitle?: string;
   data?: any;
@@ -48,7 +51,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   columns = 1,
   onSubmit,
   initialValues,
-  submitText = "CONTINUE",
+  isCreate = true,
   title,
   subTitle,
   data,
@@ -57,6 +60,13 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
 }) => {
   const [form] = Form.useForm();
   const router = useRouter();
+  const [isLoading, setIsloading] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      form.setFieldsValue(data);
+    }
+  }, [data]);
 
   const renderField = (field: FieldConfig) => {
     switch (field.type) {
@@ -160,17 +170,28 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
     data ? "PUT" : "POST"
   );
 
-  const handleFormSubmit = (values: any) => {
+  const handleFormSubmit = async (values: any) => {
     try {
-      mutate(values, {
+      const payload = { ...values };
+      await mutate(payload, {
         onSuccess: (res) => {
-          onSubmit(res);
+          onSubmit && onSubmit(res);
         },
       });
     } catch (error) {
-      console.log("Form submission error:", error);
+      toast.error(`"${error}`);
     }
   };
+
+  useEffect(() => {
+    if (isPending) {
+      setIsloading(true);
+    } else {
+      setTimeout(() => {
+        setIsloading(false);
+      }, 500);
+    }
+  }, [isPending]);
 
   return (
     <Form
@@ -180,11 +201,11 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       initialValues={initialValues}
       requiredMark={true}
     >
-      <Spin spinning={isFetching || isPending}>
+      <Spin spinning={isFetching || isLoading}>
         <div className="flex justify-center h-full">
           <div
             className={`
-        bg-white rounded-md p-8 w-2/3`}
+        bg-white rounded-md p-8 w-2/3 shadow-2xl`}
           >
             <div className=" ">
               {/* title and subtitle */}
@@ -201,18 +222,21 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                   columns === 2 ? "md:grid-cols-2" : "md:grid-cols-1"
                 }`}
               >
-                {fields.map((field: FieldConfig) => (
-                  <Form.Item
-                    key={field.name}
-                    name={field.name}
-                    label={
-                      <span className=" text-gray-900">{field.label}</span>
-                    }
-                    rules={field.rules}
-                  >
-                    {renderField(field)}
-                  </Form.Item>
-                ))}
+                {fields.map(
+                  (field: FieldConfig, index: number) =>
+                      <Form.Item
+                        key={index}
+                        name={field.name}
+                        label={
+                          <span className=" text-gray-900">{field.label}</span>
+                        }
+                        rules={field.rules}
+                        hidden={field.hidden}
+                      >
+                        {renderField(field)}
+                      </Form.Item>
+                    
+                )}
               </div>
 
               {/* form submit button */}
@@ -236,12 +260,26 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                     className="mt-2 !rounded-sm !ml-4 !items-center flex"
                     size="large"
                     icon={
-                      <Icon icon="ion:arrow-forward" width={24} height={24} />
+                      <span className="flex items-center">
+                        {isCreate ? (
+                          <Icon
+                            icon="gridicons:create"
+                            width={20}
+                            height={20}
+                          />
+                        ) : (
+                          <Icon
+                            icon="material-symbols:save-outline"
+                            width={20}
+                            height={20}
+                          />
+                        )}
+                      </span>
                     }
                     iconPosition="end"
                     loading={isPending}
                   >
-                    {submitText}
+                    {isCreate ? "Create" : "Save Changes"}{" "}
                   </Button>
                 </Form.Item>
               </div>
