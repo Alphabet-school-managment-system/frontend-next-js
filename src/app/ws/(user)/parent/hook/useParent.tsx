@@ -1,4 +1,5 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
+import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
 
 export const useParent = () => {
@@ -65,7 +66,26 @@ export const useParent = () => {
     ];
   };
 
+  const getFormFields = (): FieldConfig[] => {
+    return [
+      {
+        name: "address",
+        label: "Address",
+        type: FieldType.Textarea,
+        placeholder: "Enter address",
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "note",
+        label: "Note",
+        type: FieldType.Textarea,
+        placeholder: "Add extra note here.",
+      },
+    ];
+  };
+
   return {
     getTableColumns,
+    getFormFields,
   };
 };

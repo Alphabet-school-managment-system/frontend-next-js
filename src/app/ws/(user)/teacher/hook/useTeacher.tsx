@@ -1,4 +1,5 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
+import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
 
 export const useTeacher = () => {
@@ -63,8 +64,61 @@ export const useTeacher = () => {
       },
     ];
   };
+  const subjectOptions = [
+    { label: "Local language", value: "Local_language" },
+    { label: "Mathematics", value: "mathematics" },
+    { label: "Physics", value: "physics" },
+    { label: "Chemistry", value: "chemistry" },
+    { label: "Biology", value: "biology" },
+    { label: "English", value: "english" },
+    { label: "History", value: "history" },
+    { label: "Geography", value: "geography" },
+    { label: "Computer Science", value: "computer_science" },
+    { label: "Economics", value: "economics" },
+    { label: "Business Studies", value: "business_studies" },
+    { label: "Civics", value: "civics" },
+    { label: "Physical Education", value: "physical_education" },
+    { label: "Music", value: "music" },
+    { label: "Art", value: "art" },
+    { label: "Religious Studies", value: "religious_studies" },
+    { label: "Environmental Science", value: "environmental_science" },
+    { label: "Social Studies", value: "social_studies" },
+    { label: "Philosophy", value: "philosophy" },
+    { label: "Political Science", value: "political_science" },
+    { label: "Special Education", value: "special_education" },
+  ];
+
+  const getFormFields = (): FieldConfig[] => {
+    return [
+      {
+        name: "subject_specialization",
+        label: "Subject Specialization",
+        type: FieldType.Select,
+        placeholder: "Select subject specialization",
+        options: subjectOptions,
+        rules: [{ required: true, message: "" }],
+         prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="material-symbols:subject"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
+      },
+      {
+        name: "note",
+        label: "Note",
+        type: FieldType.Textarea,
+        placeholder: "Add extra note here.",
+      },
+    ];
+  };
 
   return {
     getTableColumns,
+    getFormFields
   };
 };

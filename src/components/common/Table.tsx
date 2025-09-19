@@ -151,7 +151,11 @@ const TableHeader = ({
           onClick={() => onAddButtonClicked()}
           style={{ marginLeft: 16 }}
           type="primary"
-          icon={<Icon icon="gg:add" width={30} height={30} />}
+          icon={
+            <span className="flex items-center">
+              <Icon icon="gg:add" width={25} height={25} />
+            </span>
+          }
           size="large"
           shape="default"
           data-testid="add-button"

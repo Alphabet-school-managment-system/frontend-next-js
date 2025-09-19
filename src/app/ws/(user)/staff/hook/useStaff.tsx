@@ -1,4 +1,5 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
+import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
 
 export const useStaff = () => {
@@ -65,7 +66,25 @@ export const useStaff = () => {
     ];
   };
 
+  const getFormFields = (): FieldConfig[] => {
+    return [
+      {
+        name: "role",
+        label: "Role",
+        type: FieldType.Select,
+        placeholder: "Select role",
+        options: [
+          { label: "Librarian", value: "librarian" },
+          { label: "Accountant", value: "accountant" },
+          { label: "Admin", value: "admin" },
+        ],
+        rules: [{ required: true, message: "" }],
+      },
+    ];
+  };
+
   return {
     getTableColumns,
+    getFormFields,
   };
 };

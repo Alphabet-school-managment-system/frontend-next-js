@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo, useEffect } from 'react';
 import { Input } from 'antd';
 import { Icon } from "@iconify-icon/react";
@@ -14,12 +16,14 @@ const PhoneNumberInput = ({
   onChecking,
   disabled,
   value = '',
+  placeholder
 }: {
   onChange: ({ formatted, raw }: onPhoneNumberInputChangeProps) => void;
   onPressEnter: (v: any) => void;
   onChecking: (v: boolean) => void;
   disabled: boolean;
   value: string | undefined;
+  placeholder?: string;
 }) => {
   const [val, setVal] = useState<string | undefined>(value);
   const raw = useMemo(() => val?.replace(/\D/g, ''), [val]);
@@ -40,14 +44,14 @@ const PhoneNumberInput = ({
     <>
       <Input
         size="large"
-        placeholder="XXX XX XX XX"
+        placeholder={placeholder ?? "XXX XX XX XX"}
         prefix={<span>+251</span>}
         suffix={
           <Icon
-            icon="fluent:phone-48-regular"
+            icon="ic:baseline-phone"
             className="text-gray-400"
-            width={20}
-            height={20}
+            width={22}
+            height={22}
           />
         }
         value={val}

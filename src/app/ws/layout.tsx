@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Index from "@/components/layout/MainLayout/Index";
 import { ConfirmationModalProvider } from "@/store/confirmationModalContext";
+import ConfirmationModal from "@/components/common/Modals";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
   children,
@@ -20,6 +22,8 @@ export default function RootLayout({
 
   return (
     <ConfirmationModalProvider>
+      <ConfirmationModal />
+      <Toaster position="top-center" />
       <Index>{children}</Index>
     </ConfirmationModalProvider>
   );
