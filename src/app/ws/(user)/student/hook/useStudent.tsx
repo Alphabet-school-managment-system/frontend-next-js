@@ -208,6 +208,6 @@ export const useStudent = () => {
   return {
     getTableColumns,
     getFormFields,
-    getCommonFormFields
+    getCommonFormFields,
   };
 };
