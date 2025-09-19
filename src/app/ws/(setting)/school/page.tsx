@@ -1,9 +1,31 @@
+"use client";
+
+import { useSchool } from "./hook/useSchool";
+import dynamic from "next/dynamic";
+import TableSkeleton from "@/components/forms/TableSkeleton";
+
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
+  const { getTableColumns } = useSchool();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>School list</h1>
-      </div>
-    </div>
+    <>
+      <List
+        columns={getTableColumns()}
+        searchByCols={["name", "address", "contact"]}
+        searchInputPlaceholderText={
+          "Search by school information (name, address & contact)"
+        }
+        route={"school"}
+        showAddButton={false}
+        actionPrevilage={{
+          edit: true,
+        }}
+      />
+    </>
   );
 }
