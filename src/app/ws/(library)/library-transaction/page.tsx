@@ -1,9 +1,33 @@
+"use client";
+
+import { useBookTransaction } from "./hook/useBookTransaction";
+import dynamic from "next/dynamic";
+import TableSkeleton from "@/components/forms/TableSkeleton";
+
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
+  const { getTableColumns } = useBookTransaction();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Library Transaction list</h1>
-      </div>
-    </div>
+    <>
+      <List
+        columns={getTableColumns()}
+        searchByCols={["first_name", "last_name", "book_title"]}
+        searchInputPlaceholderText={
+          "Search by book and borrower information (first name, last name & title)"
+        }
+        route={"library-transaction"}
+        addButtonTitle={"Add new transaction"}
+        actionPrevilage={{
+          edit: true,
+          delete: true,
+          detail: true,
+        }}
+      />
+    </>
   );
 }
