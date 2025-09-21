@@ -6,7 +6,7 @@ import {
   ConfirmationModalPropsType,
   defaultConfirmationModalProps,
 } from "@/store/confirmationModalContext";
-import { useContext, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ type props = {
     delete?: boolean;
     detail?: boolean;
   };
+  FilterOption?: ReactElement;
 };
 
 const Table = dynamic(() => import("@/components/common/Table"), {
@@ -49,6 +50,7 @@ const Index = ({
     delete: true,
     detail: false,
   },
+  FilterOption,
 }: props) => {
   const router = useRouter();
 
@@ -196,6 +198,7 @@ const Index = ({
             console.log(pageSize);
           },
         }}
+        FilterOption={FilterOption}
       />
     </div>
   );

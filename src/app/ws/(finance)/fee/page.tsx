@@ -1,9 +1,33 @@
+"use client";
+
+import { useFee } from "./hook/useFee";
+import dynamic from "next/dynamic";
+import TableSkeleton from "@/components/forms/TableSkeleton";
+
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
+  const { getTableColumns } = useFee();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Fee list</h1>
-      </div>
-    </div>
+    <>
+      <List
+        columns={getTableColumns()}
+        searchByCols={["type", "status", "amount", "due_date"]}
+        searchInputPlaceholderText={
+          "Search by fee information (type, status, amount & due date)"
+        }
+        route={"fee"}
+        addButtonTitle={"Add new fee"}
+        actionPrevilage={{
+          edit: true,
+          delete: true,
+          detail: true,
+        }}
+      />
+    </>
   );
 }
