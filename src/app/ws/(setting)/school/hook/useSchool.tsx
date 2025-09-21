@@ -40,19 +40,22 @@ export const useSchool = () => {
         placeholder: "1234, Main St, City, Country",
         rows: 4,
         rules: [{ required: true, message: "" }],
-      },
-      {
-        name: "contact",
-        label: "Contact",
-        type: FieldType.Textarea,
-        placeholder: "+1234567890,example@example.com, www.example.com",
-        rules: [{ required: true, message: "" }],
+        className: `w-full`,
       },
       {
         name: "note",
         label: "Note",
         type: FieldType.Textarea,
         placeholder: "additional information about the school",
+        rows: 4,
+        className: `w-full`,
+      },
+      {
+        name: "contact",
+        label: "Contact",
+        type: FieldType.Input,
+        placeholder: "+1234567890,example@example.com, www.example.com",
+        rules: [{ required: true, message: "" }],
       },
     ];
   };
