@@ -1,9 +1,28 @@
+"use client";
+
+import FormSkeleton from "@/components/forms/FormSkeleton";
+import dynamic from "next/dynamic";
+import { useFee } from "../hook/useFee";
+
 export default function Home() {
+  const { getFormFields } = useFee();
+
+  const FormGenerator = dynamic(
+    () => import("@/components/forms/FormGenerator"),
+    {
+      ssr: false,
+      loading: () => <FormSkeleton />,
+    }
+  );
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Fee form</h1>
-      </div>
+    <div className="">
+      <FormGenerator
+        columns={2}
+        fields={getFormFields()}
+        title="Create new Fee"
+        apiRoute="fee"
+      />
     </div>
   );
 }
