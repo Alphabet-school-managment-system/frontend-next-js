@@ -173,19 +173,6 @@ export const useStudent = () => {
         ),
       },
       {
-        name: "address",
-        label: "Address",
-        type: FieldType.Textarea,
-        placeholder: "1234, Main St, City, Country",
-        rules: [{ required: true, message: "" }],
-      },
-      {
-        name: "note",
-        label: "Note",
-        type: FieldType.Textarea,
-        placeholder: "additional information about the student",
-      },
-      {
         name: "dob",
         label: "Date of Birth",
         type: FieldType.Date,
@@ -201,6 +188,23 @@ export const useStudent = () => {
           </span>
         ),
         placeholder: "Select date of birth",
+      },
+      {
+        name: "address",
+        label: "Address",
+        type: FieldType.Textarea,
+        placeholder: "1234, Main St, City, Country",
+        rules: [{ required: true, message: "" }],
+        rows: 4,
+        className: `w-full`,
+      },
+      {
+        name: "note",
+        label: "Note",
+        type: FieldType.Textarea,
+        placeholder: "additional information about the student",
+        rows: 4,
+        className: `w-full`,
       },
     ];
   };

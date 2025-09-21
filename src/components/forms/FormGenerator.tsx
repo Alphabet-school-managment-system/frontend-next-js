@@ -34,6 +34,7 @@ export interface FieldConfig {
   hidden?: boolean;
   min?: number;
   max?: number;
+  className?: string;
 }
 
 interface FormGeneratorProps {
@@ -257,6 +258,10 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                     }
                     rules={field.rules}
                     hidden={field.hidden}
+                    className={`
+        ${field.className ?? ""}
+        ${field.className?.includes("w-full") ? "md:col-span-2" : ""}
+      `}
                   >
                     {renderField(field)}
                   </Form.Item>

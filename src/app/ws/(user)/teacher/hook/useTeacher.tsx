@@ -97,7 +97,7 @@ export const useTeacher = () => {
         placeholder: "Select subject specialization",
         options: subjectOptions,
         rules: [{ required: true, message: "" }],
-         prefix: (
+        prefix: (
           <span className="flex items-center justify-center h-full">
             <Icon
               icon="material-symbols:subject"
@@ -113,12 +113,14 @@ export const useTeacher = () => {
         label: "Note",
         type: FieldType.Textarea,
         placeholder: "Add extra note here.",
+        rows: 4,
+        className: `w-full`,
       },
     ];
   };
 
   return {
     getTableColumns,
-    getFormFields
+    getFormFields,
   };
 };
