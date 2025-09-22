@@ -1,9 +1,58 @@
+"use client";
+
+import { useLeaveRequest } from "./hook/useLeaveRequest";
+import dynamic from "next/dynamic";
+import TableSkeleton from "@/components/forms/TableSkeleton";
+import { Select } from "@/components/common/Select";
+import { useState } from "react";
+
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
+  const { getTableColumns } = useLeaveRequest();
+  const [userType, setUserType] = useState<"student" | "teacher">("student");
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Leave Request list</h1>
-      </div>
-    </div>
+    <>
+      <List
+        columns={getTableColumns(userType)}
+        searchByCols={["first_name", "last_name"]}
+        searchInputPlaceholderText={
+          "Search by user information (first name & last name)"
+        }
+        route={{
+          api: "leaverequest",
+          page: "leave-request",
+        }}
+        showAddButton={false}
+        actionPrevilage={{
+          edit: false,
+          delete: false,
+          detail: true,
+        }}
+        FilterOption={
+          <Select
+            data={[
+              {
+                value: "student",
+                text: "Students",
+              },
+              {
+                value: "teacher",
+                text: "Teachers",
+              },
+            ]}
+            placeholderText="Apply filter"
+            onChange={(value: any) => {
+              setUserType(value);
+            }}
+            classNames="shadow-none focus:shadow-none outline-none bg-transparent min-w-[150px]"
+          />
+        }
+      />
+    </>
   );
 }
