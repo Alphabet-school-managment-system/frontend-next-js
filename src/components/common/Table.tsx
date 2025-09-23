@@ -19,6 +19,9 @@ const Table = ({
   showSearchInput = true,
   FilterOption,
   pagination,
+  onRowSelection,
+  showRowSelection = false,
+  subHeader,
 }: {
   data: any[];
   columns: {
@@ -38,8 +41,21 @@ const Table = ({
   showSearchInput?: boolean;
   FilterOption?: ReactElement;
   pagination?: false | TablePaginationConfig;
+  onRowSelection?: (values: React.Key[]) => void;
+  showRowSelection?: boolean;
+  subHeader?: ReactElement;
 }) => {
   const [pageSize, setPageSize] = useState(10);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedKeys);
+      onRowSelection && onRowSelection(selectedKeys);
+    },
+    columnWidth: 75,
+  };
 
   return (
     <>
@@ -65,6 +81,7 @@ const Table = ({
               showAddButton={showAddButton}
               showSearchInput={showSearchInput}
               FilterOption={FilterOption}
+              subHeader={subHeader}
             />
           )
         }
@@ -85,6 +102,7 @@ const Table = ({
           },
           ...pagination,
         }}
+        rowSelection={showRowSelection ? rowSelection : undefined}
       />
     </>
   );
@@ -99,6 +117,7 @@ const TableHeader = ({
   showAddButton,
   showSearchInput,
   FilterOption,
+  subHeader,
 }: {
   onSearchInputChange: (value: string) => void;
   placeholder: string;
@@ -108,6 +127,8 @@ const TableHeader = ({
   showAddButton: boolean;
   showSearchInput: boolean;
   FilterOption?: ReactElement;
+  ReactElement?: ReactElement;
+  subHeader?: ReactElement;
 }) => {
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && event.currentTarget.value) {
@@ -120,51 +141,54 @@ const TableHeader = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-lg shadow-main bg-white gap-2">
-      {showSearchInput ? (
-        <Input
-          placeholder={placeholder}
-          prefix={
-            <SearchOutlined
-              style={{
-                color: "gray",
-                marginRight: 5,
-              }}
-              width={20}
-              height={20}
-            />
-          }
-          className="text-lg"
-          size="large"
-          onKeyDown={handleEnter}
-          allowClear
-          onChange={handleChange}
-          value={value}
-          addonAfter={FilterOption && FilterOption}
-        />
-      ) : (
-        <div></div>
-      )}
-      {showAddButton && (
-        <Button
-          className="flex self-center justify-center"
-          onClick={() => onAddButtonClicked()}
-          style={{ marginLeft: 16 }}
-          type="primary"
-          icon={
-            <span className="flex items-center">
-              <Icon icon="gg:add" width={25} height={25} />
-            </span>
-          }
-          size="large"
-          shape="default"
-          data-testid="add-button"
-          data-cy="add-button"
-          aria-label="Add new item"
-        >
-          {addButtonTitle}
-        </Button>
-      )}
+    <div className="flex flex-col justify-between p-4 rounded-lg shadow-main bg-white gap-2">
+      <div className="flex justify-between">
+        {showSearchInput ? (
+          <Input
+            placeholder={placeholder}
+            prefix={
+              <SearchOutlined
+                style={{
+                  color: "gray",
+                  marginRight: 5,
+                }}
+                width={20}
+                height={20}
+              />
+            }
+            className="text-lg"
+            size="large"
+            onKeyDown={handleEnter}
+            allowClear
+            onChange={handleChange}
+            value={value}
+            addonAfter={FilterOption && FilterOption}
+          />
+        ) : (
+          <div></div>
+        )}
+        {showAddButton && (
+          <Button
+            className="flex self-center justify-center"
+            onClick={() => onAddButtonClicked()}
+            style={{ marginLeft: 16 }}
+            type="primary"
+            icon={
+              <span className="flex items-center">
+                <Icon icon="gg:add" width={25} height={25} />
+              </span>
+            }
+            size="large"
+            shape="default"
+            data-testid="add-button"
+            data-cy="add-button"
+            aria-label="Add new item"
+          >
+            {addButtonTitle}
+          </Button>
+        )}
+      </div>
+      {subHeader && subHeader}
     </div>
   );
 };
