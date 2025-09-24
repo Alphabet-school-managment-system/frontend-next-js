@@ -3,6 +3,7 @@ import { useState, type ReactElement } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
 import { Icon } from "@iconify-icon/react";
+import { ColumnsType } from "antd/es/table";
 
 const Table = ({
   data,
@@ -24,11 +25,7 @@ const Table = ({
   subHeader,
 }: {
   data: any[];
-  columns: {
-    title: string;
-    dataIndex: string;
-    key: string;
-  }[];
+  columns: ColumnsType<any>;
   rowKey?: string;
   placeholderText?: string;
   onSearchInputChange?: (value: string) => void;
