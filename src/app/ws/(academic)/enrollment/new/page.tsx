@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <div className="">
       <FormGenerator
-        columns={2}
+        columns={1}
         fields={getFormFields()}
         title="Create new enrollment"
         apiRoute="enrollment"

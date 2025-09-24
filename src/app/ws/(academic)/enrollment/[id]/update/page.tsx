@@ -37,7 +37,7 @@ export default function Update() {
   return (
     <div className="">
       <FormGenerator
-        columns={2}
+        columns={1}
         fields={getFormFields()}
         title="Update Enrollment Information"
         apiRoute="enrollment"

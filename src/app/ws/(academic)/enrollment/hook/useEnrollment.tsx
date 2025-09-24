@@ -59,13 +59,13 @@ export const useEnrollment = () => {
         },
       },
       {
-        title: "Class name",
+        title: "Class",
         dataIndex: "class_name",
         key: "class_name",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
       },
       {
-        title: "Section name",
+        title: "Section",
         dataIndex: "section_name",
         key: "section_name",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
@@ -77,7 +77,7 @@ export const useEnrollment = () => {
     return [
       {
         name: "student_id",
-        label: "Class",
+        label: "Student",
         type: FieldType.Select,
         placeholder: "Select student",
         options: [],
