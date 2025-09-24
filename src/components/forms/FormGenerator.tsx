@@ -21,6 +21,11 @@ export enum FieldType {
   hidden = "hidden",
 }
 
+export enum SelectMode {
+  multiple = "multiple",
+  tags = "tags",
+}
+
 export interface FieldConfig {
   name: string;
   label: string;
@@ -35,6 +40,7 @@ export interface FieldConfig {
   min?: number;
   max?: number;
   className?: string;
+  selectMode?: SelectMode;
 }
 
 interface FormGeneratorProps {
@@ -101,6 +107,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             className="w-full"
             prefix={field?.prefix}
             suffixIcon={field?.suffix}
+            mode={field.selectMode ?? SelectMode.tags}
           >
             {field.options?.map((opt) => (
               <Select.Option key={opt.value} value={opt.value}>
