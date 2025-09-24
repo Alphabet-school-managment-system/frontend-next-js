@@ -31,6 +31,10 @@ type props = {
     detail?: boolean;
   };
   FilterOption?: ReactElement;
+  showActionCols?: boolean;
+  onRowSelection?: (values: React.Key[]) => void;
+  showRowSelection?: boolean;
+  subHeader?: ReactElement;
 };
 
 const Table = dynamic(() => import("@/components/common/Table"), {
@@ -51,6 +55,10 @@ const Index = ({
     detail: false,
   },
   FilterOption,
+  showActionCols = true,
+  onRowSelection,
+  showRowSelection = false,
+  subHeader,
 }: props) => {
   const router = useRouter();
 
@@ -181,8 +189,8 @@ const Index = ({
     <div className="p-4">
       <Table
         data={datas}
-        columns={[...columns, ...actionCol()]}
-        rowKey="_id"
+        columns={[...columns, ...(showActionCols ? actionCol() : [])]}
+        rowKey="id"
         loading={isLoading || deleting}
         onSearchInputChange={(value: string) => {
           setSearchValue(value);
@@ -199,6 +207,9 @@ const Index = ({
           },
         }}
         FilterOption={FilterOption}
+        onRowSelection={onRowSelection}
+        showRowSelection={showRowSelection}
+        subHeader={subHeader}
       />
     </div>
   );

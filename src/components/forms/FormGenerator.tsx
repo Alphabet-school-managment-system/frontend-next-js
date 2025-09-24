@@ -9,6 +9,7 @@ import PhoneNumberInput, {
 import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks/useApi";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 export enum FieldType {
   Input = "input",
@@ -19,6 +20,15 @@ export enum FieldType {
   email = "email",
   number = "number",
   hidden = "hidden",
+}
+
+export enum SelectMode {
+  multiple = "multiple",
+  tags = "tags",
+}
+
+export interface DateFieldConfig extends FieldConfig {
+  disabledDate?: (current: dayjs.Dayjs) => boolean;
 }
 
 export interface FieldConfig {
@@ -35,6 +45,9 @@ export interface FieldConfig {
   min?: number;
   max?: number;
   className?: string;
+  selectMode?: SelectMode;
+  disabled?: boolean;
+  disabledDate?: (current: dayjs.Dayjs) => boolean;
 }
 
 interface FormGeneratorProps {
@@ -101,6 +114,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             className="w-full"
             prefix={field?.prefix}
             suffixIcon={field?.suffix}
+            mode={field.selectMode}
           >
             {field.options?.map((opt) => (
               <Select.Option key={opt.value} value={opt.value}>
@@ -110,6 +124,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
           </Select>
         );
       case "date":
+        const dateField = field as DateFieldConfig;
+
         return (
           <DatePicker
             className="w-full"
@@ -127,6 +143,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             }
             placeholder={field.placeholder}
             format={"YYYY-MM-DD"}
+            disabledDate={dateField.disabledDate}
+            disabled={field.disabled}
           />
         );
       case "phone":
@@ -260,7 +278,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                     hidden={field.hidden}
                     className={`
         ${field.className ?? ""}
-        ${field.className?.includes("w-full") ? "md:col-span-2" : ""}
+        ${field.className?.includes("w-full") ? `md:col-span-${columns}` : ""}
       `}
                   >
                     {renderField(field)}

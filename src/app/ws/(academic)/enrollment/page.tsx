@@ -1,9 +1,33 @@
+"use client";
+
+import { useEnrollment } from "./hook/useEnrollment";
+import dynamic from "next/dynamic";
+import TableSkeleton from "@/components/forms/TableSkeleton";
+
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
+  const { getTableColumns } = useEnrollment();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Enrollment list</h1>
-      </div>
-    </div>
+    <>
+      <List
+        columns={getTableColumns()}
+        searchByCols={["first_name", "last_name", "class_name"]}
+        searchInputPlaceholderText={
+          "Search by enrollment information (first name, last name & class_name)"
+        }
+        route={"enrollment"}
+        addButtonTitle={"Add new enrollment"}
+        actionPrevilage={{
+          edit: true,
+          delete: true,
+          detail: false,
+        }}
+      />
+    </>
   );
 }
