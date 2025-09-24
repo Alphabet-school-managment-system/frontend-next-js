@@ -1,3 +1,5 @@
+"use client";
+
 import FormSkeleton from "@/components/forms/FormSkeleton";
 import { useApiQuery } from "@/hooks/useApi";
 import { Teacher } from "@/types";
