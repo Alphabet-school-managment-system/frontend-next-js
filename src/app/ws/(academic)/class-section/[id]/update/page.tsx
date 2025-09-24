@@ -2,7 +2,7 @@
 
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
-import { Student } from "@/types";
+import { ClassSection } from "@/types";
 import { useClassSection } from "../../hook/useClassSection";
 import dynamic from "next/dynamic";
 import FormSkeleton from "@/components/forms/FormSkeleton";
@@ -13,7 +13,7 @@ export default function Update() {
   const { getFormFields } = useClassSection();
   const [data, setData] = useState<any>(null);
 
-  const { data: result, isLoading } = useApiQuery<Student>(
+  const { data: result, isLoading } = useApiQuery<ClassSection>(
     [],
     `class-section/${id}`,
     Boolean(id)

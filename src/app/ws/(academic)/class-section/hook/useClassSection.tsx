@@ -54,6 +54,12 @@ export const useClassSection = () => {
         rules: [{ required: true, message: "" }],
         selectMode: SelectMode.multiple,
       },
+      {
+        name: "branch_id",
+        label: "",
+        type: FieldType.Input,
+        hidden: true,
+      },
     ];
   };
 
