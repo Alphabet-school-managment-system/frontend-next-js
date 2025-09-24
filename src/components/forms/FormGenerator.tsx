@@ -9,6 +9,7 @@ import PhoneNumberInput, {
 import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks/useApi";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 export enum FieldType {
   Input = "input",
@@ -26,6 +27,10 @@ export enum SelectMode {
   tags = "tags",
 }
 
+export interface DateFieldConfig extends FieldConfig {
+  disabledDate?: (current: dayjs.Dayjs) => boolean;
+}
+
 export interface FieldConfig {
   name: string;
   label: string;
@@ -41,6 +46,8 @@ export interface FieldConfig {
   max?: number;
   className?: string;
   selectMode?: SelectMode;
+  disabled?: boolean;
+  disabledDate?: (current: dayjs.Dayjs) => boolean;
 }
 
 interface FormGeneratorProps {
@@ -117,6 +124,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
           </Select>
         );
       case "date":
+        const dateField = field as DateFieldConfig;
+
         return (
           <DatePicker
             className="w-full"
@@ -134,6 +143,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             }
             placeholder={field.placeholder}
             format={"YYYY-MM-DD"}
+            disabledDate={dateField.disabledDate}
+            disabled={field.disabled}
           />
         );
       case "phone":
