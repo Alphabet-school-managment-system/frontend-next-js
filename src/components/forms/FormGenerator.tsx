@@ -114,7 +114,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             className="w-full"
             prefix={field?.prefix}
             suffixIcon={field?.suffix}
-            mode={field.selectMode ?? SelectMode.tags}
+            mode={field.selectMode}
           >
             {field.options?.map((opt) => (
               <Select.Option key={opt.value} value={opt.value}>
@@ -278,7 +278,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                     hidden={field.hidden}
                     className={`
         ${field.className ?? ""}
-        ${field.className?.includes("w-full") ? "md:col-span-2" : ""}
+        ${field.className?.includes("w-full") ? `md:col-span-${columns}` : ""}
       `}
                   >
                     {renderField(field)}
