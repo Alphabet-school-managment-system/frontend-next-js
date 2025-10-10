@@ -110,12 +110,15 @@ const Index = ({
 
   const handleDelete = () => {
     try {
-      Delete(null, {
-        onSuccess: (res) => {
-          setcmProps({ ...defaultConfirmationModalProps });
-          router.back();
-        },
-      });
+      Delete(
+        { body: undefined },
+        {
+          onSuccess: (res) => {
+            setcmProps({ ...defaultConfirmationModalProps });
+            router.back();
+          },
+        }
+      );
     } catch (error) {
       console.log("Item deletion error:", error);
     }

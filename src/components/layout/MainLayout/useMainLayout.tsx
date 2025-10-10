@@ -30,27 +30,6 @@ export const useMainLayout = () => {
       description: "Manage academic operations",
       children: [
         {
-          key: "assessment",
-          icon: <Icon icon="mdi:file-document-edit-outline" width={22} height={22} />,
-          label: "Assessment",
-          path: "/ws/assessment",
-          description: "Create and manage student assessments",
-        },
-        {
-          key: "attendance",
-          icon: <Icon icon="mdi:clipboard-check-outline" width={22} height={22} />,
-          label: "Attendance",
-          path: "/ws/attendance",
-          description: "Track student attendance records",
-        },
-        {
-          key: "class-section",
-          icon: <Icon icon="mdi:account-multiple-outline" width={22} height={22} />,
-          label: "Class Section",
-          path: "/ws/class-section",
-          description: "Organize students into classes and sections",
-        },
-        {
           key: "enrollment",
           icon: <Icon icon="mdi:calendar-plus" width={22} height={22} />,
           label: "Enrollment",
@@ -63,49 +42,7 @@ export const useMainLayout = () => {
           label: "Timetable",
           path: "/ws/timetable",
           description: "Schedule classes and subjects",
-        },
-        {
-          key: "academic-year",
-          icon: <Icon icon="mdi:calendar-range" width={22} height={22} />,
-          label: "Academic Year",
-          path: "/ws/academic-year",
-          description: "Manage academic years",
-        },
-        {
-          key: "term",
-          icon: <Icon icon="mdi:calendar-month-outline" width={22} height={22} />,
-          label: "Term",
-          path: "/ws/term",
-          description: "Define academic terms",
-        },
-        {
-          key: "mark-entry",
-          icon: <Icon icon="mdi:check-decagram-outline" width={22} height={22} />,
-          label: "Mark Entry",
-          path: "/ws/mark",
-          description: "Enter student marks",
-        },
-        {
-          key: "mark-archive",
-          icon: <Icon icon="mdi:archive-outline" width={22} height={22} />,
-          label: "Mark Archive",
-          path: "/ws/mark-archive",
-          description: "Archive student marks",
-        },
-        {
-          key: "behavior",
-          icon: <Icon icon="mdi:emoticon-outline" width={22} height={22} />,
-          label: "Behavior",
-          path: "/ws/behavior",
-          description: "Record and track student behavior",
-        },
-        {
-          key: "leave-request",
-          icon: <Icon icon="mdi:calendar-alert" width={22} height={22} />,
-          label: "Leave Request",
-          path: "/ws/leave-request",
-          description: "Manage student leave requests",
-        },
+        }
       ],
     },
     {
@@ -129,13 +66,7 @@ export const useMainLayout = () => {
           path: "/ws/fee",
           description: "Manage student fee payments",
         },
-        {
-          key: "finance-archive",
-          icon: <Icon icon="mdi:archive" width={22} height={22} />,
-          label: "Finance Archive",
-          path: "/ws/finance-archive",
-          description: "Archive past financial records",
-        },
+        
       ],
     },
     {
@@ -147,7 +78,9 @@ export const useMainLayout = () => {
       children: [
         {
           key: "library-books",
-          icon: <Icon icon="mdi:book-open-page-variant" width={22} height={22} />,
+          icon: (
+            <Icon icon="mdi:book-open-page-variant" width={22} height={22} />
+          ),
           label: "Books",
           path: "/ws/library-book",
           description: "Catalog and manage books",
@@ -177,14 +110,18 @@ export const useMainLayout = () => {
         },
         {
           key: "staff",
-          icon: <Icon icon="mdi:account-badge-outline" width={22} height={22} />,
+          icon: (
+            <Icon icon="mdi:account-badge-outline" width={22} height={22} />
+          ),
           label: "Staff",
           path: "/ws/staff",
           description: "Manage staff details",
         },
         {
           key: "student",
-          icon: <Icon icon="mdi:account-school-outline" width={22} height={22} />,
+          icon: (
+            <Icon icon="mdi:account-school-outline" width={22} height={22} />
+          ),
           label: "Students",
           path: "/ws/student",
           description: "Manage student records",
@@ -199,30 +136,37 @@ export const useMainLayout = () => {
       ],
     },
     {
+      key: "Archives",
+      icon: <Icon icon="mdi:archive" width={24} height={24} />,
+      label: "Archives",
+      path: "#",
+      description: "Manage Archival records of ...",
+      children: [
+        {
+          key: "finance-archive",
+          icon: <Icon icon="tabler:cash" width={22} height={22} />,
+          label: "Finance",
+          path: "/ws/finance-archive",
+          description: "Archive past financial records",
+        },
+        {
+          key: "mark-archive",
+          icon: <Icon icon="hugeicons:ai-sheets" width={22} height={22} />,
+          label: "Mark",
+          path: "/ws/mark-archive",
+          description: "Archive student marks",
+        },
+      ],
+    },
+    {
       key: "settings",
       icon: <Icon icon="mdi:cog-outline" width={24} height={24} />,
       label: "Settings",
-      path: "#",
+      path: "/ws/setting",
       description: "Configure system settings",
-      children: [
-        {
-          key: "branch",
-          icon: <Icon icon="mdi:source-branch" width={22} height={22} />,
-          label: "Branch",
-          path: "/ws/branch",
-          description: "Manage school branches",
-        },
-        {
-          key: "school",
-          icon: <Icon icon="mdi:office-building" width={22} height={22} />,
-          label: "School",
-          path: "/ws/school",
-          description: "Manage school information",
-        },
-      ],
+      children: [],
     },
   ];
 
   return { navItems };
 };
-
