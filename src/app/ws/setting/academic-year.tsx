@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
-export const Index = ({
+const Index = ({
   onLoading,
 }: {
   onLoading: (value: boolean) => void;
@@ -133,3 +133,6 @@ export const Index = ({
     </div>
   );
 };
+
+
+export default Index;

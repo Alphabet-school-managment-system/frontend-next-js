@@ -1,6 +1,6 @@
 "use client";
 
-import FormSkeleton from "@/components/forms/FormSkeleton";
+import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useStudent } from "../../student/hook/useStudent";
 import { useStaff } from "../hook/useStaff";

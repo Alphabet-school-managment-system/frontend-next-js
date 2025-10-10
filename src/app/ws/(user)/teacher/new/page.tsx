@@ -1,7 +1,7 @@
 "use client";
 
 import { FieldType } from "@/components/forms/FormGenerator";
-import FormSkeleton from "@/components/forms/FormSkeleton";
+import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useStudent } from "../../student/hook/useStudent";
 import { useTeacher } from "../hook/useTeacher";

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Expense } from "@/types";
 import { useExpense } from "../../hook/useExpense";
 import dynamic from "next/dynamic";
-import FormSkeleton from "@/components/forms/FormSkeleton";
+import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 

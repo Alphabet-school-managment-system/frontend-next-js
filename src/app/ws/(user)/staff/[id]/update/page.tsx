@@ -1,6 +1,6 @@
 "use client";
 
-import FormSkeleton from "@/components/forms/FormSkeleton";
+import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useApiQuery } from "@/hooks/useApi";
 import { Staff } from "@/types";
 import dynamic from "next/dynamic";
