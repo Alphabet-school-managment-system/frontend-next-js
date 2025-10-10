@@ -11,11 +11,7 @@ import { Button, Card, Col, Form, Input, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export const Index = ({
-  onLoading,
-}: {
-  onLoading: (value: boolean) => void;
-}) => {
+const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const apiRoute = "branch";
 
   const { setConfirmationModalProps: setcmProps } = useContext(
@@ -205,3 +201,5 @@ export const Index = ({
     </div>
   );
 };
+
+export default Index;

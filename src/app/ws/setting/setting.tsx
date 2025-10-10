@@ -4,11 +4,7 @@ import { Button, Card, Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export const Index = ({
-  onLoading,
-}: {
-  onLoading: (value: boolean) => void;
-}) => {
+const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [settingForm] = Form.useForm();
   const [id, setId] = useState<string | undefined>("");
   const [schoolId, setSchoolId] = useState<string | undefined>(
@@ -121,3 +117,5 @@ export const Index = ({
     </div>
   );
 };
+
+export default Index;

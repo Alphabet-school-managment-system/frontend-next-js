@@ -1,12 +1,29 @@
 "use client";
 
-import { Index as Branch } from "./branch";
-import { Index as Setting } from "./setting";
-import { Index as AY } from "./academicYear";
-import { Index as School } from "./school";
 import { useState } from "react";
 import { Spin } from "antd";
+import dynamic from "next/dynamic";
+import {BaseSkeleton} from "@/components/forms/FormSkeleton";
 
+const School = dynamic(() => import("@/app/ws/setting/school"), {
+  ssr: false,
+  loading: () => <BaseSkeleton />,
+});
+
+const AY = dynamic(() => import("@/app/ws/setting/academic-year"), {
+  ssr: false,
+  loading: () => <BaseSkeleton />,
+});
+
+const Setting = dynamic(() => import("@/app/ws/setting/setting"), {
+  ssr: false,
+  loading: () => <BaseSkeleton />,
+});
+
+const Branch = dynamic(() => import("@/app/ws/setting/branch"), {
+  ssr: false,
+  loading: () => <BaseSkeleton />,
+});
 export default function Home() {
   const [isLoading, setIsloading] = useState(false);
 

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { LibraryBook } from "@/types";
 import { useLibraryBook } from "../../hook/useLibraryBook";
 import dynamic from "next/dynamic";
-import FormSkeleton from "@/components/forms/FormSkeleton";
+import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
 
 export default function Update() {

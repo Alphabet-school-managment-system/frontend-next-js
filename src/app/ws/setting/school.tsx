@@ -4,7 +4,7 @@ import { Button, Card, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export const Index = ({
+const Index = ({
   onLoading,
 }: {
   onLoading: (value: boolean) => void;
@@ -107,3 +107,6 @@ export const Index = ({
     </Card>
   );
 };
+
+
+export default Index;
