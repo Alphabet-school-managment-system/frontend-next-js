@@ -7,11 +7,11 @@ import toast from "react-hot-toast";
 export const useApiQuery = <T>(
   key: string[],
   url: string,
-  enabled: boolean = true
+  enabled: boolean = true,
 ) =>
   useQuery<T>({
     queryKey: key,
-    queryFn: () => getData<T>(url),
+    queryFn: ({ signal }) => getData<T>(url, signal),
     enabled,
     meta: {
       onError: (error: unknown) => {
@@ -30,7 +30,13 @@ export const useApiMutation = <T>(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: unknown | any) => postData<T>(url, { ...body }, method),
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: unknown | any;
+      signal?: AbortSignal;
+    }) => postData<T>(url, { ...body }, method, signal),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: keyToInvalidate });
       toast.success(

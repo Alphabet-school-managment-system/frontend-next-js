@@ -8,12 +8,14 @@ import { ParentType } from "./enums";
 import { StaffRole } from "./enums";
 
 export type AcademicYear = {
-  _id: string;
-  branch_id?: string | null;
+  id: string;
+  branch_id: string | null;
   name: string;
   name_local?: string | null;
-  start_date?: Date | null;
-  end_date?: Date | null;
+  start_date: Date | null;
+  end_date: Date | null;
+  enrollment_start: Date | null;
+  enrollment_end: Date | null;
   term_id?: string | null;
   created_at?: Date | null;
   updated_at?: Date | null;
@@ -44,7 +46,7 @@ export type Behavior = {
 };
 
 export type Branch = {
-  _id: string;
+  id?: string;
   school_id?: string | null;
   name: string;
   location?: string | null;
@@ -241,3 +243,12 @@ export type Timetable = {
   period: number;
   note?: string | null;
 };
+
+export interface Setting {
+  id: string;
+  number_of_terms: number;
+  sections_per_class: number;
+  levels_of_education: string[];
+  created_at?: Date | null;
+  updated_at?: Date | null;
+}

@@ -218,11 +218,14 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   const handleFormSubmit = async (values: any) => {
     try {
       const payload = { ...values };
-      await mutate(payload, {
-        onSuccess: (res) => {
-          onSubmit && onSubmit(res);
-        },
-      });
+      await mutate(
+        { body: payload },
+        {
+          onSuccess: (res) => {
+            onSubmit && onSubmit(res);
+          },
+        }
+      );
     } catch (error) {
       toast.error(`"${error}`);
     }
