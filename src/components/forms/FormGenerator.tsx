@@ -250,7 +250,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       requiredMark={true}
     >
       <Spin spinning={isFetching || isLoading}>
-        <div className="flex justify-center h-full">
+        <div className="flex h-full">
           <div
             className={`
         bg-white rounded-md p-8 w-2/3 shadow-2xl`}

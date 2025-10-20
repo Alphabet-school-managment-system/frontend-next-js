@@ -6,7 +6,7 @@ export type MenuItem = {
   label: string;
   path: string;
   role?: string;
-  description?: string; // 👈 new
+  description?: string;
 };
 
 export type NavigationItem = MenuItem & {
@@ -42,7 +42,7 @@ export const useMainLayout = () => {
           label: "Timetable",
           path: "/ws/timetable",
           description: "Schedule classes and subjects",
-        }
+        },
       ],
     },
     {
@@ -66,7 +66,6 @@ export const useMainLayout = () => {
           path: "/ws/fee",
           description: "Manage student fee payments",
         },
-        
       ],
     },
     {
@@ -164,7 +163,6 @@ export const useMainLayout = () => {
       label: "Settings",
       path: "/ws/setting",
       description: "Configure system settings",
-      children: [],
     },
   ];
 
