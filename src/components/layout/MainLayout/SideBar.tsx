@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Icon } from "@iconify-icon/react";
-import logo from "@/assets/images/logo.png";
 import {
   useMainLayout,
   type MenuItem,
   type NavigationItem,
 } from "./useMainLayout";
-import Image from "next/image";
 import Link from "next/link";
 
 type SidebarProps = {

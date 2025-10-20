@@ -9,6 +9,7 @@ export type UserDataType = {
   role?: string;
   token?: string;
   better_auth_userId?: string;
+  image?: string | null;
 };
 
 export type AppData = {
@@ -37,6 +38,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     role: undefined,
     token: undefined,
     better_auth_userId: undefined,
+    image: undefined
   });
 
   return (

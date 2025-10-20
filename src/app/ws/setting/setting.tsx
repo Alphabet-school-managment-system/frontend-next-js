@@ -107,7 +107,6 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
               htmlType="submit"
               className="!rounded-sm"
               size="large"
-              loading={isLoading}
             >
               Save Changes
             </Button>

@@ -8,19 +8,66 @@ import {
   type ConfirmationModalPropsType,
 } from "../../../store/confirmationModalContext";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import ChangePassword from "@/app/ws/(profile)/change-password";
+import { Drawer } from "@/components/common/Drawer";
+import { Button, Form } from "antd";
 
 type HeaderProps = {
   pageTitle?: string;
   pageTitleDescription?: string;
   bgColor?: string;
+  onLoading: (value: boolean) => void;
 };
 
-const Header = ({ pageTitle, pageTitleDescription }: HeaderProps) => {
+export const Logout = async ({
+  onRequest,
+  onResponse,
+}: {
+  onRequest: () => void;
+  onResponse: () => void;
+}) => {
+  await signOut(
+    {},
+    {
+      onRequest: () => {
+        onRequest();
+      },
+      onResponse: () => {
+        onResponse();
+        window.location.replace("/auth/login");
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error.message);
+      },
+    }
+  );
+};
+
+const Header = ({
+  pageTitle,
+  pageTitleDescription,
+  onLoading,
+}: HeaderProps) => {
+  const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [drawerView, setDrawerView] = useState(<></>);
+  const [titles, setTitles] = useState<{
+    header: string;
+    button: string;
+  }>({
+    header: "",
+    button: "",
+  });
+
+  const [form] = Form.useForm();
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const { userData } = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
     ConfirmationModalContext
@@ -47,7 +94,14 @@ const Header = ({ pageTitle, pageTitleDescription }: HeaderProps) => {
       okButtonText: "Yes, Proceed.",
       cancelButtonText: "Nuh, Stay!",
       onOk: async () => {
-        router.push("/auth/logout");
+        await Logout({
+          onRequest: () => {
+            onLoading(true);
+          },
+          onResponse: () => {
+            onLoading(false);
+          },
+        });
       },
       show: true,
     }));
@@ -59,6 +113,29 @@ const Header = ({ pageTitle, pageTitleDescription }: HeaderProps) => {
       onCancel: () => {},
     }));
   }, []);
+
+  const { data: session, isPending, error } = useSession();
+
+  useEffect(() => {
+    if (isPending) {
+      onLoading(true);
+    } else {
+      if (error) {
+        toast.error(error?.message || "Error occurred");
+        router.replace("/auth/login");
+      } else {
+        if (session) {
+          setUserData({
+            first_name: session?.user?.name,
+            image: session?.user?.image,
+          });
+        } else {
+          router.replace("/auth/login");
+        }
+      }
+      onLoading(false);
+    }
+  }, [isPending, error, session]);
 
   return (
     <>
@@ -81,25 +158,33 @@ const Header = ({ pageTitle, pageTitleDescription }: HeaderProps) => {
               onClick={() => setShowDropdown(!showDropdown)}
             >
               <div className="flex items-center justify-center text-gray-800">
-                <span>{`Welcome,${userData?.first_name}`}</span>
-                <Icon icon="ei:user" width={40} height={40} />
+                <span>{`Welcome, ${session?.user?.name}`}</span>
+                {!session?.user?.image && (
+                  <Icon icon="ei:user" width={40} height={40} />
+                )}
               </div>
             </button>
 
             {/* Dropdown Menu */}
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10 border border-gray-100">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-800">
-                    My Account
-                  </p>
-                  <p className="mt-2 w-full">
-                    <span className="text-xs text-gray-800 bg-gray-200 p-2 rounded uppercase font-bold">
-                      {userData?.role}
-                    </span>
-                  </p>
+                <div className=" mt-2 pt-2">
+                  <button
+                    onClick={() => {
+                      setTitles({
+                        header: "Change Password",
+                        button: "Update Password",
+                      });
+                      setOpenDrawer(true);
+                      setDrawerView(
+                        <ChangePassword form={form} onLoading={setLoading} />
+                      );
+                    }}
+                    className="w-full text-left block px-4 py-2 text-sm   font-medium cursor-pointer"
+                  >
+                    Change Password
+                  </button>
                 </div>
-
                 <div className="border-t border-gray-100 mt-2 pt-2">
                   <button
                     onClick={handleLogout}
@@ -113,6 +198,32 @@ const Header = ({ pageTitle, pageTitleDescription }: HeaderProps) => {
           </div>
         </div>
       </header>
+
+      {openDrawer && (
+        <Drawer
+          title={titles?.header}
+          open
+          onClose={() => {
+            form.resetFields();
+            setOpenDrawer(false);
+          }}
+          width={500}
+          footer={
+            <Button
+              type="primary"
+              htmlType="button"
+              className="!rounded-sm flex w-full"
+              size="large"
+              onClick={() => form.submit()}
+              loading={loading}
+            >
+              {titles?.button}
+            </Button>
+          }
+        >
+          {drawerView}
+        </Drawer>
+      )}
     </>
   );
 };
