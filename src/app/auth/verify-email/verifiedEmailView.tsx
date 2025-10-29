@@ -1,11 +1,11 @@
-'use client";';
+"use client";
 import { authClient } from "@/lib/auth-client";
 import { Spin } from "antd";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function verifiedEmailView() {
+export default function VerifiedEmailView() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<{ data: any; error: any }>({
     data: undefined,
@@ -19,7 +19,7 @@ export default function verifiedEmailView() {
       setLoading(true);
       if (params.get("token")) {
         try {
-          let response = await authClient.verifyEmail({
+          const response = await authClient.verifyEmail({
             query: {
               token: params.get("token") || "",
             },

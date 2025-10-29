@@ -60,8 +60,8 @@ export const BaseSkeleton = () => {
 
 export function FormSkeleton() {
   return (
-    <div className="flex  h-screen">
-      <div className="p-6 bg-white rounded-md w-2/3 shadow-2xl">
+    <div className="flex h-screen bg-white p-1 m-4 rounded-md">
+      <div className="rounded-sm p-8 w-2/3">
         <BaseSkeleton />
       </div>
     </div>
@@ -72,27 +72,6 @@ export function AuthFormSkeleton() {
   return (
     <div className="flex items-center justify-center h-screen p-6">
       <Spin size="large" spinning />
-      {/* <div className="mb-4">
-        <Skeleton.Input
-          active
-          size="large"
-          style={{ width: 250, height: 40 }}
-        />
-        <div className="mt-2">
-          <Skeleton.Input
-            active
-            size="large"
-            style={{ width: 400, height: 40 }}
-          />
-        </div>
-        <div className="flex justify-start gap-4 mt-6">
-          <Skeleton.Button
-            active
-            style={{ width: 100, height: 40 }}
-            size="large"
-          />
-        </div> */}
-      {/* </div> */}
     </div>
   );
 }

@@ -147,7 +147,7 @@ const LoginView = () => {
             </Form.Item>
 
             <p className="text-center text-gray-900">
-              Don't have an account? <Link href="/?q=signup">Register</Link>
+              {"Don't have an account?"} <Link href="/?q=signup">Register</Link>
             </p>
             <p className="text-center text-gray-900 mt-2">
               <Link href="/auth/forgot-password">Forgot Password?</Link>
