@@ -4,6 +4,7 @@ import "antd/dist/reset.css";
 import "@ant-design/v5-patch-for-react-19";
 import { ConfigProvider } from "antd";
 import QueryProvider from "@/store/query-provider";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Toaster position="top-center" />
         <ConfigProvider
           theme={{
             components: {
