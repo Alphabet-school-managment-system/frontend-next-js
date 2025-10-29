@@ -4,24 +4,27 @@ import { useEffect } from "react";
 import { Index as Footer } from "@/app/(home)/footerPage";
 import { Index as Header } from "@/app/(home)/headerPage";
 import { Index } from "@/app/(home)/index";
-
 import { Spin } from "antd";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
-export default function Home() {
-  const { data: session, isPending, error } = useSession();
+function HomeContent() {
+  const { data: session, isPending } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (isPending)
-      <div className="flex justify-center items-center w-full h-screen">
-        <Spin size="large" spinning className="text-gray-800" />
-      </div>;
-
-    if (session) {
+    if (!isPending && session) {
       router.replace("/ws/dashboard");
     }
   }, [session, isPending, router]);
+
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <Spin size="large" spinning />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -29,5 +32,17 @@ export default function Home() {
       <Index />
       <Footer />
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center w-full h-screen">
+        <Spin size="large" spinning />
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }

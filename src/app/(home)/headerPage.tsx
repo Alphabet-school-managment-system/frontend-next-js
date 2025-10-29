@@ -1,5 +1,4 @@
 "use client";
-
 import { Drawer } from "@/components/common/Drawer";
 import { useEffect, useState } from "react";
 import { SignUpForm } from "./signupPage";

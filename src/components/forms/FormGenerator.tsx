@@ -256,12 +256,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       requiredMark={true}
     >
       <Spin spinning={isFetching || isLoading}>
-        <div className="flex h-full">
-          <div
-            className={`
-        bg-white rounded-md p-8 w-2/3 shadow-2xl`}
-          >
-            <div className=" ">
+        <div className="flex !h-full bg-white p-1 m-4 rounded-md">
+          <div className={`rounded-sm p-8 w-2/3`}>
+            <div className="">
               {/* title and subtitle */}
               <div className="text-gray-800 mb-4">
                 <h1 className="!font-bold text-lg">{title}</h1>
