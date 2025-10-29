@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react";
+import { get } from "http";
 export const authClient = createAuthClient({
   baseURL: "http://localhost:4000",
 });
@@ -13,4 +14,5 @@ export const {
   changeEmail,
   updateUser,
   requestPasswordReset,
+  verifyEmail,
 } = authClient;

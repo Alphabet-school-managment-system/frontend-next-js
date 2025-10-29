@@ -27,6 +27,12 @@ export enum SelectMode {
   tags = "tags",
 }
 
+export enum Staff_Role_Enum {
+  Librarian = "Librarian",
+  Accountant = "Accountant",
+  Admin = "Admin",
+}
+
 export interface DateFieldConfig extends FieldConfig {
   disabledDate?: (current: dayjs.Dayjs) => boolean;
 }

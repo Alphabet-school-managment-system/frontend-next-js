@@ -1,4 +1,5 @@
-import { Button, Drawer as MainDrawer } from 'antd';
+import { Button, Drawer as MainDrawer } from "antd";
+import { DrawerStyles } from "antd/es/drawer/DrawerPanel";
 
 export const Drawer = ({
   title,
@@ -12,6 +13,8 @@ export const Drawer = ({
   buttonDanger = false,
   loading,
   footer,
+  styles,
+  className
 }: {
   title: string | React.ReactNode;
   isEdit?: boolean;
@@ -19,11 +22,13 @@ export const Drawer = ({
   form?: any;
   children: React.ReactNode;
   open: boolean;
-  width?: number;
+  width?: number | string;
   buttonTitle?: string;
   buttonDanger?: boolean;
   loading?: boolean;
   footer?: React.ReactNode;
+  styles?: DrawerStyles;
+  className?: string;
 }) => {
   return (
     <MainDrawer
@@ -32,6 +37,7 @@ export const Drawer = ({
       onClose={() => {
         onClose();
       }}
+      styles={styles && styles}
       footer={
         footer ?? (
           <Button
@@ -45,12 +51,13 @@ export const Drawer = ({
             size="large"
             danger={buttonDanger}
           >
-            {buttonTitle ? buttonTitle : isEdit ? 'Save Changes' : 'Create'}
+            {buttonTitle ? buttonTitle : isEdit ? "Save Changes" : "Create"}
           </Button>
         )
       }
       maskClosable={false}
       width={width}
+      className={className}
     >
       {children}
     </MainDrawer>
