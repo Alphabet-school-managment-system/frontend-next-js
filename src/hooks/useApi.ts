@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 export const useApiQuery = <T>(
   key: string[],
   url: string,
-  enabled: boolean = true,
+  enabled: boolean = true
 ) =>
   useQuery<T>({
     queryKey: key,
@@ -37,12 +37,13 @@ export const useApiMutation = <T>(
       body: unknown | any;
       signal?: AbortSignal;
     }) => postData<T>(url, { ...body }, method, signal),
-    onSuccess: () => {
+    onSuccess: (result: any) => {
       queryClient.invalidateQueries({ queryKey: keyToInvalidate });
       toast.success(
-        method === "DELETE"
-          ? "Data deleted successfully."
-          : "Data saved successfully."
+        result?.message ??
+          (method === "DELETE"
+            ? "Data deleted successfully."
+            : "Data saved successfully.")
       );
     },
     onError: (error) => {
