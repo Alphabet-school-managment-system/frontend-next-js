@@ -28,7 +28,7 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
   }, [activeKey]);
 
   const toggleGroup = (key: string) => {
-    setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+    setOpenGroups((prev) => ({ [key]: !prev[key] }));
   };
 
   return (
@@ -85,12 +85,12 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                       <Icon
                         icon={
                           openGroups[item.key]
-                            ? "ph:caret-circle-up-bold"
-                            : "ph:caret-circle-down-bold"
+                            ? "ph:caret-down-bold"
+                            : "ph:caret-right-bold"
                         }
                         className="!font-bold transition-transform duration-300"
-                        width={25}
-                        height={25}
+                        width={20}
+                        height={20}
                       />
                     )}
                   </button>
