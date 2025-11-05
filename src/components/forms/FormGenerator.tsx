@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks/useApi";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
+import UserSearch, { UserSearchProps } from "../common/UserSearch";
 
 export enum FieldType {
   Input = "input",
@@ -20,6 +21,7 @@ export enum FieldType {
   email = "email",
   number = "number",
   hidden = "hidden",
+  userAutoComplete = "userAutoComplete",
 }
 
 export enum SelectMode {
@@ -54,6 +56,7 @@ export interface FieldConfig {
   selectMode?: SelectMode;
   disabled?: boolean;
   disabledDate?: (current: dayjs.Dayjs) => boolean;
+  userSearchProps?: UserSearchProps;
 }
 
 interface FormGeneratorProps {
@@ -210,6 +213,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             }
           />
         );
+
+      case "userAutoComplete":
+        return <UserSearch {...field.userSearchProps} />;
       default:
         return null;
     }

@@ -60,10 +60,14 @@ export const useFee = () => {
       {
         name: "student_id",
         label: "Student",
-        type: FieldType.Select,
+        type: FieldType.userAutoComplete,
         placeholder: "Select the student",
         rules: [{ required: false, message: "" }],
-        options: [],
+        userSearchProps: {
+          apiRoute: "student",
+          placeholder: "Search student by name",
+          onSelect: (value: string) => {},
+        },
       },
       {
         name: "amount",

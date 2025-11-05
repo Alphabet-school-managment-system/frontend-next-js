@@ -78,13 +78,17 @@ export const useEnrollment = () => {
       {
         name: "student_id",
         label: "Student",
-        type: FieldType.Select,
+        type: FieldType.userAutoComplete,
         placeholder: "Select student",
-        options: [],
         rules: [{ required: true, message: "" }],
+        userSearchProps: {
+          apiRoute: "student",
+          placeholder: "Search student by name",
+          onSelect: (value: string) => {},
+        },
       },
       {
-        name: "student_id",
+        name: "class_id",
         label: "Class (and section)",
         type: FieldType.Select,
         placeholder: "Select class & sec",

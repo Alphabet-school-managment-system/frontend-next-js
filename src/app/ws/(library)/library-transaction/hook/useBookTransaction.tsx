@@ -65,10 +65,14 @@ export const useBookTransaction = () => {
       {
         name: "borrower_id",
         label: "Borrower",
-        type: FieldType.Select,
+        type: FieldType.userAutoComplete,
         placeholder: "Select teacher or student",
-        options: [],
         rules: [{ required: false, message: "" }],
+        userSearchProps: {
+          apiRoute: "student",
+          placeholder: "Search student by name",
+          onSelect: (value: string) => {},
+        },
       },
       {
         name: "issue_date",
