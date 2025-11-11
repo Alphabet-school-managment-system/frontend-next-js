@@ -21,7 +21,7 @@ export default function Home() {
     <div className="">
       <FormGenerator
         columns={2}
-        fields={[...getCommonFormFields(), ...getFormFields()]}
+        fields={[...getCommonFormFields(false), ...getFormFields()]}
         title="Create new Parent"
         apiRoute="parent"
         data={{

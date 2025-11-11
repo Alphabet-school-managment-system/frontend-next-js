@@ -11,8 +11,7 @@ export const useStaff = () => {
         key: "staff",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            first_name={record?.first_name}
-            last_name={record?.last_name}
+            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/staff-detail/${record?.id}`}
           />

@@ -11,8 +11,7 @@ export const useStudent = () => {
         key: "student",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            first_name={record?.first_name}
-            last_name={record?.last_name}
+            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/student-detail/${record?.id}`}
           />
@@ -83,7 +82,7 @@ export const useStudent = () => {
     ];
   };
 
-  const getCommonFormFields = (): FieldConfig[] => {
+  const getCommonFormFields = (showLastName: boolean): FieldConfig[] => {
     return [
       {
         name: "first_name",
@@ -103,12 +102,23 @@ export const useStudent = () => {
         ),
       },
       {
-        name: "last_name",
-        label: "Last Name",
+        name: "middle_name",
+        label: "Middle Name",
         type: FieldType.Input,
         placeholder: "e.g. Doe",
         rules: [{ required: true, message: "" }],
       },
+      ...(showLastName
+        ? [
+            {
+              name: "last_name",
+              label: "Last Name",
+              type: FieldType.Input,
+              placeholder: "e.g. Mark",
+              rules: [{ required: true, message: "" }],
+            },
+          ]
+        : []),
       {
         name: "gender",
         label: "Sex",
@@ -152,9 +162,9 @@ export const useStudent = () => {
     ];
   };
 
-  const getFormFields = (): FieldConfig[] => {
+  const getFormFields = ({ image }: { image: string }): FieldConfig[] => {
     return [
-      ...getCommonFormFields(),
+      ...getCommonFormFields(true),
       {
         name: "full_name_local",
         label: "Full Name (Local)",
@@ -205,6 +215,13 @@ export const useStudent = () => {
         placeholder: "additional information about the student",
         rows: 4,
         className: `w-full`,
+      },
+      {
+        name: "image",
+        label: "",
+        type: FieldType.hidden,
+        hidden: true,
+        value: image,
       },
     ];
   };

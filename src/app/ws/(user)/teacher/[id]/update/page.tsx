@@ -8,11 +8,20 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useStudent } from "../../../student/hook/useStudent";
 import { useTeacher } from "../../hook/useTeacher";
+import { ImagePreview } from "../../../student/new/page";
 
+const FormGenerator = dynamic(
+  () => import("@/components/forms/FormGenerator"),
+  {
+    ssr: false,
+    loading: () => <FormSkeleton />,
+  }
+);
 export default function Home() {
   const { id } = useParams();
   const { getCommonFormFields } = useStudent();
   const { getFormFields } = useTeacher();
+  const [image, setImage] = useState<any>(null);
 
   const [data, setData] = useState<any>(null);
   const { data: result, isLoading } = useApiQuery<Teacher>(
@@ -28,24 +37,17 @@ export default function Home() {
     }
   }, [result]);
 
-  const FormGenerator = dynamic(
-    () => import("@/components/forms/FormGenerator"),
-    {
-      ssr: false,
-      loading: () => <FormSkeleton />,
-    }
-  );
-
   return (
     <div className="">
       <FormGenerator
         columns={2}
-        fields={[...getCommonFormFields(), ...getFormFields()]}
+        fields={[...getCommonFormFields(false), ...getFormFields({ image })]}
         title="Update Teacher Information"
         apiRoute="teacher"
         data={data}
         isFetching={isLoading}
         isCreate={false}
+        leftContent={<ImagePreview onImageSelect={setImage} />}
       />
     </div>
   );
