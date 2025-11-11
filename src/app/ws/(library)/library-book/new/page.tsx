@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <div className="">
       <FormGenerator
-        columns={1}
+        columns={2}
         fields={getFormFields()}
         title="Create new Library Book"
         apiRoute="library-book"
