@@ -1,8 +1,11 @@
+import { Select } from "@/components/common/Select";
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
-import { Icon } from "@iconify-icon/react";
+import dayjs from "dayjs";
+import { useState } from "react";
 
 export const useBookTransaction = () => {
+  const [userType, setUserType] = useState<"student" | "teacher">("student");
   const getTableColumns = (): any[] => {
     return [
       {
@@ -11,8 +14,7 @@ export const useBookTransaction = () => {
         key: "borrower",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            first_name={record?.first_name}
-            last_name={record?.last_name}
+            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
             photoUrl={record?.photoUrl}
           />
         ),
@@ -52,35 +54,78 @@ export const useBookTransaction = () => {
     ];
   };
 
-  const getFormFields = (): FieldConfig[] => {
+  const getFormFields = ({
+    onBookSelect,
+  }: {
+    onBookSelect: (fileList: any[]) => void;
+  }): FieldConfig[] => {
     return [
       {
         name: "book_id",
         label: "Book",
-        type: FieldType.Select,
-        options: [],
+        type: FieldType.searchInput,
         placeholder: "Select book",
-        rules: [{ required: false, message: "" }],
+        rules: [{ required: true, message: "" }],
+        searchInputProps: {
+          apiRoute: "library-book",
+          placeholder: "Search book by title",
+          queryKeys: ["title"],
+          onSelect: (value: string) => {},
+        },
       },
       {
         name: "borrower_id",
         label: "Borrower",
-        type: FieldType.Select,
+        type: FieldType.searchInput,
         placeholder: "Select teacher or student",
-        options: [],
-        rules: [{ required: false, message: "" }],
+        rules: [{ required: true, message: "" }],
+        searchInputProps: {
+          apiRoute: userType,
+          placeholder: "Search student by name",
+          queryKeys: ["first_name", "last_name"],
+          onSelect: (value: any) => {
+            onBookSelect(value);
+          },
+          suffixIcon: (
+            <span className="flex justify-end pointer-events-auto cursor-pointer">
+              <Select
+                data={[
+                  {
+                    value: "student",
+                    text: "Students",
+                  },
+                  {
+                    value: "teacher",
+                    text: "Teachers",
+                  },
+                ]}
+                onChange={(value: any) => {
+                  setUserType(value);
+                }}
+                classNames="shadow-none !focus:shadow-none !outline-none min-w-[150px] w-full flex-1"
+                variant="borderless"
+                value={userType}
+              />
+            </span>
+          ),
+          allowClear: false,
+        },
       },
       {
         name: "issue_date",
         label: "Issue Date",
         type: FieldType.Date,
         placeholder: "",
+        rules: [{ required: true, message: "" }],
+        disabledDate: (current) => current > dayjs().endOf("day"),
       },
       {
         name: "return_date",
         label: "Return Date",
         type: FieldType.Date,
         placeholder: "",
+        rules: [{ required: true, message: "" }],
+        disabledDate: (current) => current > dayjs().endOf("day"),
       },
       {
         name: "note",

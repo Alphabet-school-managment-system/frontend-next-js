@@ -6,8 +6,12 @@ import {
 } from "@/components/forms/FormGenerator";
 import { ColumnsType } from "antd/es/table";
 import { Icon } from "@iconify-icon/react";
+import { Student } from "@/types";
+import { useState } from "react";
 
 export const useEnrollment = () => {
+  const [isTransferred, setIsTransferred] = useState<boolean>(false);
+
   const getTableColumns = (): ColumnsType<any> => {
     return [
       {
@@ -16,8 +20,7 @@ export const useEnrollment = () => {
         key: "student",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            first_name={record?.first_name}
-            last_name={record?.last_name}
+            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/student/${record?.id}/detail`}
           />
@@ -73,24 +76,69 @@ export const useEnrollment = () => {
     ];
   };
 
-  const getFormFields = (): FieldConfig[] => {
+  const getFormFields = ({
+    onStudentSelect,
+  }: {
+    onStudentSelect: (student: Student) => void;
+  }): FieldConfig[] => {
     return [
       {
         name: "student_id",
         label: "Student",
-        type: FieldType.Select,
+        type: FieldType.searchInput,
         placeholder: "Select student",
-        options: [],
         rules: [{ required: true, message: "" }],
+        searchInputProps: {
+          apiRoute: "student",
+          placeholder: "Search student by name",
+          queryKeys: ["first_name", "last_name"],
+          onSelect: (value: any) => {
+            onStudentSelect(value);
+          },
+        },
       },
       {
-        name: "student_id",
+        name: "class_id",
         label: "Class (and section)",
         type: FieldType.Select,
         placeholder: "Select class & sec",
         options: [],
         rules: [{ required: true, message: "" }],
         selectMode: SelectMode.multiple,
+      },
+      {
+        name: "isTransferred",
+        label: "Transfer option",
+        type: FieldType.checkbox,
+        rules: [{ required: false, message: "" }],
+        checkboxTypeProps: {
+          onChange: (checked) => {
+            setIsTransferred(checked);
+          },
+          checked: isTransferred,
+          label: "Is the student transferred from other school?",
+        },
+      },
+      {
+        name: "transferredFrom",
+        label: "Transferred from",
+        type: FieldType.Input,
+        disabled: isTransferred ? false : true,
+        placeholder: "Enter previous school name transferred from",
+        rules: [
+          {
+            required: isTransferred,
+            message: "please enter the previous school name",
+          },
+        ],
+      },
+      {
+        name: "note",
+        label: "Note",
+        type: FieldType.Textarea,
+        placeholder: "Enter any additional notes",
+        rows: 4,
+        rules: [{ required: false, message: "" }],
       },
       {
         name: "academic_year_id",

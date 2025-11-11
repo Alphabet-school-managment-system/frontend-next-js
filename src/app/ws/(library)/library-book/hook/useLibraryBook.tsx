@@ -1,8 +1,19 @@
+import { useTeacher } from "@/app/ws/(user)/teacher/hook/useTeacher";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { isValidISBN } from "@/lib/format-phone-number";
 import { Icon } from "@iconify-icon/react";
+import dayjs from "dayjs";
 
 export const useLibraryBook = () => {
+  const libraryItemType = [
+    { label: "Book", value: "book" },
+    { label: "Magazine", value: "magazine" },
+    { label: "Journal", value: "journal" },
+    { label: "E-Book", value: "e-book" },
+    { label: "Audio Book", value: "audio-book" },
+    { label: "Reference Book", value: "reference-book" },
+    { label: "Other", value: "other" },
+  ];
   const getTableColumns = (): any[] => {
     return [
       {
@@ -32,6 +43,8 @@ export const useLibraryBook = () => {
     ];
   };
 
+  const { subjectOptions } = useTeacher();
+
   const getFormFields = (): FieldConfig[] => {
     return [
       {
@@ -47,6 +60,42 @@ export const useLibraryBook = () => {
         type: FieldType.Input,
         placeholder: "Enter the author, co-author or publisher",
         rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "item_type",
+        label: "Item Type",
+        type: FieldType.Select,
+        placeholder: "Select the type of library item",
+        options: libraryItemType,
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "subject",
+        label: "Subject",
+        type: FieldType.Select,
+        placeholder: "Select the subject",
+        options: subjectOptions,
+        rules: [{ required: true, message: "" }],
+        prefix: (
+          <span className="flex items-center justify-center h-full">
+            <Icon
+              icon="material-symbols:subject"
+              className="text-gray-500"
+              width={22}
+              height={22}
+            />
+          </span>
+        ),
+      },
+      {
+        name: "copies_available",
+        label: "Available Copies",
+        type: FieldType.number,
+        placeholder: "Enter the number of available copies",
+        rules: [
+          { required: true, message: "" },
+          { min: 0, message: "Items can't be less than 0" },
+        ],
       },
       {
         name: "isbn",
@@ -76,14 +125,12 @@ export const useLibraryBook = () => {
         max: 13,
       },
       {
-        name: "copies_available",
-        label: "Available Copies",
-        type: FieldType.number,
-        placeholder: "Enter the number of available copies",
-        rules: [
-          { required: true, message: "" },
-          { min: 0, message: "Items can't be less than 0" },
-        ],
+        name: "publication_date",
+        label: "Publication Date",
+        type: FieldType.Date,
+        placeholder: "",
+        disabledDate: (current) => current > dayjs().endOf("day"),
+        rules: [{ required: true, message: "" }],
       },
       {
         name: "note",
@@ -91,6 +138,7 @@ export const useLibraryBook = () => {
         type: FieldType.Textarea,
         placeholder: "additional information about the book",
         rows: 4,
+        className: "w-full",
       },
     ];
   };
@@ -98,5 +146,6 @@ export const useLibraryBook = () => {
   return {
     getTableColumns,
     getFormFields,
+    libraryItemType,
   };
 };

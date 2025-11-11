@@ -1,7 +1,7 @@
+import { staticImages } from "@/lib/static-images";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import schoolImg from "@/assets/images/home.png";
 
 export const Index = () => {
   const router = useRouter();
@@ -29,7 +29,7 @@ export const Index = () => {
 
         <div className="flex justify-center">
           <Image
-            src={schoolImg}
+            src={staticImages.schoolImg}
             alt="School Illustration"
             width={600}
             height={500}

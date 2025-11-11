@@ -1,11 +1,11 @@
-import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify-icon/react";
 import Link from "next/link";
 
 const UserProfileInfo = ({
-  first_name,
-  last_name,
+  full_name,
+  short_name,
   photoUrl,
   phone,
   email,
@@ -13,8 +13,8 @@ const UserProfileInfo = ({
   avatarSize = 40,
   nameStyle,
 }: {
-  first_name: string;
-  last_name: string;
+  full_name: string;
+  short_name?: string;
   photoUrl: string;
   phone?: string;
   email?: string;
@@ -35,7 +35,7 @@ const UserProfileInfo = ({
       )}
       <span
         className={`ml-3 font-light text-nowrap hover:underline hover:cursor-pointer`}
-      >{`${first_name} ${last_name}`}</span>
+      >{`${short_name ?? full_name}`}</span>
     </Link>
   ) : (
     <span className="flex items-center !text-black">
@@ -49,7 +49,7 @@ const UserProfileInfo = ({
         />
       )}
       <span className="flex flex-col gap-1">
-        <span className={` ${nameStyle}`}>{`${first_name} ${last_name}`}</span>
+        <span className={` ${nameStyle}`}>{`${short_name ?? full_name}`}</span>
         {phone && (
           <span className="ml-3 flex items-center gap-2">
             <Icon

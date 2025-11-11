@@ -11,8 +11,7 @@ export const useTeacher = () => {
         key: "teacher",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            first_name={record?.first_name}
-            last_name={record?.last_name}
+            full_name={`${record?.first_name} ${record?.middle_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/teacher-detail/${record?.id}`}
           />
@@ -86,9 +85,10 @@ export const useTeacher = () => {
     { label: "Philosophy", value: "philosophy" },
     { label: "Political Science", value: "political_science" },
     { label: "Special Education", value: "special_education" },
+    { label: "Other", value: "other" },
   ];
 
-  const getFormFields = (): FieldConfig[] => {
+  const getFormFields = ({ image }: { image: string }): FieldConfig[] => {
     return [
       {
         name: "subject_specialization",
@@ -116,11 +116,19 @@ export const useTeacher = () => {
         rows: 4,
         className: `w-full`,
       },
+      {
+        name: "image",
+        label: "",
+        type: FieldType.hidden,
+        hidden: true,
+        value: image,
+      },
     ];
   };
 
   return {
     getTableColumns,
     getFormFields,
+    subjectOptions,
   };
 };

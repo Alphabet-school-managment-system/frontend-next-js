@@ -1,7 +1,16 @@
 "use client";
 
 import React, { ReactElement, useEffect, useState } from "react";
-import { Form, Input, Select, DatePicker, Button, Spin } from "antd";
+import {
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Spin,
+  Upload,
+  Checkbox,
+} from "antd";
 import { Icon } from "@iconify-icon/react";
 import PhoneNumberInput, {
   onPhoneNumberInputChangeProps,
@@ -10,6 +19,8 @@ import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks/useApi";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
+import SearchInput, { SearchInputProps } from "../common/SearchInput";
+import { UploadOutlined } from "@ant-design/icons";
 
 export enum FieldType {
   Input = "input",
@@ -20,6 +31,9 @@ export enum FieldType {
   email = "email",
   number = "number",
   hidden = "hidden",
+  searchInput = "searchInput",
+  file = "file",
+  checkbox = "checkbox",
 }
 
 export enum SelectMode {
@@ -35,6 +49,18 @@ export enum Staff_Role_Enum {
 
 export interface DateFieldConfig extends FieldConfig {
   disabledDate?: (current: dayjs.Dayjs) => boolean;
+}
+
+export interface FileTypeProps {
+  onChange: (fileList: any[]) => void;
+  accept?: string;
+  maxCount?: number;
+}
+
+export interface CheckboxTypeProps {
+  onChange?: (checked: boolean) => void;
+  checked?: boolean;
+  label?: string;
 }
 
 export interface FieldConfig {
@@ -54,6 +80,10 @@ export interface FieldConfig {
   selectMode?: SelectMode;
   disabled?: boolean;
   disabledDate?: (current: dayjs.Dayjs) => boolean;
+  searchInputProps?: SearchInputProps;
+  fileTypeProps?: FileTypeProps;
+  checkboxTypeProps?: CheckboxTypeProps;
+  value?: any;
 }
 
 interface FormGeneratorProps {
@@ -67,6 +97,7 @@ interface FormGeneratorProps {
   data?: any;
   apiRoute: string;
   isFetching?: boolean;
+  leftContent?: ReactElement;
 }
 
 const FormGenerator: React.FC<FormGeneratorProps> = ({
@@ -80,6 +111,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   data,
   apiRoute,
   isFetching = false,
+  leftContent,
 }) => {
   const [form] = Form.useForm();
   const router = useRouter();
@@ -101,6 +133,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             className="w-full"
             prefix={field?.prefix}
             suffix={field?.suffix}
+            disabled={field?.disabled}
+            value={field?.value}
           />
         );
       case "textarea":
@@ -110,6 +144,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             size="large"
             className="w-full"
             rows={field.rows || 1}
+            disabled={field?.disabled}
+            value={field?.value}
           />
         );
       case "select":
@@ -121,6 +157,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             prefix={field?.prefix}
             suffixIcon={field?.suffix}
             mode={field.selectMode}
+            disabled={field?.disabled}
+            value={field?.value}
           >
             {field.options?.map((opt) => (
               <Select.Option key={opt.value} value={opt.value}>
@@ -151,6 +189,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             format={"YYYY-MM-DD"}
             disabledDate={dateField.disabledDate}
             disabled={field.disabled}
+            value={field?.value}
           />
         );
       case "phone":
@@ -161,9 +200,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             }}
             onPressEnter={() => {}}
             onChecking={() => {}}
-            disabled={false}
-            value={undefined}
+            disabled={!!field?.disabled}
             placeholder={field.placeholder}
+            value={field?.value}
           />
         );
       case "email":
@@ -185,6 +224,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                 </span>
               )
             }
+            disabled={field?.disabled}
+            value={field?.value}
           />
         );
       case "number":
@@ -208,7 +249,50 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                 </span>
               )
             }
+            disabled={field?.disabled}
+            value={field?.value}
           />
+        );
+
+      case "searchInput": {
+        const sip = field.searchInputProps;
+        return (
+          <SearchInput {...(sip ?? {})} queryKeys={sip?.queryKeys ?? []} />
+        );
+      }
+      case "file":
+        const fileProps = field.fileTypeProps!;
+        return (
+          <Upload
+            multiple={(fileProps?.maxCount ?? 0) > 1}
+            accept={fileProps?.accept}
+            beforeUpload={() => false}
+            onChange={({ fileList }) =>
+              fileProps.onChange(fileList.map((f) => f.originFileObj))
+            }
+            maxCount={fileProps?.maxCount}
+          >
+            <Button size="large" className="!w-full" icon={<UploadOutlined />}>
+              {field.placeholder || "Upload File"}
+            </Button>
+          </Upload>
+        );
+      case "checkbox":
+        const checkboxProps = field.checkboxTypeProps!;
+        return (
+          <div className="flex items-center gap-2">
+            <Checkbox
+              onChange={(e) =>
+                checkboxProps.onChange &&
+                checkboxProps.onChange(e.target.checked)
+              }
+              checked={checkboxProps?.checked}
+            >
+              {checkboxProps?.label && (
+                <span className="text-gray-900">{checkboxProps.label}</span>
+              )}
+            </Checkbox>
+          </div>
         );
       default:
         return null;
@@ -257,85 +341,91 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
     >
       <Spin spinning={isFetching || isLoading}>
         <div className="flex !h-full bg-white p-1 m-4 rounded-md">
-          <div className={`rounded-sm p-8 w-2/3`}>
-            <div className="">
-              {/* title and subtitle */}
-              <div className="text-gray-800 mb-4">
-                <h1 className="!font-bold text-lg">{title}</h1>
-                {subTitle && <h2 className="font-semibold">{subTitle}</h2>}
-              </div>
-              <p className="text-gray-600 mt-4 ">
-                Please note that all fields with an astrisk (*) are mandatory.
-              </p>
-              {/* actual form inputes */}
-              <div
-                className={`grid gap-4 ${
-                  columns === 2 ? "md:grid-cols-2" : "md:grid-cols-1"
-                }`}
-              >
-                {fields.map((field: FieldConfig, index: number) => (
-                  <Form.Item
-                    key={index}
-                    name={field.name}
-                    label={
-                      <span className=" text-gray-900">{field.label}</span>
-                    }
-                    rules={field.rules}
-                    hidden={field.hidden}
-                    className={`
-        ${field.className ?? ""}
-        ${field.className?.includes("w-full") ? `md:col-span-${columns}` : ""}
-      `}
-                  >
-                    {renderField(field)}
-                  </Form.Item>
-                ))}
-              </div>
+          <div className={`rounded-sm p-8 w-full`}>
+            <div className="flex justify-between w-full gap-6">
+              <div className={`${leftContent ? "w-3/4" : "w-full"}`}>
+                {/* title and subtitle */}
+                <div className="text-gray-800 mb-4">
+                  <h1 className="!font-bold text-lg">{title}</h1>
+                  {subTitle && <h2 className="font-semibold">{subTitle}</h2>}
+                </div>
+                <p className="text-gray-600 mt-4 ">
+                  Please note that all fields with an astrisk (*) are mandatory.
+                </p>
+                {/* actual form inputes */}
+                <div
+                  className={`grid gap-4 ${
+                    columns === 2 ? "md:grid-cols-2" : "md:grid-cols-1"
+                  }`}
+                >
+                  {fields.map((field: FieldConfig, index: number) => (
+                    <Form.Item
+                      key={index}
+                      name={field.name}
+                      label={
+                        <span className=" text-gray-900">{field.label}</span>
+                      }
+                      rules={field.rules}
+                      hidden={field.hidden}
+                      className={`${field.className ?? ""} ${
+                        field.className?.includes("w-full")
+                          ? `md:col-span-${columns}`
+                          : ""
+                      }`}
+                    >
+                      {renderField(field)}
+                    </Form.Item>
+                  ))}
+                </div>
 
-              {/* form submit button */}
-              <div className="flex mt-6 ">
-                <Form.Item>
-                  <Button
-                    type="default"
-                    danger
-                    htmlType="button"
-                    className="mt-2 !rounded-sm"
-                    size="large"
-                    onClick={() => {
-                      router.back();
-                    }}
-                  >
-                    CANCEL
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="mt-2 !rounded-sm !ml-4 !items-center flex"
-                    size="large"
-                    icon={
-                      <span className="flex items-center">
-                        {isCreate ? (
-                          <Icon
-                            icon="gridicons:create"
-                            width={20}
-                            height={20}
-                          />
-                        ) : (
-                          <Icon
-                            icon="material-symbols:save-outline"
-                            width={20}
-                            height={20}
-                          />
-                        )}
-                      </span>
-                    }
-                    iconPosition="end"
-                    loading={isPending}
-                  >
-                    {isCreate ? "Create" : "Save Changes"}{" "}
-                  </Button>
-                </Form.Item>
+                {/* form submit button */}
+                <div className="flex mt-6 ">
+                  <Form.Item>
+                    <Button
+                      type="default"
+                      danger
+                      htmlType="button"
+                      className="mt-2 !rounded-sm"
+                      size="large"
+                      onClick={() => {
+                        router.back();
+                      }}
+                    >
+                      CANCEL
+                    </Button>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="mt-2 !rounded-sm !ml-4 !items-center flex"
+                      size="large"
+                      icon={
+                        <span className="flex items-center">
+                          {isCreate ? (
+                            <Icon
+                              icon="gridicons:create"
+                              width={20}
+                              height={20}
+                            />
+                          ) : (
+                            <Icon
+                              icon="material-symbols:save-outline"
+                              width={20}
+                              height={20}
+                            />
+                          )}
+                        </span>
+                      }
+                      iconPosition="end"
+                      loading={isPending}
+                    >
+                      {isCreate ? "Create" : "Save Changes"}{" "}
+                    </Button>
+                  </Form.Item>
+                </div>
               </div>
+              {leftContent && (
+                <div className="w-1/2 h-screen ">{leftContent}</div>
+              )}
             </div>
           </div>
         </div>

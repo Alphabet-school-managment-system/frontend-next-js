@@ -52,7 +52,7 @@ export const Index = () => {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
         {features.map((feature) => (
-          <Card
+          <Card 
             key={feature.title}
             title={
               <span className="text-lg font-semibold text-gray-700">

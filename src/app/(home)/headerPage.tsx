@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { SignUpForm } from "./signupPage";
 import { useSearchParams } from "next/navigation";
 import { Icon } from "@iconify-icon/react";
-import logoImg from "@/assets/images/logo.png";
 import Image from "next/image";
+import { staticImages } from "@/lib/static-images";
 
 export const Index = () => {
   const params = useSearchParams();
@@ -24,7 +24,7 @@ export const Index = () => {
       <header className="flex fixed justify-between items-center px-8 py-5 shadow-lg w-full z-10 bg-white">
         <div className="flex items-center justify-between">
           <Image
-            src={logoImg}
+            src={staticImages.logoImg}
             alt="School Logo"
             width={50}
             height={50}

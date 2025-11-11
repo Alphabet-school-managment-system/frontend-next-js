@@ -61,7 +61,7 @@ export const BaseSkeleton = () => {
 export function FormSkeleton() {
   return (
     <div className="flex h-screen bg-white p-1 m-4 rounded-md">
-      <div className="rounded-sm p-8 w-2/3">
+      <div className="rounded-sm p-8 w-full">
         <BaseSkeleton />
       </div>
     </div>

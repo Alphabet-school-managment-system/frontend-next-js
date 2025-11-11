@@ -41,7 +41,7 @@ export default function Home() {
     <div className="">
       <FormGenerator
         columns={2}
-        fields={[...getCommonFormFields(), ...getFormFields()]}
+        fields={[...getCommonFormFields(false), ...getFormFields()]}
         title="Update Parent Information"
         apiRoute="parent"
         data={data}

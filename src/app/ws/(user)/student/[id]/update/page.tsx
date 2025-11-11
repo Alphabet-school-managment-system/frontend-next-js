@@ -8,11 +8,21 @@ import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { ImagePreview } from "../../new/page";
+
+const FormGenerator = dynamic(
+  () => import("@/components/forms/FormGenerator"),
+  {
+    ssr: false,
+    loading: () => <FormSkeleton />,
+  }
+);
 
 export default function Update() {
   const { id } = useParams();
   const { getFormFields } = useStudent();
   const [data, setData] = useState<any>(null);
+  const [image, setImage] = useState<any>(null);
 
   const { data: result, isLoading } = useApiQuery<Student>(
     [],
@@ -28,24 +38,17 @@ export default function Update() {
     }
   }, [result]);
 
-  const FormGenerator = dynamic(
-    () => import("@/components/forms/FormGenerator"),
-    {
-      ssr: false,
-      loading: () => <FormSkeleton />,
-    }
-  );
-
   return (
     <div className="">
       <FormGenerator
         columns={2}
-        fields={getFormFields()}
+        fields={getFormFields({ image })}
         title="Update Student Information"
         apiRoute="student"
         data={data}
         isFetching={isLoading}
         isCreate={false}
+        leftContent={<ImagePreview onImageSelect={setImage} />}
       />
     </div>
   );

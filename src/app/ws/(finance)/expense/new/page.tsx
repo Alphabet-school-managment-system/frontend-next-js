@@ -3,30 +3,91 @@
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useExpense } from "../hook/useExpense";
+import {  useState } from "react";
+import { GetProp, Image, UploadFile, UploadProps } from "antd";
+import { Icon } from "@iconify-icon/react";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+export const getBase64 = (file: FileType): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+export const getFileUrl = async (fileList: any[]) => {
+  const file: UploadFile = fileList?.[0];
+
+  if (!file) {
+    return "";
+  }
+
+  if (!file.url && !file.preview) {
+    file.preview = await getBase64(file as FileType);
+    return file.url || (file.preview as string);
+  }
+};
+
+export const ReceiptPreview = ({ previewImage }: { previewImage: string }) => {
+  const [previewOpen, setPreviewOpen] = useState(false);
+  return (
+    <div className="flex justify-center items-center rounded-md p-4 bg-gray-50 shadow-sm m-4 h-3/4">
+      {previewImage ? (
+        <Image
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+          }}
+          src={previewImage}
+        />
+      ) : (
+        <div className="flex flex-col justify-center items-center">
+          <span className="flex items-center mb-2">
+            <Icon
+              icon="akar-icons:reciept"
+              width={30}
+              height={30}
+              className="text-gray-600"
+            />
+          </span>
+          <h2 className="text-lg font-medium mb-4 text-gray-600">
+            Receipt preview shown here.
+          </h2>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const FormGenerator = dynamic(
+  () => import("@/components/forms/FormGenerator"),
+  {
+    ssr: false,
+    loading: () => <FormSkeleton />,
+  }
+);
 
 export default function Home() {
   const { getFormFields } = useExpense();
-
-  const FormGenerator = dynamic(
-    () => import("@/components/forms/FormGenerator"),
-    {
-      ssr: false,
-      loading: () => <FormSkeleton />,
-    }
-  );
+  const [previewImage, setPreviewImage] = useState("");
 
   return (
-    <div className="">
-      <FormGenerator
-        columns={2}
-        fields={getFormFields()}
-        title="Create new Expense"
-        apiRoute="expense"
-        data={{
-          branch_id: "lvers",
-          academic_year_id: "kjk",
-        }}
-      />
-    </div>
+    <FormGenerator
+      columns={2}
+      fields={getFormFields({
+        onFileChange: async (fileList) =>
+          setPreviewImage((await getFileUrl(fileList)) ?? ""),
+      })}
+      title="Create new Expense"
+      apiRoute="expense"
+      data={{
+        branch_id: "lvers",
+        academic_year_id: "kjk",
+      }}
+      leftContent={<ReceiptPreview previewImage={previewImage} />}
+    />
   );
 }

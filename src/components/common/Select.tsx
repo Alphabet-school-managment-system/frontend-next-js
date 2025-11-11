@@ -1,4 +1,4 @@
-import { Select as MainSelect } from 'antd';
+import { Select as MainSelect } from "antd";
 
 type selectType = { text: string; value: string };
 
@@ -7,11 +7,15 @@ export const Select = ({
   placeholderText,
   onChange,
   classNames,
+  variant = "outlined",
+  value,
 }: {
   data: selectType[];
-  placeholderText: string;
+  placeholderText?: string;
   onChange: (value: any) => void;
   classNames?: string;
+  variant?: "outlined" | "filled" | "borderless" | "underlined";
+  value?: string;
 }) => {
   const { Option } = MainSelect;
 
@@ -20,8 +24,10 @@ export const Select = ({
       <MainSelect
         placeholder={placeholderText}
         size="large"
-        className={`${classNames}`}
+        className={`${classNames} !cursor-pointer`}
         onChange={onChange}
+        variant={variant}
+        value={value}
       >
         {data.map((item: selectType) => (
           <Option key={item?.value} value={item?.value}>
