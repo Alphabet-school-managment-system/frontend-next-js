@@ -2,16 +2,27 @@
 
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
-import { Enrollment } from "@/types";
+import { Enrollment, Student } from "@/types";
 import { useEnrollment } from "../../hook/useEnrollment";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
+import { EnrollmentStudentDetail } from "../../new/page";
+
+const FormGenerator = dynamic(
+  () => import("@/components/forms/FormGenerator"),
+  {
+    ssr: false,
+    loading: () => <FormSkeleton />,
+  }
+);
 
 export default function Update() {
   const { id } = useParams();
   const { getFormFields } = useEnrollment();
   const [data, setData] = useState<any>(null);
+  const [student, setStudent] = useState<Student>();
+  const [enrolled_class, setEnrolledClass] = useState<string>("");
 
   const { data: result, isLoading } = useApiQuery<Enrollment>(
     [],
@@ -26,24 +37,23 @@ export default function Update() {
     }
   }, [result]);
 
-  const FormGenerator = dynamic(
-    () => import("@/components/forms/FormGenerator"),
-    {
-      ssr: false,
-      loading: () => <FormSkeleton />,
-    }
-  );
-
   return (
     <div className="">
       <FormGenerator
         columns={1}
-        fields={getFormFields()}
+        fields={getFormFields({
+          onStudentSelect: async (student) => {
+            setStudent(student);
+          },
+        })}
         title="Update Enrollment Information"
         apiRoute="enrollment"
         data={data}
         isFetching={isLoading}
         isCreate={false}
+        leftContent={
+          <EnrollmentStudentDetail student={student} enrolled_class={enrolled_class} />
+        }
       />
     </div>
   );
