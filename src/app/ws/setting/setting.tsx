@@ -59,7 +59,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   return (
     <div>
-      <Card title="Setting" style={{ marginBottom: 24 }}>
+      <Card variant="borderless" title="Setting" style={{ marginBottom: 24 }}>
         <Form layout="vertical" form={settingForm} onFinish={handleSubmit}>
           <div className={`grid gap-4 md:grid-cols-2`}>
             <Form.Item label="id" name="id" hidden>

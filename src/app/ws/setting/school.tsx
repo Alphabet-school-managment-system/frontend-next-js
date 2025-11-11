@@ -56,7 +56,7 @@ const Index = ({
   };
 
   return (
-    <Card title="School Information" style={{ marginBottom: 24 }}>
+    <Card variant="borderless" title="School Information" style={{ marginBottom: 24 }}>
       <Form layout="vertical" form={schoolForm} onFinish={handleSubmit}>
         <div className={`grid gap-4 md:grid-cols-2`}>
           <Form.Item label="id" name="id" hidden>

@@ -82,7 +82,7 @@ const Index = ({
   };
   return (
     <div>
-      <Card title="Academic Year" style={{ marginBottom: 24 }}>
+      <Card variant="borderless" title="Academic Year" style={{ marginBottom: 24 }}>
         <Form layout="vertical" form={ayForm} onFinish={handleSubmit}>
           <div className={`grid gap-4 md:grid-cols-2`}>
             <Form.Item label="id" name="id" hidden>

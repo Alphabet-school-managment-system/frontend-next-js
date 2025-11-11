@@ -104,7 +104,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   return (
     <div>
-      <Card
+      <Card variant="borderless"
         title="Branches"
         extra={
           <Button icon={<PlusOutlined />} onClick={() => setOpenDrawer(true)}>
@@ -116,7 +116,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
           {data &&
             data.map((branch: Branch) => (
               <Col key={branch?.id} xs={24} sm={12} md={8}>
-                <Card
+                <Card variant="borderless"
                   size="small"
                   actions={[
                     <EditOutlined
