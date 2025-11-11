@@ -213,6 +213,7 @@ export type Student = {
   phone?: string | null;
   note?: string | null;
   branch_id?: string | null;
+  photo_url?: string | null;
 };
 
 export type Teacher = {
