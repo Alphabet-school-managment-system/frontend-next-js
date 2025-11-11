@@ -8,11 +8,21 @@ import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { getFileUrl, ReceiptPreview } from "../../../expense/new/page";
+
+const FormGenerator = dynamic(
+  () => import("@/components/forms/FormGenerator"),
+  {
+    ssr: false,
+    loading: () => <FormSkeleton />,
+  }
+);
 
 export default function Update() {
   const { id } = useParams();
   const { getFormFields } = useFee();
   const [data, setData] = useState<any>(null);
+  const [previewImage, setPreviewImage] = useState("");
 
   const { data: result, isLoading } = useApiQuery<Fee>(
     [],
@@ -28,24 +38,20 @@ export default function Update() {
     }
   }, [result]);
 
-  const FormGenerator = dynamic(
-    () => import("@/components/forms/FormGenerator"),
-    {
-      ssr: false,
-      loading: () => <FormSkeleton />,
-    }
-  );
-
   return (
     <div className="">
       <FormGenerator
         columns={2}
-        fields={getFormFields()}
+        fields={getFormFields({
+          onFileChange: async (fileList) =>
+            setPreviewImage((await getFileUrl(fileList)) ?? ""),
+        })}
         title="Update Fee Information"
         apiRoute="fee"
         data={data}
         isFetching={isLoading}
         isCreate={false}
+        leftContent={<ReceiptPreview previewImage={previewImage} />}
       />
     </div>
   );

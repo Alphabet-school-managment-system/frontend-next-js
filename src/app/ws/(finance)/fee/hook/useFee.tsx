@@ -1,6 +1,6 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
-import { Icon } from "@iconify-icon/react";
+import dayjs from "dayjs";
 
 export const useFee = () => {
   const getTableColumns = (): any[] => {
@@ -11,8 +11,7 @@ export const useFee = () => {
         key: "student",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            first_name={record?.first_name}
-            last_name={record?.last_name}
+            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/student-detail/${record?.id}`}
           />
@@ -55,17 +54,22 @@ export const useFee = () => {
     ];
   };
 
-  const getFormFields = (): FieldConfig[] => {
+  const getFormFields = ({
+    onFileChange,
+  }: {
+    onFileChange: (fileList: any[]) => void;
+  }): FieldConfig[] => {
     return [
       {
         name: "student_id",
         label: "Student",
-        type: FieldType.userAutoComplete,
+        type: FieldType.searchInput,
         placeholder: "Select the student",
-        rules: [{ required: false, message: "" }],
-        userSearchProps: {
+        rules: [{ required: true, message: "" }],
+        searchInputProps: {
           apiRoute: "student",
           placeholder: "Search student by name",
+          queryKeys: ["first_name", "last_name"],
           onSelect: (value: string) => {},
         },
       },
@@ -89,6 +93,7 @@ export const useFee = () => {
         type: FieldType.Date,
         placeholder: "",
         rules: [{ required: false, message: "" }],
+        disabledDate: (current) => current > dayjs().endOf("day"),
       },
       {
         name: "status",
@@ -112,6 +117,20 @@ export const useFee = () => {
           { label: "Other", value: "Other" },
         ],
         rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "receipt",
+        label: "Receipt",
+        type: FieldType.file,
+        placeholder: "Upload receipt",
+        rules: [{ required: false, message: "" }],
+        fileTypeProps: {
+          maxCount: 1,
+          accept: ".jpg,.jpeg,.png",
+          onChange: (fileList: any[]) => {
+            onFileChange(fileList);
+          },
+        },
       },
       {
         name: "note",
