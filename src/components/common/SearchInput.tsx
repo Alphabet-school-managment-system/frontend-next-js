@@ -1,25 +1,38 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { AutoComplete, Spin } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { useApiQuery } from "@/hooks/useApi";
 
-export interface UserSearchProps {
+export interface SearchInputProps {
   onSelect?: (value: string) => void;
   placeholder?: string;
   apiRoute?: string;
+  queryKeys: string[];
+  suffixIcon?: ReactNode;
+  allowClear?: boolean;
 }
 
-const UserSearch = (props: UserSearchProps) => {
+const SearchInput = ({
+  onSelect,
+  placeholder,
+  apiRoute,
+  queryKeys,
+  suffixIcon,
+  allowClear = true,
+}: SearchInputProps) => {
   const [options, setOptions] = useState<{ value: string }[]>([]);
   const [value, setValue] = useState("");
   const [enabled, setEnabled] = useState(false);
 
-  const apiRoute = props?.apiRoute ?? "";
+  const queryString = queryKeys
+    .map((key) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  const route = apiRoute ?? "";
   const { data, isLoading } = useApiQuery<any[]>(
-    [apiRoute],
-    `${apiRoute}/search/?first_name=${value}&last_name=${value}`,
+    [route],
+    `${route}/search/?${queryString}`,
     enabled
   );
 
@@ -52,14 +65,14 @@ const UserSearch = (props: UserSearchProps) => {
           setOptions([]);
         }
       }}
-      onSelect={(value) => props.onSelect?.(value)}
-      placeholder={props?.placeholder}
+      onSelect={(value) => onSelect?.(value)}
+      placeholder={placeholder}
       options={options.map((item: any) => ({
         value: `${item.first_name} ${item.last_name}`,
         label: <span>{`${item.first_name} ${item.last_name}`}</span>,
       }))}
       className="w-full"
-      allowClear
+      allowClear={allowClear}
       prefix={
         <span className="flex items-center justify-center h-full">
           {isLoading ? (
@@ -67,15 +80,16 @@ const UserSearch = (props: UserSearchProps) => {
           ) : (
             <Icon
               icon="material-symbols:search"
-              className="text-gray-800"
+              className="text-gray-500"
               width={22}
               height={22}
             />
           )}
         </span>
       }
+      suffixIcon={suffixIcon}
     />
   );
 };
 
-export default UserSearch;
+export default SearchInput;
