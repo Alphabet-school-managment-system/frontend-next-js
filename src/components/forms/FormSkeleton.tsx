@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton, Spin } from "antd";
+import { Card, Skeleton, Spin } from "antd";
 
 export const BaseSkeleton = () => {
   return (
@@ -63,6 +63,41 @@ export function FormSkeleton() {
     <div className="flex h-screen bg-white p-1 m-4 rounded-md">
       <div className="rounded-sm p-8 w-full">
         <BaseSkeleton />
+      </div>
+    </div>
+  );
+}
+
+export function DashboardSkeleton({ loading = true }) {
+  return (
+    <div className="flex flex-col justify-between">
+      {/* Counts Skeleton */}
+      <div className="flex flex-wrap gap-4 mb-4">
+        {[1, 2, 3, 4].map((_, i) => (
+          <Card key={i} className="flex-1 min-w-[150px]">
+            <Skeleton active paragraph={{ rows: 1 }} loading={loading} />
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts Skeleton */}
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mt-4">
+        <Card className="flex-1">
+          <Skeleton
+            active
+            paragraph={{ rows: 6 }}
+            title={{ width: "60%" }}
+            loading={loading}
+          />
+        </Card>
+        <Card className="flex-1">
+          <Skeleton
+            active
+            paragraph={{ rows: 6 }}
+            title={{ width: "60%" }}
+            loading={loading}
+          />
+        </Card>
       </div>
     </div>
   );
