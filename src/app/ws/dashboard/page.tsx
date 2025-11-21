@@ -1,9 +1,17 @@
+"use client";
+
+import { DashboardSkeleton } from "@/components/forms/FormSkeleton";
+import dynamic from "next/dynamic";
+
+const Index = dynamic(() => import("./index"), {
+  ssr: false,
+  loading: () => <DashboardSkeleton />,
+});
+
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <div>
-        <h1>Welcome to dashboard</h1>
-      </div>
+    <div className="">
+      <Index />
     </div>
   );
 }

@@ -158,7 +158,7 @@ export const useMainLayout = () => {
       ],
     },
     {
-      key: "settings",
+      key: "setting",
       icon: <Icon icon="mdi:cog-outline" width={24} height={24} />,
       label: "Settings",
       path: "/ws/setting",
