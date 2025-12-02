@@ -6,8 +6,9 @@ import { useEnrollment } from "../hook/useEnrollment";
 import { Student } from "@/types";
 import Image from "next/image";
 import { staticImages } from "@/lib/static-images";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Icon } from "@iconify-icon/react";
+import { IdsContext } from "@/store/idsContext";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -78,6 +79,7 @@ export const EnrollmentStudentDetail = ({
 };
 
 export default function Home() {
+  const { Ids } = useContext(IdsContext);
   const { getFormFields } = useEnrollment();
   const [student, setStudent] = useState<Student>();
   const [enrolled_class, setEnrolledClass] = useState<string>("");
@@ -94,10 +96,13 @@ export default function Home() {
         title="Create new enrollment"
         apiRoute="enrollment"
         data={{
-          academic_year_id: "lvers",
+          academic_year_id: Ids?.academicYearId,
         }}
         leftContent={
-          <EnrollmentStudentDetail student={student} enrolled_class={enrolled_class} />
+          <EnrollmentStudentDetail
+            student={student}
+            enrolled_class={enrolled_class}
+          />
         }
       />
     </div>

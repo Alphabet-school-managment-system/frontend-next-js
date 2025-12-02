@@ -3,6 +3,7 @@
 import { useParent } from "./hook/useParent";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
+import { QueryBy } from "@/components/list/index";
 
 export default function Home() {
   const { getTableColumns } = useParent();
@@ -22,6 +23,7 @@ export default function Home() {
         }
         route={"parent"}
         addButtonTitle={"Add new parent"}
+        queryBy={QueryBy.BRANCH}
       />
     </>
   );

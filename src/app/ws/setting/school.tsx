@@ -1,27 +1,24 @@
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
+import { IdsContext } from "@/store/idsContext";
 import { School } from "@/types";
 import { Button, Card, Form, Input } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const Index = ({
-  onLoading,
-}: {
-  onLoading: (value: boolean) => void;
-}) => {
+const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [schoolForm] = Form.useForm();
-  const [schoolId, setSchoolId] = useState<string | undefined>(
-    "a120f8c1-6da5-43b7-95d0-79ff888c0593"
-  );
+
+  const { Ids } = useContext(IdsContext);
+
   const apiRoute = "school";
 
   const { data, isLoading } = useApiQuery<School>(
-    [`${apiRoute}/${schoolId}`],
-    `${apiRoute}/${schoolId}`
+    [`${apiRoute}/${Ids?.schoolId}`],
+    `${apiRoute}/${Ids?.schoolId}`
   );
   const { mutate, isPending: isUpdating } = useApiMutation(
-    [`${apiRoute}/${schoolId}`],
-    `${apiRoute}/${schoolId}/update`,
+    [`${apiRoute}/${Ids?.schoolId}`],
+    `${apiRoute}/${Ids?.schoolId}/update`,
     "PUT"
   );
 
@@ -56,7 +53,11 @@ const Index = ({
   };
 
   return (
-    <Card variant="borderless" title="School Information" style={{ marginBottom: 24 }}>
+    <Card
+      variant="borderless"
+      title="School Information"
+      style={{ marginBottom: 24 }}
+    >
       <Form layout="vertical" form={schoolForm} onFinish={handleSubmit}>
         <div className={`grid gap-4 md:grid-cols-2`}>
           <Form.Item label="id" name="id" hidden>
@@ -107,6 +108,5 @@ const Index = ({
     </Card>
   );
 };
-
 
 export default Index;

@@ -3,6 +3,7 @@
 import { useTeacher } from "./hook/useTeacher";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
+import { QueryBy } from "@/components/list/index";
 
 export default function Home() {
   const { getTableColumns } = useTeacher();
@@ -22,6 +23,7 @@ export default function Home() {
         }
         route={"teacher"}
         addButtonTitle={"Add new teacher"}
+        queryBy={QueryBy.BRANCH}
       />
     </>
   );

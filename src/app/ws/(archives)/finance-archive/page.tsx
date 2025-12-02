@@ -4,7 +4,9 @@ import { useFinanceArchive } from "./hook/useFinanceArchive";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { Select } from "@/components/common/Select";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { IdsContext } from "@/store/idsContext";
+import { QueryBy } from "@/components/list/index";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -14,6 +16,7 @@ const List = dynamic(() => import("@/components/list/index"), {
 export default function Home() {
   const { getTableColumns } = useFinanceArchive();
   const [type, setType] = useState("fee");
+  const { Ids } = useContext(IdsContext);
 
   return (
     <>
@@ -47,6 +50,7 @@ export default function Home() {
             classNames="shadow-none focus:shadow-none outline-none bg-transparent min-w-[150px]"
           />
         }
+        queryBy={QueryBy.BRANCH}
       />
     </>
   );

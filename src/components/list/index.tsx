@@ -12,6 +12,12 @@ import TableSkeleton from "@/components/forms/TableSkeleton";
 import { useRouter } from "next/navigation";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { Icon } from "@iconify-icon/react";
+import { IdsContext } from "@/store/idsContext";
+
+export enum QueryBy {
+  ACADEMIC_YEAR = "academic_year_id",
+  BRANCH = "branch_id",
+}
 
 type props = {
   columns: any[];
@@ -35,6 +41,7 @@ type props = {
   onRowSelection?: (values: React.Key[]) => void;
   showRowSelection?: boolean;
   subHeader?: ReactElement;
+  queryBy?: QueryBy;
 };
 
 const Table = dynamic(() => import("@/components/common/Table"), {
@@ -59,6 +66,7 @@ const Index = ({
   onRowSelection,
   showRowSelection = false,
   subHeader,
+  queryBy,
 }: props) => {
   const router = useRouter();
 
@@ -66,12 +74,23 @@ const Index = ({
   const [datasCopy, setDatasCopy] = useState<unknown[] | any>([]);
   const [selectedRow, setSelectedRow] = useState<any>(null);
   const [searchValue, setSearchValue] = useState("");
+  const { Ids } = useContext(IdsContext);
 
   const isRouteString = typeof route === "string";
   const apiRoute = isRouteString ? route : route.api;
   const pageRoute = isRouteString ? route : route.page;
 
-  const { data, isLoading } = useApiQuery([apiRoute], `${apiRoute}`);
+  const query = new URLSearchParams(
+    queryBy === QueryBy.ACADEMIC_YEAR
+      ? { academic_year_id: Ids?.academicYearId }
+      : ({ branch_id: Ids?.branchId } as any)
+  ).toString();
+
+  const { data, isLoading } = useApiQuery(
+    [`${apiRoute}?${query}`],
+    `${apiRoute}?${query}`
+  );
+
   const { mutate: Delete, isPending: deleting } = useApiMutation(
     [apiRoute],
     `${apiRoute}/${selectedRow?.id}/delete`,

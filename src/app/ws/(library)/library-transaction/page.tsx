@@ -3,6 +3,7 @@
 import { useBookTransaction } from "./hook/useBookTransaction";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
+import { QueryBy } from "@/components/list/index";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -27,6 +28,7 @@ export default function Home() {
           delete: true,
           detail: true,
         }}
+        queryBy={QueryBy.BRANCH}
       />
     </>
   );

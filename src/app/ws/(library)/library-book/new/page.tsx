@@ -3,9 +3,12 @@
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useLibraryBook } from "../hook/useLibraryBook";
+import { IdsContext } from "@/store/idsContext";
+import { useContext } from "react";
 
 export default function Home() {
   const { getFormFields } = useLibraryBook();
+  const { Ids } = useContext(IdsContext);
 
   const FormGenerator = dynamic(
     () => import("@/components/forms/FormGenerator"),
@@ -23,7 +26,7 @@ export default function Home() {
         title="Create new Library Book"
         apiRoute="library-book"
         data={{
-          branch_id: "lvers",
+          branch_id: Ids?.branchId,
         }}
       />
     </div>

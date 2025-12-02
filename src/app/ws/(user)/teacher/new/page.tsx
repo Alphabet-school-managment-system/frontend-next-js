@@ -6,7 +6,8 @@ import dynamic from "next/dynamic";
 import { useStudent } from "../../student/hook/useStudent";
 import { useTeacher } from "../hook/useTeacher";
 import { ImagePreview } from "../../student/new/page";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { IdsContext } from "@/store/idsContext";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -20,6 +21,7 @@ export default function Home() {
   const { getCommonFormFields } = useStudent();
   const { getFormFields } = useTeacher();
   const [image, setImage] = useState<any>(null);
+  const { Ids } = useContext(IdsContext);
 
   return (
     <div className="">
@@ -29,7 +31,7 @@ export default function Home() {
         title="Create new Teacher"
         apiRoute="teacher"
         data={{
-          branch_id: "lvers",
+          branch_id: Ids?.branchId,
         }}
         leftContent={<ImagePreview onImageSelect={setImage} />}
       />

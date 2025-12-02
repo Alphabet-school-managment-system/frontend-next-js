@@ -3,6 +3,7 @@
 import { useStaff } from "./hook/useStaff";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
+import { QueryBy } from "@/components/list/index";
 
 export default function Home() {
   const { getTableColumns } = useStaff();
@@ -22,6 +23,7 @@ export default function Home() {
         }
         route={"staff"}
         addButtonTitle={"Add new staff"}
+        queryBy={QueryBy.BRANCH}
       />
     </>
   );
