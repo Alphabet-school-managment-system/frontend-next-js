@@ -52,7 +52,10 @@ export default function Update() {
         isFetching={isLoading}
         isCreate={false}
         leftContent={
-          <EnrollmentStudentDetail student={student} enrolled_class={enrolled_class} />
+          <EnrollmentStudentDetail
+            student={student}
+            enrolled_class={enrolled_class}
+          />
         }
       />
     </div>

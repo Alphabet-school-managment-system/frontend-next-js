@@ -98,7 +98,7 @@ export const useEnrollment = () => {
         },
       },
       {
-        name: "class_id",
+        name: "section_id",
         label: "Class (and section)",
         type: FieldType.Select,
         placeholder: "Select class & sec",
