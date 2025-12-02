@@ -13,6 +13,8 @@ import toast from "react-hot-toast";
 import ChangePassword from "@/app/ws/(profile)/change-password";
 import { Drawer } from "@/components/common/Drawer";
 import { Button, Form } from "antd";
+import { useApiQuery } from "@/hooks/useApi";
+import { IdsContext } from "@/store/idsContext";
 
 type HeaderProps = {
   pageTitle?: string;
@@ -63,11 +65,11 @@ const Header = ({
   });
 
   const [form] = Form.useForm();
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-
-  const { userData, setUserData } = useContext(UserContext);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { Ids, setIds } = useContext(IdsContext);
+  const { setUserData } = useContext(UserContext);
+  const [getIds, setGetIds] = useState(false);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
     ConfirmationModalContext
@@ -116,7 +118,14 @@ const Header = ({
 
   const { data: session, isPending, error } = useSession();
 
+  const { data: ids, isLoading: gettingIds } = useApiQuery<any>(
+    ["auth/getIds"],
+    `${"auth/getIds"}/${session?.user?.id}`,
+    getIds
+  );
+
   useEffect(() => {
+    setGetIds(false);
     if (isPending) {
       onLoading(true);
     } else {
@@ -129,6 +138,7 @@ const Header = ({
             first_name: session?.user?.name,
             image: session?.user?.image,
           });
+          setGetIds(true);
         } else {
           router.replace("/auth/login");
         }
@@ -136,6 +146,21 @@ const Header = ({
       onLoading(false);
     }
   }, [isPending, error, session]);
+
+  useEffect(() => {
+    onLoading(gettingIds);
+  }, [gettingIds]);
+
+  useEffect(() => {
+    if (ids) {
+      setIds({
+        schoolId: ids?.schoolId,
+        branchId: ids?.branchId,
+        branchName: ids?.branchName,
+        academicYearId: ids?.academicYearId[0],
+      });
+    }
+  }, [ids]);
 
   return (
     <>
@@ -151,6 +176,9 @@ const Header = ({
           </div>
         </div>
         <div className="flex items-center space-x-6">
+          <span className="bg-blue-50 text-gray-800 p-2 text-sm font-semibold rounded-md cursor-pointer" title="Current branch">
+            {Ids?.branchName}
+          </span>
           {/* User Profile */}
           <div className="relative" ref={dropdownRef}>
             <button

@@ -6,6 +6,7 @@ import Index from "@/components/layout/MainLayout/Index";
 import { ConfirmationModalProvider } from "@/store/confirmationModalContext";
 import ConfirmationModal from "@/components/common/Modals";
 import { Toaster } from "react-hot-toast";
+import { IdsProvider } from "@/store/idsContext";
 
 export default function RootLayout({
   children,
@@ -22,9 +23,11 @@ export default function RootLayout({
 
   return (
     <ConfirmationModalProvider>
-      <ConfirmationModal />
-      <Toaster position="top-center" />
-      <Index>{children}</Index>
+      <IdsProvider>
+        <ConfirmationModal />
+        <Toaster position="top-center" />
+        <Index>{children}</Index>
+      </IdsProvider>
     </ConfirmationModalProvider>
   );
 }
