@@ -1,23 +1,23 @@
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
+import { IdsContext } from "@/store/idsContext";
 import { Setting } from "@/types";
 import { Button, Card, Form, Input, Select } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [settingForm] = Form.useForm();
   const [id, setId] = useState<string | undefined>("");
-  const [schoolId, setSchoolId] = useState<string | undefined>(
-    "a120f8c1-6da5-43b7-95d0-79ff888c0593"
-  );
+  const { Ids } = useContext(IdsContext);
+
   const apiRoute = "setting";
 
   const { data, isLoading } = useApiQuery<Setting>(
-    [`${apiRoute}/${schoolId}`],
-    `${apiRoute}/${schoolId}`
+    [`${apiRoute}/${Ids?.schoolId}`],
+    `${apiRoute}/${Ids?.schoolId}`
   );
   const { mutate, isPending: isUpdating } = useApiMutation(
-    [`${apiRoute}/${schoolId}`],
+    [`${apiRoute}/${Ids?.schoolId}`],
     data ? `${apiRoute}/${id}/update` : apiRoute,
     data ? "PUT" : "POST"
   );
@@ -42,7 +42,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const handleSubmit = async (values: any) => {
     try {
       const payload = { ...values };
-      payload.school_id = schoolId;
+      payload.school_id = Ids?.schoolId;
       payload.sections_per_class = Number(values.sections_per_class);
       payload.number_of_terms = Number(values.number_of_terms);
 
@@ -55,7 +55,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
     } catch (error) {
       toast.error(`${error}`);
     }
-  };
+  }; 
 
   return (
     <div>

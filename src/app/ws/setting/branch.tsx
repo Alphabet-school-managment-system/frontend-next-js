@@ -5,6 +5,7 @@ import {
   ConfirmationModalPropsType,
   defaultConfirmationModalProps,
 } from "@/store/confirmationModalContext";
+import { IdsContext } from "@/store/idsContext";
 import { Branch } from "@/types";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Card, Col, Form, Input, Row } from "antd";
@@ -29,18 +30,17 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isEditBranch, setIsEditBranch] = useState(false);
   const [id, setId] = useState<string | undefined>("");
-  const [schoolId, setSchoolId] = useState<string | undefined>(
-    "a120f8c1-6da5-43b7-95d0-79ff888c0593"
-  );
+
+  const { Ids } = useContext(IdsContext);
 
   const [branchForm] = Form.useForm();
   const { data, isLoading } = useApiQuery<Branch[]>(
-    [`${apiRoute}/${schoolId}`],
-    `${apiRoute}/${schoolId}`
+    [`${apiRoute}/${Ids?.schoolId}`],
+    `${apiRoute}/${Ids?.schoolId}`
   );
 
   const { mutate, isPending } = useApiMutation(
-    [`${apiRoute}/${schoolId}`],
+    [`${apiRoute}/${Ids?.schoolId}`],
     isEditBranch
       ? `${apiRoute}/${branchForm.getFieldValue("id")}/update`
       : apiRoute,
@@ -48,7 +48,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   );
 
   const { mutate: Delete, isPending: deleting } = useApiMutation(
-    [`${apiRoute}/${schoolId}`],
+    [`${apiRoute}/${Ids?.schoolId}`],
     `${apiRoute}/${id}/delete`,
     "DELETE"
   );
@@ -67,7 +67,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
     try {
       const payload = isEditBranch
         ? { ...values }
-        : { ...values, school_id: schoolId };
+        : { ...values, school_id: Ids?.schoolId };
       await mutate(
         { body: payload },
         {
@@ -104,7 +104,8 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   return (
     <div>
-      <Card variant="borderless"
+      <Card
+        variant="borderless"
         title="Branches"
         extra={
           <Button icon={<PlusOutlined />} onClick={() => setOpenDrawer(true)}>
@@ -116,7 +117,8 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
           {data &&
             data.map((branch: Branch) => (
               <Col key={branch?.id} xs={24} sm={12} md={8}>
-                <Card variant="borderless"
+                <Card
+                  variant="borderless"
                   size="small"
                   actions={[
                     <EditOutlined

@@ -1,32 +1,28 @@
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { AcademicYear } from "@/types";
 import { Button, Card, DatePicker, Form, Input } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
+import { IdsContext } from "@/store/idsContext";
 
 const { RangePicker } = DatePicker;
 
-const Index = ({
-  onLoading,
-}: {
-  onLoading: (value: boolean) => void;
-}) => {
+const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [ayForm] = Form.useForm();
-  const [branchId, setBranchId] = useState<string | undefined>(
-    "5a318378-c4f6-4b75-8f1e-8dfc9319b298"
-  );
+
+  const { Ids } = useContext(IdsContext);
 
   const [id, setId] = useState<string | undefined>("");
   const apiRoute = "academic-year";
 
   const { data, isLoading } = useApiQuery<AcademicYear>(
-    [`${apiRoute}/${branchId}`],
-    `${apiRoute}/${branchId}`
+    [`${apiRoute}/${Ids?.branchId}`],
+    `${apiRoute}/${Ids?.branchId}`
   );
 
   const { mutate, isPending: isUpdating } = useApiMutation(
-    [`${apiRoute}/${branchId}`],
+    [`${apiRoute}/${Ids?.branchId}`],
     data ? `${apiRoute}/${id}/update` : apiRoute,
     data ? "PUT" : "POST"
   );
@@ -58,7 +54,7 @@ const Index = ({
   const handleSubmit = async (values: any) => {
     try {
       const payload = { ...values };
-      payload.branch_id = branchId;
+      payload.branch_id = Ids?.branchId;
       if (values.start_end_date) {
         payload.start_date = values.start_end_date[0];
         payload.end_date = values.start_end_date[1];
@@ -82,7 +78,11 @@ const Index = ({
   };
   return (
     <div>
-      <Card variant="borderless" title="Academic Year" style={{ marginBottom: 24 }}>
+      <Card
+        variant="borderless"
+        title="Academic Year"
+        style={{ marginBottom: 24 }}
+      >
         <Form layout="vertical" form={ayForm} onFinish={handleSubmit}>
           <div className={`grid gap-4 md:grid-cols-2`}>
             <Form.Item label="id" name="id" hidden>
@@ -133,6 +133,5 @@ const Index = ({
     </div>
   );
 };
-
 
 export default Index;

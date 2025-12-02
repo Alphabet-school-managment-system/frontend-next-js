@@ -3,9 +3,10 @@
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useExpense } from "../hook/useExpense";
-import {  useState } from "react";
+import { useContext, useState } from "react";
 import { GetProp, Image, UploadFile, UploadProps } from "antd";
 import { Icon } from "@iconify-icon/react";
+import { IdsContext } from "@/store/idsContext";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -73,6 +74,7 @@ const FormGenerator = dynamic(
 export default function Home() {
   const { getFormFields } = useExpense();
   const [previewImage, setPreviewImage] = useState("");
+  const { Ids } = useContext(IdsContext);
 
   return (
     <FormGenerator
@@ -84,8 +86,7 @@ export default function Home() {
       title="Create new Expense"
       apiRoute="expense"
       data={{
-        branch_id: "lvers",
-        academic_year_id: "kjk",
+        academic_year_id: Ids?.academicYearId,
       }}
       leftContent={<ReceiptPreview previewImage={previewImage} />}
     />

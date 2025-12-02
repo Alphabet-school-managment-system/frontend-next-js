@@ -1,9 +1,11 @@
 import { Counts } from "./counts";
 import { Chart } from "./chart";
 import { useApiQuery } from "@/hooks/useApi";
+import { useContext } from "react";
+import { IdsContext } from "@/store/idsContext";
 
 const Index = () => {
-  const schoolId: string = "17fcb7f4-b7a7-4666-9ef5-5afbc1be8969";
+  const { Ids } = useContext(IdsContext);
 
   const { data, isLoading } = useApiQuery<{
     maleStudents: number;
@@ -12,7 +14,7 @@ const Index = () => {
     attendanceToday: number;
     expenseData: number[];
     feeData: number[];
-  }>([`dashboard/${schoolId}`], `dashboard/${schoolId}`);
+  }>([`dashboard/${Ids?.schoolId}`], `dashboard/${Ids?.schoolId}`);
 
   return (
     <div className="flex flex-col justify-between">

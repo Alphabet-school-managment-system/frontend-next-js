@@ -4,10 +4,13 @@ import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useStudent } from "../../student/hook/useStudent";
 import { useStaff } from "../hook/useStaff";
+import { useContext } from "react";
+import { IdsContext } from "@/store/idsContext";
 
 export default function Home() {
   const { getCommonFormFields } = useStudent();
   const { getFormFields } = useStaff();
+  const { Ids } = useContext(IdsContext);
 
   const FormGenerator = dynamic(
     () => import("@/components/forms/FormGenerator"),
@@ -25,7 +28,7 @@ export default function Home() {
         title="Create new Staff"
         apiRoute="staff"
         data={{
-          branch_id: "lvers",
+          branch_id: Ids?.branchId,
         }}
       />
     </div>

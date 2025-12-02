@@ -3,13 +3,14 @@
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useStudent } from "../hook/useStudent";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Image as AntdImage, Upload, UploadProps } from "antd";
 import { staticImages } from "@/lib/static-images";
 import { UploadOutlined } from "@ant-design/icons";
 import { getFileUrl } from "@/app/ws/(finance)/expense/new/page";
 
 import Image from "next/image";
+import { IdsContext } from "@/store/idsContext";
 
 export const ImagePreview = ({
   onImageSelect,
@@ -81,6 +82,7 @@ const FormGenerator = dynamic(
 export default function Home() {
   const { getFormFields } = useStudent();
   const [image, setImage] = useState<any>(null);
+  const { Ids } = useContext(IdsContext);
 
   return (
     <div className="">
@@ -90,7 +92,7 @@ export default function Home() {
         title="Create new Student"
         apiRoute="student"
         data={{
-          branch_id: "lvers",
+          branch_id: Ids?.branchId,
         }}
         leftContent={<ImagePreview onImageSelect={setImage} />}
       />
