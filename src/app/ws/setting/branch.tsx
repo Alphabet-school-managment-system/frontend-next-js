@@ -1,4 +1,5 @@
 import { Drawer } from "@/components/common/Drawer";
+import { Select } from "@/components/common/Select";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import {
   ConfirmationModalContext,
@@ -11,6 +12,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Card, Col, Form, Input, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Icon } from "@iconify-icon/react";
 
 const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const apiRoute = "branch";
@@ -30,10 +32,11 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isEditBranch, setIsEditBranch] = useState(false);
   const [id, setId] = useState<string | undefined>("");
-
-  const { Ids } = useContext(IdsContext);
+  const { Ids, setIds } = useContext(IdsContext);
 
   const [branchForm] = Form.useForm();
+  const [changeCurrentBranchForm] = Form.useForm();
+
   const { data, isLoading } = useApiQuery<Branch[]>(
     [`${apiRoute}/${Ids?.schoolId}`],
     `${apiRoute}/${Ids?.schoolId}`
@@ -47,6 +50,13 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
     isEditBranch ? "PUT" : "POST"
   );
 
+  const { mutate: changeCurrent, isPending: changingCurrentBranch } =
+    useApiMutation(
+      [`${apiRoute}/${Ids?.schoolId}`],
+      `${apiRoute}/change-current`,
+      "PUT"
+    );
+
   const { mutate: Delete, isPending: deleting } = useApiMutation(
     [`${apiRoute}/${Ids?.schoolId}`],
     `${apiRoute}/${id}/delete`,
@@ -54,28 +64,48 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   );
 
   useEffect(() => {
-    if (isLoading || isPending || deleting) {
+    if (isLoading || isPending || deleting || changingCurrentBranch) {
       onLoading(true);
     } else {
       setTimeout(() => {
         onLoading(false);
       }, 500);
     }
-  }, [isLoading, isPending, deleting]);
+  }, [isLoading, isPending, deleting, changingCurrentBranch]);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (
+    values: any,
+    isChangeCurrent: boolean = false
+  ) => {
     try {
-      const payload = isEditBranch
-        ? { ...values }
-        : { ...values, school_id: Ids?.schoolId };
-      await mutate(
-        { body: payload },
-        {
-          onSuccess: (res) => {
-            handleDrawerClose();
-          },
-        }
-      );
+      if (isChangeCurrent) {
+        changeCurrent(
+          { body: { ...values } },
+          {
+            onSuccess: (res) => {
+              if (setIds) {
+                setIds({
+                  ...(Ids ?? {}),
+                  branchId: res?.data?.id,
+                  branchName: res?.data?.name,
+                });
+              }
+            },
+          }
+        );
+      } else {
+        const payload = isEditBranch
+          ? { ...values }
+          : { ...values, school_id: Ids?.schoolId };
+        await mutate(
+          { body: payload },
+          {
+            onSuccess: (res) => {
+              handleDrawerClose();
+            },
+          }
+        );
+      }
     } catch (error) {
       toast.error(`${error}`);
     }
@@ -113,42 +143,126 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
           </Button>
         }
       >
+        {/* change the school current branch */}
+        <div className=" flex flex-col mb-4">
+          <Form
+            layout="vertical"
+            onFinish={async (values: any) => {
+              handleSubmit({ id: values?.id }, true);
+            }}
+            form={changeCurrentBranchForm}
+          >
+            <Form.Item
+              label="Set this branch as your school's current default"
+              name="id"
+              rules={[{ required: true, message: "" }]}
+            >
+              <Select
+                placeholderText="Select Branch"
+                classNames="!w-full"
+                data={
+                  data?.map((branch: Branch) => ({
+                    text: branch.name,
+                    value: branch.id ?? "",
+                  })) ?? []
+                }
+                onChange={(value: any) => {
+                  changeCurrentBranchForm.setFieldValue("id", value);
+                }}
+                allowClear={true}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="link"
+                htmlType="submit"
+                className="!rounded-sm"
+                size="large"
+                loading={changingCurrentBranch}
+              >
+                Save Changes
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+
         <Row gutter={[16, 16]}>
           {data &&
-            data.map((branch: Branch) => (
-              <Col key={branch?.id} xs={24} sm={12} md={8}>
-                <Card
-                  variant="borderless"
-                  size="small"
-                  actions={[
-                    <EditOutlined
-                      key="edit"
-                      onClick={() => {
-                        branchForm.setFieldsValue(branch);
-                        setIsEditBranch(true);
-                        setOpenDrawer(true);
-                      }}
-                    />,
-                    <DeleteOutlined
-                      key="delete"
-                      onClick={() =>
-                        setcmProps((prev: ConfirmationModalPropsType) => ({
-                          ...prev,
-                          show: true,
-                          onOk: async () => {
-                            await setId(branch?.id);
-                            await handleDeleteBranch();
-                          },
-                        }))
-                      }
-                    />,
-                  ]}
-                >
-                  <span className="block">{branch.name}</span>
-                  <span>{branch.location}</span>
-                </Card>
-              </Col>
-            ))}
+            data.map((branch: Branch) => {
+              if (branch?.isCurrent)
+                changeCurrentBranchForm.setFieldValue("id", branch.id);
+              return (
+                <Col key={branch?.id} xs={24} sm={12} md={8}>
+                  <Card
+                    variant="outlined"
+                    size="small"
+                    actions={[
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => {
+                          if (changingCurrentBranch) return;
+                          branchForm.setFieldsValue(branch);
+                          setIsEditBranch(true);
+                          setOpenDrawer(true);
+                        }}
+                      />,
+                      !branch?.isDefault ? (
+                        <DeleteOutlined
+                          key="delete"
+                          onClick={() => {
+                            if (changingCurrentBranch) return;
+                            setcmProps((prev: ConfirmationModalPropsType) => ({
+                              ...prev,
+                              show: true,
+                              onOk: async () => {
+                                await setId(branch?.id);
+                                await handleDeleteBranch();
+                              },
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <span className="flex justify-center items-center">
+                          <Icon
+                            icon="mdi:delete-off-outline"
+                            className="text-gray-900 cursor-pointer"
+                            width={20}
+                            height={20}
+                            title="Default branch can't be deleted"
+                          />
+                        </span>
+                      ),
+                    ]}
+                    extra={
+                      <span className="flex gap-2">
+                        {branch.isDefault && (
+                          <Icon
+                            icon="uit:star"
+                            className="text-gray-900 cursor-pointer"
+                            width={20}
+                            height={20}
+                            title="Default Branch"
+                          />
+                        )}
+                        {branch.isCurrent && (
+                          <span
+                            title="Current Branch"
+                            className="text-gray-400"
+                          >
+                            <small>(Current)</small>
+                          </span>
+                        )}
+                      </span>
+                    }
+                    title={branch.name}
+                  >
+                    <span className="text-gray-400">
+                      {branch.location?.toString()}
+                    </span>
+                  </Card>
+                </Col>
+              );
+            })}
         </Row>
       </Card>
 

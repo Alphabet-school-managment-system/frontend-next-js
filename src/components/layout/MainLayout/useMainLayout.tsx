@@ -81,14 +81,14 @@ export const useMainLayout = () => {
             <Icon icon="mdi:book-open-page-variant" width={22} height={22} />
           ),
           label: "Books",
-          path: "/ws/library-book",
+          path: "/ws/library-item",
           description: "Catalog and manage books",
         },
         {
-          key: "library-transaction",
+          key: "library-item-loan",
           icon: <Icon icon="mdi:book-check-outline" width={22} height={22} />,
           label: "Transactions",
-          path: "/ws/library-transaction",
+          path: "/ws/library-item-loan",
           description: "Track book issues and returns",
         },
       ],
