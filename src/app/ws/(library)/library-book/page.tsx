@@ -22,8 +22,8 @@ export default function Home() {
           "Search by book information (title, author & isbn)"
         }
         route={{
-          api: "library-book",
-          page: "library-book",
+          api: "library-item",
+          page: "library-item",
         }}
         addButtonTitle={"Add new book"}
         actionPrevilage={{

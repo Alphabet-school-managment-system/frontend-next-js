@@ -139,6 +139,7 @@ export const useLibraryBook = () => {
         placeholder: "additional information about the book",
         rows: 4,
         className: "w-full",
+        rules: [{ required: false, message: "" }],
       },
     ];
   };

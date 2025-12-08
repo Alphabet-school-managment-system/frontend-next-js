@@ -15,7 +15,7 @@ export default function Update() {
 
   const { data: result, isLoading } = useApiQuery<LibraryBook>(
     [],
-    `library-book/${id}`,
+    `library-item/${id}`,
     Boolean(id)
   );
 
@@ -40,7 +40,7 @@ export default function Update() {
         columns={2}
         fields={getFormFields()}
         title="Update Book Information"
-        apiRoute="library-book"
+        apiRoute="library-item"
         data={data}
         isFetching={isLoading}
         isCreate={false}

@@ -9,6 +9,7 @@ export const Select = ({
   classNames,
   variant = "outlined",
   value,
+  allowClear = false,
 }: {
   data: selectType[];
   placeholderText?: string;
@@ -16,6 +17,7 @@ export const Select = ({
   classNames?: string;
   variant?: "outlined" | "filled" | "borderless" | "underlined";
   value?: string;
+  allowClear?: boolean;
 }) => {
   const { Option } = MainSelect;
 
@@ -28,6 +30,7 @@ export const Select = ({
         onChange={onChange}
         variant={variant}
         value={value}
+        allowClear={allowClear}
       >
         {data.map((item: selectType) => (
           <Option key={item?.value} value={item?.value}>

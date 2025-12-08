@@ -18,9 +18,9 @@ export const useTeacher = () => {
         ),
       },
       {
-        title: "Gender",
-        dataIndex: "gender",
-        key: "gender",
+        title: "Sex",
+        dataIndex: "sex",
+        key: "sex",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
       },
       {
@@ -115,6 +115,7 @@ export const useTeacher = () => {
         placeholder: "Add extra note here.",
         rows: 4,
         className: `w-full`,
+        rules: [{ required: false, message: "" }],
       },
       {
         name: "image",

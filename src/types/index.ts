@@ -50,6 +50,8 @@ export type Branch = {
   school_id?: string | null;
   name: string;
   location?: string | null;
+  isCurrent?: boolean | null;
+  isDefault?: boolean | null;
 };
 
 export type ClassSection = {

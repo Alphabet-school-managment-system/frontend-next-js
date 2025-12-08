@@ -25,8 +25,8 @@ export const useStudent = () => {
       },
       {
         title: "Sex",
-        dataIndex: "gender",
-        key: "gender",
+        dataIndex: "sex",
+        key: "sex",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
       },
       {
@@ -120,7 +120,7 @@ export const useStudent = () => {
           ]
         : []),
       {
-        name: "gender",
+        name: "sex",
         label: "Sex",
         type: FieldType.Select,
         placeholder: "e.g. Male",
@@ -215,6 +215,7 @@ export const useStudent = () => {
         placeholder: "additional information about the student",
         rows: 4,
         className: `w-full`,
+        rules: [{ required: false, message: "" }],
       },
       {
         name: "image",

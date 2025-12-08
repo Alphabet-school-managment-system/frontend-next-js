@@ -67,7 +67,7 @@ export const useBookTransaction = () => {
         placeholder: "Select book",
         rules: [{ required: true, message: "" }],
         searchInputProps: {
-          apiRoute: "library-book",
+          apiRoute: "library-item",
           placeholder: "Search book by title",
           queryKeys: ["title"],
           onSelect: (value: string) => {},
