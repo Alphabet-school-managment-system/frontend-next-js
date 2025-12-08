@@ -98,13 +98,13 @@ export const useEnrollment = () => {
         },
       },
       {
-        name: "section_id",
-        label: "Class (and section)",
+        name: "class",
+        label: "Class (grade)",
         type: FieldType.Select,
-        placeholder: "Select class & sec",
+        placeholder: "Select class",
         options: [],
         rules: [{ required: true, message: "" }],
-        selectMode: SelectMode.multiple,
+        selectMode: SelectMode.tags,
       },
       {
         name: "isTransferred",

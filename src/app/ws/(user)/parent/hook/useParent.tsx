@@ -73,7 +73,7 @@ export const useParent = () => {
         type: FieldType.Textarea,
         placeholder: "Enter address",
         rules: [{ required: true, message: "" }],
-         rows: 4,
+        rows: 4,
         className: `w-full`,
       },
       {
@@ -81,8 +81,9 @@ export const useParent = () => {
         label: "Note",
         type: FieldType.Textarea,
         placeholder: "Add extra note here.",
-         rows: 4,
+        rows: 4,
         className: `w-full`,
+        rules: [{ required: false, message: "" }],
       },
     ];
   };
