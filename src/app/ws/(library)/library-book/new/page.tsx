@@ -24,7 +24,7 @@ export default function Home() {
         columns={2}
         fields={getFormFields()}
         title="Create new Library Book"
-        apiRoute="library-book"
+        apiRoute="library-item"
         data={{
           branch_id: Ids?.branchId,
         }}

@@ -21,7 +21,7 @@ export default function Home() {
         searchInputPlaceholderText={
           "Search by book and borrower information (first name, last name & title)"
         }
-        route={"library-transaction"}
+        route={"library-item-loan"}
         addButtonTitle={"Add new transaction"}
         actionPrevilage={{
           edit: true,

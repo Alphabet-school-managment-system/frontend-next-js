@@ -23,7 +23,7 @@ export default function Update() {
 
   const { data: result, isLoading } = useApiQuery<LibraryBook>(
     [],
-    `library-transaction/${id}`,
+    `library-item-loan/${id}`,
     Boolean(id)
   );
 
@@ -42,7 +42,7 @@ export default function Update() {
           onBookSelect: async (value) => {},
         })}
         title="Update Book Transaction Information"
-        apiRoute="library-transaction"
+        apiRoute="library-item-loan"
         data={data}
         isFetching={isLoading}
         isCreate={false}

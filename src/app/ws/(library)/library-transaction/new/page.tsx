@@ -25,7 +25,7 @@ export default function Home() {
           onBookSelect: async (value) => {},
         })}
         title="Create new transaction"
-        apiRoute="library-transaction"
+        apiRoute="library-item-loan"
         data={{
           branch_id: Ids?.branchId,
         }}
