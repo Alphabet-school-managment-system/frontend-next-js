@@ -2,7 +2,7 @@
 
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
-import { useBookTransaction } from "../hook/useBookTransaction";
+import { useBookItemLoan } from "../hook/useBookItemLoan";
 import { useContext } from "react";
 import { IdsContext } from "@/store/idsContext";
 
@@ -14,7 +14,7 @@ const FormGenerator = dynamic(
   }
 );
 export default function Home() {
-  const { getFormFields } = useBookTransaction();
+  const { getFormFields } = useBookItemLoan();
   const { Ids } = useContext(IdsContext);
 
   return (
