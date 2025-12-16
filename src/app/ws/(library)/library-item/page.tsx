@@ -1,6 +1,6 @@
 "use client";
 
-import { useLibraryBook } from "./hook/useLibraryBook";
+import { useLibraryItem } from "./hook/useLibraryItem";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { QueryBy } from "@/components/list/index";
@@ -11,7 +11,7 @@ const List = dynamic(() => import("@/components/list/index"), {
 });
 
 export default function Home() {
-  const { getTableColumns } = useLibraryBook();
+  const { getTableColumns } = useLibraryItem();
 
   return (
     <>
