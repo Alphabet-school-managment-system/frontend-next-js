@@ -10,6 +10,7 @@ import {
   Spin,
   Upload,
   Checkbox,
+  InputNumber,
 } from "antd";
 import { Icon } from "@iconify-icon/react";
 import PhoneNumberInput, {
@@ -230,13 +231,13 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
         );
       case "number":
         return (
-          <Input
+          <InputNumber
             type="number"
-            className="w-full"
+            className="!w-full"
             size="large"
             placeholder={field.placeholder}
-            min={field?.min ?? 0}
-            max={field?.max ?? 1}
+            min={field?.min ?? 1}
+            max={field?.max}
             prefix={
               field?.prefix ?? (
                 <span className="flex items-center justify-center h-full">
@@ -250,7 +251,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
               )
             }
             disabled={field?.disabled}
-            value={field?.value}
+            value={+field?.value}
           />
         );
 
@@ -301,18 +302,23 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
 
   const { mutate, isPending } = useApiMutation(
     [apiRoute],
-    data ? `${apiRoute}/${data.id}/update` : apiRoute,
-    data ? "PUT" : "POST"
+    data?.id ? `${apiRoute}/${data.id}/update` : apiRoute,
+    data?.id ? "PUT" : "POST"
   );
 
   const handleFormSubmit = async (values: any) => {
     try {
       const payload = { ...values };
+
       await mutate(
         { body: payload },
         {
           onSuccess: (res) => {
-            onSubmit && onSubmit(res);
+            if (onSubmit) {
+              onSubmit(res);
+            } else {
+              router.back();
+            }
           },
         }
       );
