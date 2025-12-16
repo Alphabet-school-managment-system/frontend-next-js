@@ -3,7 +3,7 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
 import { LibraryBook } from "@/types";
-import { useBookTransaction } from "../../hook/useBookTransaction";
+import { useBookItemLoan } from "../../hook/useBookItemLoan";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ const FormGenerator = dynamic(
 
 export default function Update() {
   const { id } = useParams();
-  const { getFormFields } = useBookTransaction();
+  const { getFormFields } = useBookItemLoan();
   const [data, setData] = useState<any>(null);
 
   const { data: result, isLoading } = useApiQuery<LibraryBook>(

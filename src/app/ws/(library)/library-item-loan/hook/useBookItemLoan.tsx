@@ -4,7 +4,7 @@ import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import dayjs from "dayjs";
 import { useState } from "react";
 
-export const useBookTransaction = () => {
+export const useBookItemLoan = () => {
   const [userType, setUserType] = useState<"student" | "teacher">("student");
   const getTableColumns = (): any[] => {
     return [

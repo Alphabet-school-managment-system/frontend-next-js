@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { Icon } from "@iconify-icon/react";
 import { IdsContext } from "@/store/idsContext";
+import { Table } from "antd";
 
 export enum QueryBy {
   ACADEMIC_YEAR = "academic_year_id",
@@ -31,11 +32,7 @@ type props = {
       };
   addButtonTitle?: string;
   showAddButton?: boolean;
-  actionPrevilage?: {
-    edit?: boolean;
-    delete?: boolean;
-    detail?: boolean;
-  };
+  actionPrevilage?: actionPrevilageType;
   FilterOption?: ReactElement;
   showActionCols?: boolean;
   onRowSelection?: (values: React.Key[]) => void;
@@ -44,7 +41,13 @@ type props = {
   queryBy?: QueryBy;
 };
 
-const Table = dynamic(() => import("@/components/common/Table"), {
+type actionPrevilageType = {
+  edit?: boolean;
+  delete?: boolean;
+  detail?: boolean;
+};
+
+const MainTable = dynamic(() => import("@/components/common/Table"), {
   ssr: false,
   loading: () => <TableSkeleton />,
 });
@@ -143,7 +146,7 @@ const Index = ({
     }
   };
 
-  const actionCol = () => {
+  const actionCol = (value?: actionPrevilageType) => {
     return [
       {
         title: "Action",
@@ -152,7 +155,7 @@ const Index = ({
         width: 150,
         render: (_: string, record: any) => (
           <div className="flex justify-between items-center">
-            {actionPrevilage?.edit && (
+            {value?.edit ? (
               <span
                 className="flex p-2 hover:cursor-pointer"
                 title="edit"
@@ -167,8 +170,10 @@ const Index = ({
                   className="text-gray-900"
                 />
               </span>
+            ) : (
+              <span></span>
             )}
-            {actionPrevilage?.delete && (
+            {value?.delete ? (
               <span
                 className="flex p-2 hover:cursor-pointer"
                 title="delete"
@@ -190,8 +195,10 @@ const Index = ({
                   className="text-gray-900"
                 />
               </span>
+            ) : (
+              <span></span>
             )}
-            {actionPrevilage?.detail && (
+            {value?.detail ? (
               <span className="flex p-2 hover:cursor-pointer" title="detail">
                 <Icon
                   icon="bx:detail"
@@ -200,6 +207,8 @@ const Index = ({
                   className="text-gray-900"
                 />
               </span>
+            ) : (
+              <span></span>
             )}
           </div>
         ),
@@ -209,9 +218,12 @@ const Index = ({
 
   return (
     <div className="p-4">
-      <Table
+      <MainTable
         data={datas}
-        columns={[...columns, ...(showActionCols ? actionCol() : [])]}
+        columns={[
+          ...columns,
+          ...(showActionCols ? actionCol(actionPrevilage) : []),
+        ]}
         rowKey="id"
         loading={isLoading || deleting}
         onSearchInputChange={(value: string) => {
@@ -232,6 +244,28 @@ const Index = ({
         onRowSelection={onRowSelection}
         showRowSelection={showRowSelection}
         subHeader={subHeader}
+        expandable={{
+          expandedRowRender: (parent: any) => {
+            const col = [
+              ...columns,
+              actionCol({
+                edit: false,
+                delete: true,
+                detail: false,
+              })[0],
+            ];
+            return (
+              <Table
+                dataSource={parent.sub}
+                columns={col}
+                pagination={false}
+                rowKey={"id"}
+                showHeader={false}
+              />
+            );
+          },
+          rowExpandable: (record: any) => record.isParent === true,
+        }}
       />
     </div>
   );

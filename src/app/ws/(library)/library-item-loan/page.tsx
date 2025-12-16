@@ -1,6 +1,6 @@
 "use client";
 
-import { useBookTransaction } from "./hook/useBookTransaction";
+import { useBookItemLoan } from "./hook/useBookItemLoan";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { QueryBy } from "@/components/list/index";
@@ -11,7 +11,7 @@ const List = dynamic(() => import("@/components/list/index"), {
 });
 
 export default function Home() {
-  const { getTableColumns } = useBookTransaction();
+  const { getTableColumns } = useBookItemLoan();
 
   return (
     <>

@@ -3,14 +3,14 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
 import { LibraryBook } from "@/types";
-import { useLibraryBook } from "../../hook/useLibraryBook";
+import { useLibraryItem } from "../../hook/useLibraryItem";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import { useEffect, useState } from "react";
 
 export default function Update() {
   const { id } = useParams();
-  const { getFormFields } = useLibraryBook();
+  const { getFormFields } = useLibraryItem();
   const [data, setData] = useState<any>(null);
 
   const { data: result, isLoading } = useApiQuery<LibraryBook>(

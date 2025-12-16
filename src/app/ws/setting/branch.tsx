@@ -220,12 +220,13 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
                               },
                             }));
                           }}
+                          size={20}
                         />
                       ) : (
                         <span className="flex justify-center items-center">
                           <Icon
                             icon="mdi:delete-off-outline"
-                            className="text-gray-900 cursor-pointer"
+                            className="cursor-pointer text-gray-400"
                             width={20}
                             height={20}
                             title="Default branch can't be deleted"

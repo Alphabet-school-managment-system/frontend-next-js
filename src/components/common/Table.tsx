@@ -5,6 +5,11 @@ import { Button, Input } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { ColumnsType } from "antd/es/table";
 
+export type expandableType = {
+  expandedRowRender: (parent: any) => ReactElement;
+  rowExpandable: (record: any) => boolean;
+};
+
 const Table = ({
   data,
   columns,
@@ -23,6 +28,7 @@ const Table = ({
   onRowSelection,
   showRowSelection = false,
   subHeader,
+  expandable,
 }: {
   data: any[];
   columns: ColumnsType<any>;
@@ -31,7 +37,7 @@ const Table = ({
   onSearchInputChange?: (value: string) => void;
   onAddButtonClicked?: () => void;
   addButtonTitle?: string;
-  loading: boolean;
+  loading?: boolean;
   showAddButton?: boolean;
   showHeaderBar?: boolean;
   emptyComponent?: any;
@@ -41,6 +47,7 @@ const Table = ({
   onRowSelection?: (values: React.Key[]) => void;
   showRowSelection?: boolean;
   subHeader?: ReactElement;
+  expandable?: expandableType;
 }) => {
   const [pageSize, setPageSize] = useState(10);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -100,6 +107,7 @@ const Table = ({
           ...pagination,
         }}
         rowSelection={showRowSelection ? rowSelection : undefined}
+        expandable={expandable ?? undefined}
       />
     </>
   );
