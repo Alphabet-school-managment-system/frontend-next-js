@@ -2,9 +2,9 @@
 
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
-import { useExpense } from "../hook/useExpense";
+import { ExpenseType, useExpense } from "../hook/useExpense";
 import { useContext, useState } from "react";
-import { GetProp, Image, UploadFile, UploadProps } from "antd";
+import { Form, GetProp, Image, UploadFile, UploadProps } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { IdsContext } from "@/store/idsContext";
 
@@ -74,14 +74,50 @@ const FormGenerator = dynamic(
 export default function Home() {
   const { getFormFields } = useExpense();
   const [previewImage, setPreviewImage] = useState("");
+  const [expenseTypes, setExpenseTypes] = useState<{
+    type?: ExpenseType;
+    otherType?: ExpenseType;
+  }>({});
+
   const { Ids } = useContext(IdsContext);
+  const [form] = Form.useForm();
 
   return (
     <FormGenerator
       columns={2}
       fields={getFormFields({
-        onFileChange: async (fileList) =>
-          setPreviewImage((await getFileUrl(fileList)) ?? ""),
+        onFileChange: (fileList) => {
+          getFileUrl(fileList).then((url) => setPreviewImage(url ?? ""));
+        },
+        onTypeChange: (value: ExpenseType) => {
+          setExpenseTypes((prev) => ({
+            ...prev,
+            type: value,
+          }));
+          if (value !== ExpenseType.Other) {
+            setExpenseTypes((prev) => ({
+              ...prev,
+              otherType: undefined,
+            }));
+            form.setFieldValue("other_type", undefined);
+          }
+        },
+        onOtherTypeChange: (value) => {
+          if (value) {
+            setExpenseTypes((prev) => ({
+              ...prev,
+              otherType: value,
+            }));
+          } else {
+            setExpenseTypes((prev) => ({
+              ...prev,
+              otherType: undefined,
+            }));
+            form.setFieldValue("other_type", undefined);
+          }
+        },
+        type: expenseTypes.type,
+        other_type: expenseTypes.otherType,
       })}
       title="Create new Expense"
       apiRoute="expense"
@@ -89,6 +125,7 @@ export default function Home() {
         academic_year_id: Ids?.academicYearId,
       }}
       leftContent={<ReceiptPreview previewImage={previewImage} />}
+      formInstance={form}
     />
   );
 }

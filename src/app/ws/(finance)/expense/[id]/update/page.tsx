@@ -3,12 +3,16 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
 import { Expense } from "@/types";
-import { useExpense } from "../../hook/useExpense";
+import { ExpenseType, useExpense } from "../../hook/useExpense";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { getFileUrl, ReceiptPreview } from "../../new/page";
+import {
+  ConfirmationModalContext,
+  ConfirmationModalPropsType,
+} from "@/store/confirmationModalContext";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -23,6 +27,14 @@ export default function Update() {
   const { getFormFields } = useExpense();
   const [data, setData] = useState<any>(null);
   const [previewImage, setPreviewImage] = useState("");
+  const [expenseTypes, setExpenseTypes] = useState<{
+    type?: ExpenseType;
+    otherType?: ExpenseType;
+  }>({});
+
+  const { setConfirmationModalProps: setcmProps } = useContext(
+    ConfirmationModalContext
+  );
 
   const { data: result, isLoading } = useApiQuery<Expense>(
     [],
@@ -34,6 +46,12 @@ export default function Update() {
     if (result) {
       const payload: any = { ...result };
       payload.date = dayjs(result.date);
+      payload.amount = +result.amount;
+      setExpenseTypes((prev) => ({
+        ...prev,
+        type: result.type,
+        otherType: result.other_type,
+      }));
       setData(payload);
     }
   }, [result]);
@@ -45,10 +63,64 @@ export default function Update() {
         fields={getFormFields({
           onFileChange: async (fileList) =>
             setPreviewImage((await getFileUrl(fileList)) ?? ""),
+          onTypeChange: (value: ExpenseType) => {
+            if (
+              expenseTypes.type === ExpenseType.Other &&
+              value !== ExpenseType.Other &&
+              expenseTypes.otherType !== undefined
+            ) {
+              setcmProps((prev: ConfirmationModalPropsType) => ({
+                ...prev,
+                show: true,
+                title: "Confirmation",
+                content:
+                  "Changing the expense type will clear the 'Specify Type' field. Do you want to proceed?",
+                okButtonText: "Yes",
+                cancelButtonText: "No",
+                onOk: () => {
+                  setExpenseTypes((prev) => ({
+                    ...prev,
+                    type: value,
+                    otherType: undefined,
+                  }));
+                },
+                onCancel: () => {
+                  setExpenseTypes((prev) => ({
+                    ...prev,
+                    type: data?.type,
+                  }));
+                },
+              }));
+            } else {
+              setExpenseTypes((prev) => ({
+                ...prev,
+                type: value,
+              }));
+            }
+          },
+          type: expenseTypes.type,
+          other_type: expenseTypes.otherType,
+          onOtherTypeChange: (value) => {
+            if (value) {
+              setExpenseTypes((prev) => ({
+                ...prev,
+                otherType: value,
+              }));
+            } else {
+              setExpenseTypes((prev) => ({
+                ...prev,
+                otherType: undefined,
+              }));
+            }
+          },
         })}
         title="Update Expense Information"
         apiRoute="expense"
-        data={data}
+        data={{
+          ...data,
+          type: expenseTypes.type,
+          other_type: expenseTypes.otherType,
+        }}
         isFetching={isLoading}
         isCreate={false}
         leftContent={<ReceiptPreview previewImage={previewImage} />}

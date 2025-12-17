@@ -1,3 +1,4 @@
+import { ExpenseType } from "@/app/ws/(finance)/expense/hook/useExpense";
 import { Day } from "./enums";
 import { AttendanceStatus } from "./enums";
 import { BehaviorType } from "./enums";
@@ -72,11 +73,15 @@ export type Enrollment = {
 
 export type Expense = {
   _id: string;
-  branch_id?: string | null;
   academic_year_id?: string | null;
   description?: string | null;
   amount: number;
   date?: Date | null;
+  type: ExpenseType;
+  other_type?: ExpenseType;
+  receipt?: string | null;
+  created_at?: Date | null;
+  updated_at?: Date | null;
 };
 
 export type Fee = {
