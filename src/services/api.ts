@@ -31,16 +31,16 @@ export const apiRequest = async <T>(
   }
 };
 
-export const getData = <T>(url: string,signal?: AbortSignal) => apiRequest<T>(url,{ signal });
+export const getData = <T>(url: string, signal?: AbortSignal) =>
+  apiRequest<T>(url, { signal });
 
 export const postData = <T>(
   url: string,
   body: unknown,
   method = "POST",
   signal?: AbortSignal
-) =>
-  apiRequest<T>(url, {
+) => apiRequest<T>(url, {
     method,
-    data: JSON.stringify(body),
+    data: JSON.stringify(body, (_, v) => (v === undefined ? null : v)),
     signal,
   });
