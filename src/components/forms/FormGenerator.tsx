@@ -11,6 +11,7 @@ import {
   Upload,
   Checkbox,
   InputNumber,
+  FormInstance,
 } from "antd";
 import { Icon } from "@iconify-icon/react";
 import PhoneNumberInput, {
@@ -85,6 +86,11 @@ export interface FieldConfig {
   fileTypeProps?: FileTypeProps;
   checkboxTypeProps?: CheckboxTypeProps;
   value?: any;
+  selectProps?: {
+    onChange?: (value: any) => void;
+  };
+  onChange?: (e: any) => void;
+  allowClear?: boolean;
 }
 
 interface FormGeneratorProps {
@@ -99,6 +105,7 @@ interface FormGeneratorProps {
   apiRoute: string;
   isFetching?: boolean;
   leftContent?: ReactElement;
+  formInstance?: FormInstance;
 }
 
 const FormGenerator: React.FC<FormGeneratorProps> = ({
@@ -113,8 +120,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   apiRoute,
   isFetching = false,
   leftContent,
+  formInstance,
 }) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm(formInstance);
   const router = useRouter();
   const [isLoading, setIsloading] = useState(false);
 
@@ -136,6 +144,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             suffix={field?.suffix}
             disabled={field?.disabled}
             value={field?.value}
+            onChange={(e) => field.onChange?.(e.target?.value)}
+            allowClear={field?.allowClear}
           />
         );
       case "textarea":
@@ -160,6 +170,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             mode={field.selectMode}
             disabled={field?.disabled}
             value={field?.value}
+            onChange={field.selectProps?.onChange}
           >
             {field.options?.map((opt) => (
               <Select.Option key={opt.value} value={opt.value}>
@@ -309,7 +320,6 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   const handleFormSubmit = async (values: any) => {
     try {
       const payload = { ...values };
-
       await mutate(
         { body: payload },
         {
