@@ -137,7 +137,6 @@ const Index = ({
         {
           onSuccess: (res) => {
             setcmProps({ ...defaultConfirmationModalProps });
-            router.back();
           },
         }
       );

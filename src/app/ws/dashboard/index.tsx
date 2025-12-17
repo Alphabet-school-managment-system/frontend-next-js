@@ -35,7 +35,7 @@ const Index = () => {
           type={"line"}
           HeaderText={"Yearly Collected Fees Summary"}
           legendText={"Monthly fees"}
-          data={data?.expenseData}
+          data={data?.feeData}
         />
       </div>
     </div>
