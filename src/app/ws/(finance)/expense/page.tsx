@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <List
         columns={getTableColumns()}
-        searchByCols={["title", "date", "type"]}
+        searchByCols={["title", "date", "type", "other_type"]}
         searchInputPlaceholderText={
           "Search by expense information (title, date & type)"
         }

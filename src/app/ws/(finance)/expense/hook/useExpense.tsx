@@ -1,6 +1,18 @@
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import dayjs from "dayjs";
 
+export const enum ExpenseType {
+  Salary = "Salary",
+  Rent = "Rent",
+  Other = "Other",
+}
+
+export const ExpenseTypeOptions = [
+  { label: "Salary", value: "Salary" },
+  { label: "Rent", value: "Rent" },
+  { label: "Other", value: "Other" },
+];
+
 export const useExpense = () => {
   const getTableColumns = (): any[] => {
     return [
@@ -47,10 +59,26 @@ export const useExpense = () => {
 
   const getFormFields = ({
     onFileChange,
+    onTypeChange,
+    type,
+    other_type,
+    onOtherTypeChange,
   }: {
     onFileChange: (fileList: any[]) => void;
+    onTypeChange: (value: ExpenseType) => void;
+    type?: ExpenseType;
+    other_type?: string;
+    onOtherTypeChange?: (e: any) => void;
   }): FieldConfig[] => {
     return [
+      {
+        name: "id",
+        label: "",
+        type: FieldType.hidden,
+        placeholder: "",
+        rules: [{ required: false, message: "" }],
+        hidden: true,
+      },
       {
         name: "title",
         label: "Title",
@@ -73,11 +101,13 @@ export const useExpense = () => {
         label: "Type",
         type: FieldType.Select,
         placeholder: "Select type",
-        options: [
-          { label: "Salary", value: "Salary" },
-          { label: "Rent", value: "Rent" },
-          { label: "Other", value: "Other" },
-        ],
+        value: type || "",
+        options: ExpenseTypeOptions,
+        selectProps: {
+          onChange: (value: ExpenseType) => {
+            onTypeChange(value);
+          },
+        },
         rules: [{ required: true, message: "" }],
       },
       {
@@ -85,11 +115,21 @@ export const useExpense = () => {
         label: "Amount",
         type: FieldType.number,
         placeholder: "Enter amount",
+        value: 1,
         min: 1,
-        rules: [
-          { required: true, message: "" },
-          { min: 1, message: "Minimum amount must be 1" },
-        ],
+        rules: [{ required: true, message: "" }],
+      },
+      {
+        name: "other_type",
+        label: "Specify Type",
+        type: FieldType.Input,
+        placeholder: "Specify expense type",
+        className: "w-full",
+        value: other_type || "",
+        rules: [{ required: type === ExpenseType.Other, message: "" }],
+        disabled: type !== ExpenseType.Other,
+        onChange: onOtherTypeChange,
+        allowClear: true,
       },
       {
         name: "date",
@@ -112,6 +152,14 @@ export const useExpense = () => {
             onFileChange(fileList);
           },
         },
+      },
+      {
+        name: "academic_year_id",
+        label: "",
+        type: FieldType.hidden,
+        placeholder: "",
+        rules: [{ required: false, message: "" }],
+        hidden: true,
       },
     ];
   };
