@@ -2,11 +2,12 @@ import { ExpenseType } from "@/app/ws/(finance)/expense/hook/useExpense";
 import { Day } from "./enums";
 import { AttendanceStatus } from "./enums";
 import { BehaviorType } from "./enums";
-import { FeeStatus, FeeType } from "./enums";
+import { FeeStatus } from "./enums";
 import { Gender } from "./enums";
 import { LeaveStatus } from "./enums";
 import { ParentType } from "./enums";
 import { StaffRole } from "./enums";
+import { FeeType } from "@/app/ws/(finance)/fee/hook/useFee";
 
 export type AcademicYear = {
   id: string;
@@ -86,11 +87,13 @@ export type Expense = {
 
 export type Fee = {
   _id: string;
+  academic_year_id?: string | null;
   student_id?: string | null;
   amount: number;
   due_date?: Date | null;
   status: FeeStatus;
   type: FeeType;
+  other_type?: FeeType;
   attachment?: string | null;
   note?: string | null;
   created_at?: Date | null;

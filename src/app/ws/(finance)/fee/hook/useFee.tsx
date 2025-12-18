@@ -2,6 +2,18 @@ import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import dayjs from "dayjs";
 
+export const enum FeeType {
+  Tuition = "Tuition",
+  Exam = "Exam",
+  Other = "Other",
+}
+
+export const FeeTypeOptions = [
+  { label: "Tuition", value: "Tuition" },
+  { label: "Exam", value: "Exam" },
+  { label: "Other", value: "Other" },
+];
+
 export const useFee = () => {
   const getTableColumns = (): any[] => {
     return [
@@ -56,10 +68,26 @@ export const useFee = () => {
 
   const getFormFields = ({
     onFileChange,
+    onTypeChange,
+    type,
+    other_type,
+    onOtherTypeChange,
   }: {
     onFileChange: (fileList: any[]) => void;
+    onTypeChange: (value: FeeType) => void;
+    type?: FeeType;
+    other_type?: string;
+    onOtherTypeChange?: (e: any) => void;
   }): FieldConfig[] => {
     return [
+      {
+        name: "id",
+        label: "",
+        type: FieldType.hidden,
+        placeholder: "",
+        rules: [{ required: false, message: "" }],
+        hidden: true,
+      },
       {
         name: "student_id",
         label: "Student",
@@ -78,14 +106,9 @@ export const useFee = () => {
         label: "Amount",
         type: FieldType.number,
         placeholder: "Enter fee amount",
+        value: 1,
         min: 1,
-        rules: [
-          { required: true, message: "" },
-          {
-            min: 1,
-            message: "Minimum amount have to be 1",
-          },
-        ],
+        rules: [{ required: true, message: "" }],
       },
       {
         name: "due_date",
@@ -100,6 +123,7 @@ export const useFee = () => {
         label: "Status",
         type: FieldType.Select,
         placeholder: "Select status",
+        value: "Paid",
         options: [
           { label: "Paid", value: "Paid" },
           { label: "Unpaid", value: "Unpaid" },
@@ -111,11 +135,12 @@ export const useFee = () => {
         label: "Type",
         type: FieldType.Select,
         placeholder: "Select type",
-        options: [
-          { label: "Tuition", value: "Tuition" },
-          { label: "Exam", value: "Exam" },
-          { label: "Other", value: "Other" },
-        ],
+        options: FeeTypeOptions,
+        selectProps: {
+          onChange: (value: FeeType) => {
+            onTypeChange(value);
+          },
+        },
         rules: [{ required: true, message: "" }],
       },
       {
@@ -133,6 +158,18 @@ export const useFee = () => {
         },
       },
       {
+        name: "other_type",
+        label: "Specify Type",
+        type: FieldType.Input,
+        placeholder: "Specify expense type",
+        className: "w-full",
+        value: other_type || "",
+        rules: [{ required: type === FeeType.Other, message: "" }],
+        disabled: type !== FeeType.Other,
+        onChange: onOtherTypeChange,
+        allowClear: true,
+      },
+      {
         name: "note",
         label: "Note",
         type: FieldType.Textarea,
@@ -140,6 +177,14 @@ export const useFee = () => {
         rows: 4,
         className: "w-full",
         rules: [{ required: false, message: "" }],
+      },
+      {
+        name: "academic_year_id",
+        label: "",
+        type: FieldType.hidden,
+        placeholder: "",
+        rules: [{ required: false, message: "" }],
+        hidden: true,
       },
     ];
   };

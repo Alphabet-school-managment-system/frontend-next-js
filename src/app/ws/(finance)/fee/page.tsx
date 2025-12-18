@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <List
         columns={getTableColumns()}
-        searchByCols={["type", "status", "amount", "due_date"]}
+        searchByCols={["type", "status", "amount", "due_date", "other_type"]}
         searchInputPlaceholderText={
           "Search by fee information (type, status, amount & due date)"
         }
