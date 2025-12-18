@@ -3,12 +3,16 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
 import { Fee } from "@/types";
-import { useFee } from "../../hook/useFee";
+import { FeeType, useFee } from "../../hook/useFee";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { getFileUrl, ReceiptPreview } from "../../../expense/new/page";
+import {
+  ConfirmationModalContext,
+  ConfirmationModalPropsType,
+} from "@/store/confirmationModalContext";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -23,17 +27,30 @@ export default function Update() {
   const { getFormFields } = useFee();
   const [data, setData] = useState<any>(null);
   const [previewImage, setPreviewImage] = useState("");
-
+  const [feeTypes, setFeeTypes] = useState<{
+    type?: FeeType;
+    otherType?: FeeType;
+  }>({});
   const { data: result, isLoading } = useApiQuery<Fee>(
     [],
     `fee/${id}`,
     Boolean(id)
   );
 
+  const { setConfirmationModalProps: setcmProps } = useContext(
+    ConfirmationModalContext
+  );
+
   useEffect(() => {
     if (result) {
       const payload: any = { ...result };
       payload.due_date = dayjs(result.due_date);
+      payload.amount = +result.amount;
+      setFeeTypes((prev) => ({
+        ...prev,
+        type: result.type,
+        otherType: result.other_type,
+      }));
       setData(payload);
     }
   }, [result]);
@@ -45,10 +62,64 @@ export default function Update() {
         fields={getFormFields({
           onFileChange: async (fileList) =>
             setPreviewImage((await getFileUrl(fileList)) ?? ""),
+          onTypeChange: (value: FeeType) => {
+            if (
+              feeTypes.type === FeeType.Other &&
+              value !== FeeType.Other &&
+              feeTypes.otherType !== undefined
+            ) {
+              setcmProps((prev: ConfirmationModalPropsType) => ({
+                ...prev,
+                show: true,
+                title: "Confirmation",
+                content:
+                  "Changing the fee type will clear the 'Specify Type' field. Do you want to proceed?",
+                okButtonText: "Yes",
+                cancelButtonText: "No",
+                onOk: () => {
+                  setFeeTypes((prev) => ({
+                    ...prev,
+                    type: value,
+                    otherType: undefined,
+                  }));
+                },
+                onCancel: () => {
+                  setFeeTypes((prev) => ({
+                    ...prev,
+                    type: data?.type,
+                  }));
+                },
+              }));
+            } else {
+              setFeeTypes((prev) => ({
+                ...prev,
+                type: value,
+              }));
+            }
+          },
+          type: feeTypes.type,
+          other_type: feeTypes.otherType,
+          onOtherTypeChange: (value) => {
+            if (value) {
+              setFeeTypes((prev) => ({
+                ...prev,
+                otherType: value,
+              }));
+            } else {
+              setFeeTypes((prev) => ({
+                ...prev,
+                otherType: undefined,
+              }));
+            }
+          },
         })}
         title="Update Fee Information"
         apiRoute="fee"
-        data={data}
+        data={{
+          ...data,
+          type: feeTypes.type,
+          other_type: feeTypes.otherType,
+        }}
         isFetching={isLoading}
         isCreate={false}
         leftContent={<ReceiptPreview previewImage={previewImage} />}
