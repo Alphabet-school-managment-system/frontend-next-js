@@ -11,7 +11,7 @@ export const useStaff = () => {
         key: "staff",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
+            full_name={`${record?.first_name} ${record?.middle_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/staff-detail/${record?.id}`}
           />
@@ -19,8 +19,8 @@ export const useStaff = () => {
       },
       {
         title: "Gender",
-        dataIndex: "gender",
-        key: "gender",
+        dataIndex: "sex",
+        key: "sex",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
       },
 
@@ -73,9 +73,9 @@ export const useStaff = () => {
         type: FieldType.Select,
         placeholder: "Select role",
         options: [
-          { label: "Librarian", value: "librarian" },
-          { label: "Accountant", value: "accountant" },
-          { label: "Admin", value: "admin" },
+          { label: "Librarian", value: "Librarian" },
+          { label: "Accountant", value: "Accountant" },
+          { label: "Admin", value: "Admin" },
         ],
         rules: [{ required: true, message: "" }],
       },
