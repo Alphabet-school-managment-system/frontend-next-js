@@ -82,8 +82,11 @@ export const useStudent = () => {
     ];
   };
 
-  const getCommonFormFields = (showLastName: boolean): FieldConfig[] => {
-    return [
+  const getCommonFormFields = (
+    showLastName: boolean,
+    includeId: boolean = false
+  ): FieldConfig[] => {
+    const fields = [
       {
         name: "first_name",
         label: "First Name",
@@ -151,6 +154,7 @@ export const useStudent = () => {
         label: "Email",
         type: FieldType.email,
         placeholder: "e.g. someone@example.com",
+        disabled: includeId,
         rules: [{ required: true, message: "" }],
       },
       {
@@ -160,6 +164,22 @@ export const useStudent = () => {
         hidden: true,
       },
     ];
+
+    if (includeId) {
+      return [
+        {
+          name: "id",
+          label: "",
+          type: FieldType.hidden,
+          placeholder: "",
+          rules: [{ required: false, message: "" }],
+          hidden: true,
+        },
+        ...fields,
+      ];
+    } else {
+      return fields;
+    }
   };
 
   const getFormFields = ({ image }: { image: string }): FieldConfig[] => {
