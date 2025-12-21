@@ -112,6 +112,7 @@ export default function Update() {
               }));
             }
           },
+          includeId: true,
         })}
         title="Update Fee Information"
         apiRoute="fee"

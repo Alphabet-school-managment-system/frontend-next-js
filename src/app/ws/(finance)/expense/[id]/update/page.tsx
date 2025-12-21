@@ -113,6 +113,7 @@ export default function Update() {
               }));
             }
           },
+          includeId: true,
         })}
         title="Update Expense Information"
         apiRoute="expense"
