@@ -243,7 +243,6 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       case "number":
         return (
           <InputNumber
-            type="number"
             className="!w-full"
             size="large"
             placeholder={field.placeholder}
@@ -262,7 +261,21 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
               )
             }
             disabled={field?.disabled}
-            value={+field?.value}
+            value={
+              typeof field?.value === "number"
+                ? field.value
+                : field?.value
+                ? Number(field.value.toString().replace(/,/g, ""))
+                : undefined
+            }
+            formatter={(value) =>
+              value !== undefined
+                ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                : ""
+            }
+            parser={(value) => {
+              return value ? Number(value.replace(/,/g, "")) : 0;
+            }}
           />
         );
 
