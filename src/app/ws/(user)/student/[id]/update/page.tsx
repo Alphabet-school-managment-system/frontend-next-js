@@ -42,7 +42,7 @@ export default function Update() {
     <div className="">
       <FormGenerator
         columns={2}
-        fields={getFormFields({ image })}
+        fields={getFormFields({ image, includeId: true })}
         title="Update Student Information"
         apiRoute="student"
         data={data}
