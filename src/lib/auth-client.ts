@@ -1,7 +1,9 @@
 import { createAuthClient } from "better-auth/react";
-import { get } from "http";
+import { emailOTPClient } from "better-auth/client/plugins";
+
 export const authClient = createAuthClient({
   baseURL: "http://localhost:4000",
+  plugins: [emailOTPClient()],
 });
 
 export const {
@@ -9,10 +11,11 @@ export const {
   signUp,
   useSession,
   signOut,
-  forgetPassword,
+  sendVerificationEmail,
   changePassword,
   changeEmail,
   updateUser,
   requestPasswordReset,
   verifyEmail,
+  forgetPassword
 } = authClient;

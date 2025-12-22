@@ -1,31 +1,33 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Button } from "antd";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
-import { PasswordInput } from "../login/LoginView";
+import { OTPInput, PasswordInput } from "../login/LoginView";
 
 export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const params = useSearchParams();
-  const token = params.get("token");
+  const email = params.get("email");
 
   const [form] = Form.useForm();
 
   const onFinish = async (values: any) => {
-    if (!token) {
-      toast.error("Invalid or missing reset token!");
+    if (!email) {
+      toast.error("Invalid or missing reset email!");
       return;
     }
 
     setLoading(true);
+
     try {
-      await authClient.resetPassword(
+      await authClient.emailOtp.resetPassword(
         {
-          token,
-          newPassword: values.password,
+          otp: values.otp,
+          email: email,
+          password: values.password,
         },
         {
           onSuccess() {
@@ -60,6 +62,7 @@ export default function ResetPassword() {
           form={form}
           requiredMark={false}
         >
+          <OTPInput label="Password reset OTP" />
           <PasswordInput />
           <PasswordInput
             name="confirmPassword"
