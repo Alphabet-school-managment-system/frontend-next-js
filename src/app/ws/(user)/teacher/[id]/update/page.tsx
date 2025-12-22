@@ -41,7 +41,10 @@ export default function Home() {
     <div className="">
       <FormGenerator
         columns={2}
-        fields={[...getCommonFormFields(false), ...getFormFields({ image })]}
+        fields={[
+          ...getCommonFormFields(false, true),
+          ...getFormFields({ image }),
+        ]}
         title="Update Teacher Information"
         apiRoute="teacher"
         data={data}
