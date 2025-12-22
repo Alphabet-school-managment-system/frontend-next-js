@@ -1,12 +1,14 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
+import { get_formatted_sex } from "../../student/hook/useStudent";
+import { Sex } from "@/types/enums";
 
 export const useStaff = () => {
   const getTableColumns = (): any[] => {
     return [
       {
-        title: "Full Name",
+        title: "Name",
         dataIndex: "staff",
         key: "staff",
         render: (_: string, record: any) => (
@@ -18,12 +20,11 @@ export const useStaff = () => {
         ),
       },
       {
-        title: "Gender",
+        title: "Sex",
         dataIndex: "sex",
         key: "sex",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: Sex) => get_formatted_sex(val),
       },
-
       {
         title: "Phone #",
         dataIndex: "phone",
