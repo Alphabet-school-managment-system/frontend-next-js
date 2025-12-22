@@ -13,17 +13,16 @@ export default function ForgotPassword() {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      await authClient.forgetPassword(
+      await authClient.forgetPassword.emailOtp(
         {
           email: values?.email,
-          redirectTo: "http://localhost:3000/auth/reset-password",
         },
         {
           onSuccess() {
-            toast.success(`Password reset link sent to ${values.email}`);
+            toast.success(`Password reset OTP sent to ${values.email}`);
             form.resetFields();
           },
-          onError(context) {
+          onError(context: any) {
             toast.error(context.error.message);
           },
         }
@@ -68,7 +67,7 @@ export default function ForgotPassword() {
               loading={loading}
               size="large"
             >
-              Send Reset Link
+              Send Reset OTP
             </Button>
           </Form.Item>
         </Form>
