@@ -57,6 +57,34 @@ export const PasswordInput = ({
   );
 };
 
+export const OTPInput = ({
+  name = "otp",
+  label,
+  rules,
+  onChange,
+}: {
+  name?: string;
+  label?: string;
+  rules?: any[];
+  onChange?: (value: any) => void;
+}) => {
+  return (
+    <Form.Item
+      label={<span className="text-gray-900">{label}</span>}
+      name={name}
+      rules={[{ required: true, message: "" }, ...(rules ?? [])]}
+      className="!w-full"
+    >
+      <Input.OTP
+        onChange={onChange}
+        length={6}
+        className="!w-full"
+        style={{ width: "100%" }}
+      />
+    </Form.Item>
+  );
+};
+
 const LoginView = () => {
   const router = useRouter();
 
