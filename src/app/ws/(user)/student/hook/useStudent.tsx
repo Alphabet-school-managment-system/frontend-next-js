@@ -1,12 +1,27 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
+import { Sex } from "@/types/enums";
 import { Icon } from "@iconify-icon/react";
+import dayjs from "dayjs";
+
+export const get_formatted_sex = (sex?: Sex) => {
+  if (!sex) return <span className="text-sm">-</span>;
+
+  const icon = sex === "Female" ? "mdi:gender-female" : "mdi:gender-male";
+
+  return (
+    <span className="text-sm inline-flex items-center gap-1">
+      <Icon icon={icon} className="w-4 h-4" />
+      {sex}
+    </span>
+  );
+};
 
 export const useStudent = () => {
   const getTableColumns = (): any[] => {
     return [
       {
-        title: "Full Name",
+        title: "Name",
         dataIndex: "student",
         key: "student",
         render: (_: string, record: any) => (
@@ -18,16 +33,16 @@ export const useStudent = () => {
         ),
       },
       {
-        title: "Full Name (Local language)",
-        dataIndex: "full_name_local",
-        key: "full_name_local",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        title: "Registration #",
+        dataIndex: "student_registration_number",
+        key: "student_registration_number",
+        render: (val: number) => `STU-${String(val).padStart(6, "0")}`,
       },
       {
         title: "Sex",
         dataIndex: "sex",
         key: "sex",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: Sex) => get_formatted_sex(val),
       },
       {
         title: "Date of Birth",
@@ -35,7 +50,7 @@ export const useStudent = () => {
         key: "dob",
         render: (val: string) => (
           <span className="text-sm">
-            {val ? new Date(val).toLocaleDateString() : "-"}
+            {val ? dayjs(val).format("D MMM, YYYY") : "-"}
           </span>
         ),
       },
@@ -73,17 +88,14 @@ export const useStudent = () => {
           );
         },
       },
-      {
-        title: "Address",
-        dataIndex: "address",
-        key: "address",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
-      },
     ];
   };
 
-  const getCommonFormFields = (showLastName: boolean): FieldConfig[] => {
-    return [
+  const getCommonFormFields = (
+    showLastName: boolean,
+    includeId: boolean = false
+  ): FieldConfig[] => {
+    const fields = [
       {
         name: "first_name",
         label: "First Name",
@@ -151,6 +163,7 @@ export const useStudent = () => {
         label: "Email",
         type: FieldType.email,
         placeholder: "e.g. someone@example.com",
+        disabled: includeId,
         rules: [{ required: true, message: "" }],
       },
       {
@@ -160,11 +173,33 @@ export const useStudent = () => {
         hidden: true,
       },
     ];
+
+    if (includeId) {
+      return [
+        {
+          name: "id",
+          label: "",
+          type: FieldType.hidden,
+          placeholder: "",
+          rules: [{ required: false, message: "" }],
+          hidden: true,
+        },
+        ...fields,
+      ];
+    } else {
+      return fields;
+    }
   };
 
-  const getFormFields = ({ image }: { image: string }): FieldConfig[] => {
+  const getFormFields = ({
+    image,
+    includeId = false,
+  }: {
+    image: string;
+    includeId?: boolean;
+  }): FieldConfig[] => {
     return [
-      ...getCommonFormFields(true),
+      ...getCommonFormFields(true, includeId),
       {
         name: "full_name_local",
         label: "Full Name (Local)",

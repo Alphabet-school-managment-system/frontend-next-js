@@ -26,7 +26,20 @@ export const useExpense = () => {
         title: "Amount",
         dataIndex: "amount",
         key: "amount",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (value: number) => {
+          const num = Number(value);
+          return (
+            <span className="text-sm font-semibold">
+              {isNaN(num)
+                ? num
+                : num.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "ETB",
+                    minimumFractionDigits: 2,
+                  }) || "-"}
+            </span>
+          );
+        },
       },
       {
         title: "Type",
@@ -63,22 +76,16 @@ export const useExpense = () => {
     type,
     other_type,
     onOtherTypeChange,
+    includeId = false,
   }: {
     onFileChange: (fileList: any[]) => void;
     onTypeChange: (value: ExpenseType) => void;
     type?: ExpenseType;
     other_type?: string;
     onOtherTypeChange?: (e: any) => void;
+    includeId?: boolean;
   }): FieldConfig[] => {
-    return [
-      {
-        name: "id",
-        label: "",
-        type: FieldType.hidden,
-        placeholder: "",
-        rules: [{ required: false, message: "" }],
-        hidden: true,
-      },
+    const fields = [
       {
         name: "title",
         label: "Title",
@@ -136,7 +143,7 @@ export const useExpense = () => {
         label: "Date",
         type: FieldType.Date,
         placeholder: "Select date when expense occurred",
-        disabledDate: (current) => current > dayjs().endOf("day"),
+        disabledDate: (current: any) => current > dayjs().endOf("day"),
         rules: [{ required: true, message: "" }],
       },
       {
@@ -162,6 +169,22 @@ export const useExpense = () => {
         hidden: true,
       },
     ];
+
+    if (includeId) {
+      return [
+        {
+          name: "id",
+          label: "",
+          type: FieldType.hidden,
+          placeholder: "",
+          rules: [{ required: false, message: "" }],
+          hidden: true,
+        },
+        ...fields,
+      ];
+    } else {
+      return fields;
+    }
   };
 
   return {

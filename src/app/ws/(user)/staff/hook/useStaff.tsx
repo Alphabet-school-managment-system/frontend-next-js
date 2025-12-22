@@ -1,29 +1,30 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
+import { get_formatted_sex } from "../../student/hook/useStudent";
+import { Sex } from "@/types/enums";
 
 export const useStaff = () => {
   const getTableColumns = (): any[] => {
     return [
       {
-        title: "Full Name",
+        title: "Name",
         dataIndex: "staff",
         key: "staff",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
+            full_name={`${record?.first_name} ${record?.middle_name}`}
             photoUrl={record?.photoUrl}
             link={`/ws/staff-detail/${record?.id}`}
           />
         ),
       },
       {
-        title: "Gender",
-        dataIndex: "gender",
-        key: "gender",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        title: "Sex",
+        dataIndex: "sex",
+        key: "sex",
+        render: (val: Sex) => get_formatted_sex(val),
       },
-
       {
         title: "Phone #",
         dataIndex: "phone",
@@ -73,9 +74,9 @@ export const useStaff = () => {
         type: FieldType.Select,
         placeholder: "Select role",
         options: [
-          { label: "Librarian", value: "librarian" },
-          { label: "Accountant", value: "accountant" },
-          { label: "Admin", value: "admin" },
+          { label: "Librarian", value: "Librarian" },
+          { label: "Accountant", value: "Accountant" },
+          { label: "Admin", value: "Admin" },
         ],
         rules: [{ required: true, message: "" }],
       },

@@ -1,12 +1,43 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
+import { get_formatted_sex } from "../../student/hook/useStudent";
+import { Sex } from "@/types/enums";
 
 export const useTeacher = () => {
+  const subjectOptions = [
+    { label: "Local language", value: "Local_language" },
+    { label: "Mathematics", value: "mathematics" },
+    { label: "Physics", value: "physics" },
+    { label: "Chemistry", value: "chemistry" },
+    { label: "Biology", value: "biology" },
+    { label: "English", value: "english" },
+    { label: "History", value: "history" },
+    { label: "Geography", value: "geography" },
+    { label: "Computer Science", value: "computer_science" },
+    { label: "Economics", value: "economics" },
+    { label: "Business Studies", value: "business_studies" },
+    { label: "Civics", value: "civics" },
+    { label: "Physical Education", value: "physical_education" },
+    { label: "Music", value: "music" },
+    { label: "Art", value: "art" },
+    { label: "Religious Studies", value: "religious_studies" },
+    { label: "Environmental Science", value: "environmental_science" },
+    { label: "Social Studies", value: "social_studies" },
+    { label: "Philosophy", value: "philosophy" },
+    { label: "Political Science", value: "political_science" },
+    { label: "Special Education", value: "special_education" },
+    { label: "Other", value: "other" },
+  ];
+
+  const get_speciality_label = (value: string): string => {
+    return subjectOptions.find((s) => s.value === value)?.label ?? "Unknown";
+  };
+
   const getTableColumns = (): any[] => {
     return [
       {
-        title: "Full Name",
+        title: "Name",
         dataIndex: "teacher",
         key: "teacher",
         render: (_: string, record: any) => (
@@ -18,10 +49,16 @@ export const useTeacher = () => {
         ),
       },
       {
+        title: "Registration #",
+        dataIndex: "teacher_registration_number",
+        key: "teacher_registration_number",
+        render: (val: number) => `TEA-${String(val).padStart(6, "0")}`,
+      },
+      {
         title: "Sex",
         dataIndex: "sex",
         key: "sex",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: Sex) => get_formatted_sex(val),
       },
       {
         title: "Phone #",
@@ -59,34 +96,14 @@ export const useTeacher = () => {
         title: "Subject Specialization",
         dataIndex: "subject_specialization",
         key: "subject_specialization",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: string) => (
+          <span className="text-sm p-2 rounded-md bg-gray-300 text-gray-800 uppercase">
+            {get_speciality_label(val) || "-"}
+          </span>
+        ),
       },
     ];
   };
-  const subjectOptions = [
-    { label: "Local language", value: "Local_language" },
-    { label: "Mathematics", value: "mathematics" },
-    { label: "Physics", value: "physics" },
-    { label: "Chemistry", value: "chemistry" },
-    { label: "Biology", value: "biology" },
-    { label: "English", value: "english" },
-    { label: "History", value: "history" },
-    { label: "Geography", value: "geography" },
-    { label: "Computer Science", value: "computer_science" },
-    { label: "Economics", value: "economics" },
-    { label: "Business Studies", value: "business_studies" },
-    { label: "Civics", value: "civics" },
-    { label: "Physical Education", value: "physical_education" },
-    { label: "Music", value: "music" },
-    { label: "Art", value: "art" },
-    { label: "Religious Studies", value: "religious_studies" },
-    { label: "Environmental Science", value: "environmental_science" },
-    { label: "Social Studies", value: "social_studies" },
-    { label: "Philosophy", value: "philosophy" },
-    { label: "Political Science", value: "political_science" },
-    { label: "Special Education", value: "special_education" },
-    { label: "Other", value: "other" },
-  ];
 
   const getFormFields = ({ image }: { image: string }): FieldConfig[] => {
     return [
@@ -131,5 +148,6 @@ export const useTeacher = () => {
     getTableColumns,
     getFormFields,
     subjectOptions,
+    get_speciality_label,
   };
 };

@@ -95,7 +95,7 @@ const Index = ({
   );
 
   const { mutate: Delete, isPending: deleting } = useApiMutation(
-    [apiRoute],
+    [`${apiRoute}?${query}`],
     `${apiRoute}/${selectedRow?.id}/delete`,
     "DELETE"
   );

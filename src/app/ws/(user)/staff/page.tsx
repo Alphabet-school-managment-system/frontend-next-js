@@ -17,9 +17,9 @@ export default function Home() {
     <>
       <List
         columns={getTableColumns()}
-        searchByCols={["first_name", "last_name", "email", "phone"]}
+        searchByCols={["first_name", "middle_name", "email", "phone"]}
         searchInputPlaceholderText={
-          "Search by staff information (first name, last name, email & phone number)"
+          "Search by staff information (first name, middle name, email & phone)"
         }
         route={"staff"}
         addButtonTitle={"Add new staff"}

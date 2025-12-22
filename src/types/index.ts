@@ -3,7 +3,7 @@ import { Day } from "./enums";
 import { AttendanceStatus } from "./enums";
 import { BehaviorType } from "./enums";
 import { FeeStatus } from "./enums";
-import { Gender } from "./enums";
+import { Sex } from "./enums";
 import { LeaveStatus } from "./enums";
 import { ParentType } from "./enums";
 import { StaffRole } from "./enums";
@@ -104,7 +104,7 @@ export type FinanceSummary = {
   _id: string;
   full_name?: string | null;
   full_name_local?: string | null;
-  gender?: Gender | null;
+  gender?: Sex | null;
   ay_name?: string | null;
   ay_name_local?: string | null;
   total_fee?: number | null;
@@ -201,7 +201,7 @@ export type StudentMarkSummary = {
   _id: string;
   full_name?: string | null;
   full_name_local?: string | null;
-  gender?: Gender | null;
+  gender?: Sex | null;
   ay_name?: string | null;
   ay_name_local?: string | null;
   subject?: string | null;
@@ -217,7 +217,7 @@ export type Student = {
   first_name: string;
   last_name: string;
   full_name_local?: string | null;
-  gender?: Gender | null;
+  gender?: Sex | null;
   dob?: Date | null;
   address?: string | null;
   phone?: string | null;
