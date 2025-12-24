@@ -23,11 +23,11 @@ export default function RootLayout({
 
   return (
     <ConfirmationModalProvider>
-      <IdsProvider>
-        <ConfirmationModal />
-        <Toaster position="top-center" />
-        <Index>{children}</Index>
-      </IdsProvider>
+        <IdsProvider>
+          <ConfirmationModal />
+          <Toaster position="top-center" />
+          <Index>{children}</Index>
+        </IdsProvider>
     </ConfirmationModalProvider>
   );
 }

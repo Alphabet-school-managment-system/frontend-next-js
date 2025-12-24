@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useState, type ReactNode } from "react";
 
 export type UserDataType = {
@@ -17,12 +18,12 @@ export type AppData = {
 };
 
 export type UserContextType = {
-  userData: UserDataType;
+  userData: UserDataType | undefined;
   setUserData: (value: UserDataType) => void;
 };
 
 export const UserContext = createContext<UserContextType>({
-  userData: {},
+  userData: undefined,
   setUserData: () => {},
 });
 
@@ -38,7 +39,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     role: undefined,
     token: undefined,
     better_auth_userId: undefined,
-    image: undefined
+    image: undefined,
   });
 
   return (

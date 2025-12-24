@@ -8,7 +8,7 @@ import {
   type ConfirmationModalPropsType,
 } from "../../../store/confirmationModalContext";
 import { useRouter } from "next/navigation";
-import { signOut, useSession } from "@/lib/auth-client";
+import { getSession, signOut } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 import ChangePassword from "@/app/ws/(profile)/change-password";
 import { Drawer } from "@/components/common/Drawer";
@@ -68,7 +68,7 @@ const Header = ({
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { Ids, setIds } = useContext(IdsContext);
-  const { setUserData } = useContext(UserContext);
+  const { setUserData, userData } = useContext(UserContext);
   const [getIds, setGetIds] = useState(false);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
@@ -116,36 +116,36 @@ const Header = ({
     }));
   }, []);
 
-  const { data: session, isPending, error } = useSession();
-
   const { data: ids, isLoading: gettingIds } = useApiQuery<any>(
     ["auth/getIds"],
-    `${"auth/getIds"}/${session?.user?.id}`,
+    `${"auth/getIds"}/${userData?.better_auth_userId}`,
     getIds
   );
 
   useEffect(() => {
-    setGetIds(false);
-    if (isPending) {
-      onLoading(true);
-    } else {
-      if (error) {
-        toast.error(error?.message || "Error occurred");
-        router.replace("/auth/login");
-      } else {
-        if (session) {
-          setUserData({
-            first_name: session?.user?.name,
-            image: session?.user?.image,
-          });
-          setGetIds(true);
-        } else {
+    async function fetch() {
+      if (!userData?.better_auth_userId) {
+        const { data: session, error } = await getSession();
+
+        if (error || !session) {
           router.replace("/auth/login");
+          return;
         }
+
+        setUserData({
+          first_name: session.user.name,
+          image: session.user.image,
+          better_auth_userId: session.user.id,
+        });
+
+        setGetIds(true);
+      } else {
+        setGetIds(true);
       }
-      onLoading(false);
     }
-  }, [isPending, error, session]);
+
+    fetch();
+  }, [userData?.better_auth_userId]);
 
   useEffect(() => {
     onLoading(gettingIds);
@@ -176,22 +176,29 @@ const Header = ({
           </div>
         </div>
         <div className="flex items-center space-x-6">
-          <span className="bg-blue-50 text-gray-800 p-2 text-sm font-semibold rounded-md cursor-pointer" title="Current branch">
-            {Ids?.branchName}
-          </span>
+          {Ids?.branchName && (
+            <span
+              className="bg-blue-50 text-gray-800 p-2 text-sm font-semibold rounded-md cursor-pointer"
+              title="Current branch"
+            >
+              {Ids?.branchName}
+            </span>
+          )}
           {/* User Profile */}
           <div className="relative" ref={dropdownRef}>
-            <button
-              className="flex items-center space-x-3 focus:outline-none cursor-pointer"
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
-              <div className="flex items-center justify-center text-gray-800">
-                <span>{`Welcome, ${session?.user?.name}`}</span>
-                {!session?.user?.image && (
-                  <Icon icon="ei:user" width={40} height={40} />
-                )}
-              </div>
-            </button>
+            {userData?.first_name && (
+              <button
+                className="flex items-center space-x-3 focus:outline-none cursor-pointer"
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                <div className="flex items-center justify-center text-gray-800">
+                  <span>{`Welcome, ${userData?.first_name}`}</span>
+                  {!userData?.image && (
+                    <Icon icon="ei:user" width={40} height={40} />
+                  )}
+                </div>
+              </button>
+            )}
 
             {/* Dropdown Menu */}
             {showDropdown && (
