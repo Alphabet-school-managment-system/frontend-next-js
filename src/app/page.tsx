@@ -37,11 +37,13 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={
-      <div className="flex justify-center items-center w-full h-screen">
-        <Spin size="large" spinning />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center w-full h-screen">
+          <Spin size="large" spinning />
+        </div>
+      }
+    >
       <HomeContent />
     </Suspense>
   );

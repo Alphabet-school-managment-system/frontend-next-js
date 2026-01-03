@@ -1,10 +1,11 @@
 import { Form, Input, Button, Checkbox } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { signIn } from "@/lib/auth-client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { UserContext } from "@/store/userContext";
 
 export const PasswordInput = ({
   name = "password",
@@ -87,6 +88,7 @@ export const OTPInput = ({
 
 const LoginView = () => {
   const router = useRouter();
+  const { setUserData, userData } = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
 
@@ -95,18 +97,26 @@ const LoginView = () => {
       {
         email: values.email,
         password: values.password,
-        callbackURL: "/ws/dashboard",
         rememberMe: values.rememberMe,
       },
       {
         onRequest: () => {
           setLoading(true);
         },
-        onResponse: () => {
-          setLoading(false);
-        },
+
         onError: (ctx) => {
           toast.error(ctx.error.message);
+          setLoading(false);
+        },
+        onSuccess: (context: any) => {
+          setUserData({
+            first_name: context?.user?.name,
+            image: context?.user?.image,
+            better_auth_userId: context?.user?.id,
+          });
+
+          setTimeout(() => router.push("/ws/dashboard"), 0);
+          setLoading(false);
         },
       }
     );

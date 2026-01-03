@@ -46,6 +46,8 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
       payload.sections_per_class = Number(values.sections_per_class);
       payload.number_of_terms = Number(values.number_of_terms);
 
+      !data ? delete payload.id : null;
+
       await mutate(
         { body: payload },
         {
@@ -55,7 +57,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
     } catch (error) {
       toast.error(`${error}`);
     }
-  }; 
+  };
 
   return (
     <div>
