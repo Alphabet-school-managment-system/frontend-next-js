@@ -126,7 +126,7 @@ const Header = ({
     async function fetch() {
       if (!userData?.better_auth_userId) {
         const { data: session, error } = await getSession();
-
+        
         if (error || !session) {
           router.replace("/auth/login");
           return;
