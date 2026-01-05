@@ -1,16 +1,85 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
-import {
-  FieldConfig,
-  FieldType,
-  SelectMode,
-} from "@/components/forms/FormGenerator";
+import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { ColumnsType } from "antd/es/table";
 import { Icon } from "@iconify-icon/react";
-import { Student } from "@/types";
-import { useState } from "react";
+import { AcademicYear, levels_of_education, Setting, Student } from "@/types";
+import { useContext, useState } from "react";
+import { useApiQuery } from "@/hooks/useApi";
+import { IdsContext } from "@/store/idsContext";
+import dayjs from "dayjs";
 
 export const useEnrollment = () => {
-  const [isTransferred, setIsTransferred] = useState<boolean>(false);
+  const { Ids } = useContext(IdsContext);
+
+  const { data: AcademicYear, isLoading: gettingAcademicYear } =
+    useApiQuery<AcademicYear>(
+      [`academic-year/${Ids?.branchId}`],
+      `academic-year/${Ids?.branchId}`,
+      Ids?.branchId ? true : false
+    );
+
+  const { data: SchoolSetting, isLoading: gettingSchoolSetting } =
+    useApiQuery<Setting>(
+      [`setting/${Ids?.schoolId}`],
+      `setting/${Ids?.schoolId}`,
+      Ids?.schoolId ? true : false
+    );
+
+  const { data: ServerDate, isLoading: gettingServerDate } = useApiQuery<any>(
+    [`util/server-date`],
+    `util/server-date`
+  );
+
+  const isEnrollmentPeriodExpired = (): {
+    message: string;
+    status: boolean;
+  } => {
+    if (AcademicYear && ServerDate) {
+      const current = dayjs(ServerDate);
+      const start = dayjs(AcademicYear.enrollment_start);
+      const end = dayjs(AcademicYear.enrollment_end);
+
+      const result =
+        (current.isAfter(start, "day") || current.isSame(start, "day")) &&
+        (current.isBefore(end, "day") || current.isSame(end, "day"));
+
+      if (!result) {
+        return {
+          message: `Enrollment period has expired. Enrollment is allowed from ${dayjs(
+            AcademicYear.enrollment_start
+          ).format("MMM DD, YYYY")} to ${dayjs(
+            AcademicYear.enrollment_end
+          ).format("MMM DD, YYYY")}.`,
+          status: true,
+        };
+      }
+    }
+
+    return { message: "", status: false };
+  };
+
+  const gradeMap: Record<levels_of_education, string[]> = {
+    kg: ["KG - 1", "KG - 2", "KG - 3"],
+    primary: [
+      "Grade 1",
+      "Grade 2",
+      "Grade 3",
+      "Grade 4",
+      "Grade 5",
+      "Grade 6",
+      "Grade 7",
+      "Grade 8",
+    ],
+    secondary: ["Grade 9", "Grade 10"],
+    college_prep: ["Grade 11", "Grade 12"],
+  };
+
+  const getGrades = (input: levels_of_education | levels_of_education[]) => {
+    const types = Array.isArray(input) ? input : [input];
+    return types
+      .flatMap((type) => gradeMap[type])
+      .map((g) => ({ label: g, value: g }));
+  };
 
   const getTableColumns = (): ColumnsType<any> => {
     return [
@@ -20,9 +89,9 @@ export const useEnrollment = () => {
         key: "student",
         render: (_: string, record: any) => (
           <UserProfileInfo
-            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
-            photoUrl={record?.photoUrl}
-            link={`/ws/student/${record?.id}/detail`}
+            full_name={`${record?.student?.first_name} ${record?.student?.middle_name} ${record?.student?.last_name}`}
+            photoUrl={record?.student?.photoUrl}
+            link={`/ws/student/${record?.student?.id}/detail`}
           />
         ),
       },
@@ -39,7 +108,7 @@ export const useEnrollment = () => {
               height={20}
               className="text-gray-700"
             />
-            <span className="text-sm">{record?.phone || "-"}</span>
+            <span className="text-sm">{record?.student?.phone || "-"}</span>
           </div>
         ),
       },
@@ -56,7 +125,7 @@ export const useEnrollment = () => {
                 height={20}
                 className="text-gray-700"
               />
-              <span className="text-sm">{record?.email || "-"}</span>
+              <span className="text-sm">{record?.student?.email || "-"}</span>
             </div>
           );
         },
@@ -65,23 +134,40 @@ export const useEnrollment = () => {
         title: "Class",
         dataIndex: "class_name",
         key: "class_name",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: string, record: any) => (
+          <span className="text-sm">{record?.grade || "-"}</span>
+        ),
       },
       {
         title: "Section",
-        dataIndex: "section_name",
-        key: "section_name",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        dataIndex: "section",
+        key: "section",
+        render: (val: string) => (
+          <span className="text-sm">{val || "Not Assigned"}</span>
+        ),
       },
     ];
   };
 
   const getFormFields = ({
     onStudentSelect,
+    onGradeSelect,
+    onClear,
+    levels_of_education,
+    includeId = false,
+    isTransferredValue = false,
   }: {
     onStudentSelect: (student: Student) => void;
+    onGradeSelect: (grade: string) => void;
+    onClear: () => void;
+    levels_of_education: levels_of_education[];
+    includeId?: boolean;
+    isTransferredValue?: boolean;
   }): FieldConfig[] => {
-    return [
+    const [isTransferred, setIsTransferred] =
+      useState<boolean>(isTransferredValue);
+
+    const fields = [
       {
         name: "student_id",
         label: "Student",
@@ -95,16 +181,23 @@ export const useEnrollment = () => {
           onSelect: (value: any) => {
             onStudentSelect(value);
           },
+          onClear: () => {
+            onClear();
+          },
         },
       },
       {
-        name: "class",
-        label: "Class (grade)",
+        name: "grade",
+        label: "Grade (Class)",
         type: FieldType.Select,
-        placeholder: "Select class",
-        options: [],
+        placeholder: "Select Grade",
+        selectProps: {
+          onChange: (value: string) => {
+            onGradeSelect(value);
+          },
+        },
+        options: getGrades(levels_of_education),
         rules: [{ required: true, message: "" }],
-        selectMode: SelectMode.tags,
       },
       {
         name: "isTransferred",
@@ -112,7 +205,7 @@ export const useEnrollment = () => {
         type: FieldType.checkbox,
         rules: [{ required: false, message: "" }],
         checkboxTypeProps: {
-          onChange: (checked) => {
+          onChange: (checked: boolean | ((prevState: boolean) => boolean)) => {
             setIsTransferred(checked);
           },
           checked: isTransferred,
@@ -147,10 +240,34 @@ export const useEnrollment = () => {
         hidden: true,
       },
     ];
+
+    if (includeId) {
+      return [
+        {
+          name: "id",
+          label: "",
+          type: FieldType.hidden,
+          placeholder: "",
+          rules: [{ required: false, message: "" }],
+          hidden: true,
+        },
+        ...fields,
+      ];
+    } else {
+      return fields;
+    }
   };
 
   return {
     getTableColumns,
     getFormFields,
+    getGrades,
+    AcademicYear,
+    gettingAcademicYear,
+    SchoolSetting,
+    gettingSchoolSetting,
+    ServerDate,
+    gettingServerDate,
+    isEnrollmentPeriodExpired,
   };
 };
