@@ -1,3 +1,4 @@
+"use client";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { AcademicYear } from "@/types";
 import { Button, Card, DatePicker, Form, Input } from "antd";
@@ -10,7 +11,6 @@ const { RangePicker } = DatePicker;
 
 const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const [ayForm] = Form.useForm();
-
   const { Ids } = useContext(IdsContext);
 
   const [id, setId] = useState<string | undefined>("");
@@ -19,6 +19,11 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const { data, isLoading } = useApiQuery<AcademicYear>(
     [`${apiRoute}/${Ids?.branchId}`],
     `${apiRoute}/${Ids?.branchId}`
+  );
+
+  const { data: ServerDate, isLoading: gettingServerDate } = useApiQuery<any>(
+    [`util/server-date`],
+    `util/server-date`
   );
 
   const { mutate, isPending: isUpdating } = useApiMutation(
@@ -42,14 +47,14 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   }, [data]);
 
   useEffect(() => {
-    if (isLoading || isUpdating) {
+    if (isLoading || isUpdating || gettingServerDate) {
       onLoading(true);
     } else {
       setTimeout(() => {
         onLoading(false);
       }, 500);
     }
-  }, [isLoading, isUpdating]);
+  }, [isLoading, isUpdating, gettingServerDate]);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -107,14 +112,26 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
               name="start_end_date"
               rules={[{ required: true, message: "" }]}
             >
-              <RangePicker size="large" className="w-full" />
+              <RangePicker
+                size="large"
+                className="w-full"
+                disabledDate={(current) =>
+                  current.year() !== dayjs(ServerDate).year()
+                }
+              />
             </Form.Item>
             <Form.Item
               label="Enrollment Period"
               name="enrollment_start_end_date"
               rules={[{ required: true, message: "" }]}
             >
-              <RangePicker size="large" className="w-full" />
+              <RangePicker
+                size="large"
+                className="w-full"
+                disabledDate={(current) =>
+                  current.year() !== dayjs(ServerDate).year()
+                }
+              />
             </Form.Item>
           </div>
           <Form.Item>

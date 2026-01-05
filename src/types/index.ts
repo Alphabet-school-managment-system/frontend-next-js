@@ -64,10 +64,15 @@ export type ClassSection = {
 };
 
 export type Enrollment = {
-  _id: string;
-  student_id?: string | null;
-  section_id?: string | null;
-  academic_year_id?: string | null;
+  id?: string | null;
+  academic_year_id: string;
+  student_id: string;
+  grade: string;
+  section?: string | null;
+  isTransferred: boolean;
+  transferredFrom?: string | null;
+  note?: string | null;
+  student?: Student;
   created_at?: Date | null;
   updated_at?: Date | null;
 };
@@ -212,18 +217,21 @@ export type StudentMarkSummary = {
 };
 
 export type Student = {
-  _id: string;
+  id: string;
   better_auth_id?: string | null;
   first_name: string;
+  middle_name: string;
   last_name: string;
   full_name_local?: string | null;
-  gender?: Sex | null;
+  sex?: Sex | null;
   dob?: Date | null;
   address?: string | null;
   phone?: string | null;
+  email?: string | null;
   note?: string | null;
   branch_id?: string | null;
-  photo_url?: string | null;
+  image?: string | null;
+  student_registration_number?: string | null;
 };
 
 export type Teacher = {
@@ -255,11 +263,17 @@ export type Timetable = {
   note?: string | null;
 };
 
+export type levels_of_education =
+  | "kg"
+  | "primary"
+  | "secondary"
+  | "college_prep";
+
 export interface Setting {
   id: string;
   number_of_terms: number;
   sections_per_class: number;
-  levels_of_education: string[];
+  levels_of_education: levels_of_education[];
   created_at?: Date | null;
   updated_at?: Date | null;
 }
