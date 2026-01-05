@@ -6,7 +6,8 @@ import { Icon } from "@iconify-icon/react";
 import { useApiQuery } from "@/hooks/useApi";
 
 export interface SearchInputProps {
-  onSelect?: (value: string) => void;
+  onSelect?: (value: any) => void;
+  onClear?: () => void;
   placeholder?: string;
   apiRoute?: string;
   queryKeys: string[];
@@ -16,6 +17,7 @@ export interface SearchInputProps {
 
 const SearchInput = ({
   onSelect,
+  onClear,
   placeholder,
   apiRoute,
   queryKeys,
@@ -65,11 +67,15 @@ const SearchInput = ({
           setOptions([]);
         }
       }}
-      onSelect={(value) => onSelect?.(value)}
+      onSelect={(_, option) => {
+        onSelect?.(option?.data);
+      }}
+      onClear={() => onClear?.()}
       placeholder={placeholder}
       options={options.map((item: any) => ({
         value: `${item.first_name} ${item.last_name}`,
         label: <span>{`${item.first_name} ${item.last_name}`}</span>,
+        data: item,
       }))}
       className="w-full"
       allowClear={allowClear}

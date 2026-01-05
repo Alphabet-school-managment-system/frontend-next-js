@@ -105,7 +105,9 @@ interface FormGeneratorProps {
   apiRoute: string;
   isFetching?: boolean;
   leftContent?: ReactElement;
+  topContent?: ReactElement;
   formInstance?: FormInstance;
+  disableForm?: boolean;
 }
 
 const FormGenerator: React.FC<FormGeneratorProps> = ({
@@ -120,7 +122,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   apiRoute,
   isFetching = false,
   leftContent,
+  topContent,
   formInstance,
+  disableForm = false,
 }) => {
   const [form] = Form.useForm(formInstance);
   const router = useRouter();
@@ -307,10 +311,10 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
         return (
           <div className="flex items-center gap-2">
             <Checkbox
-              onChange={(e) =>
+              onChange={(e) => {
                 checkboxProps.onChange &&
-                checkboxProps.onChange(e.target.checked)
-              }
+                  checkboxProps.onChange(e.target.checked);
+              }}
               checked={checkboxProps?.checked}
             >
               {checkboxProps?.label && (
@@ -367,10 +371,12 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       onFinish={handleFormSubmit}
       initialValues={initialValues}
       requiredMark={true}
+      disabled={disableForm}
     >
       <Spin spinning={isFetching || isLoading}>
         <div className="flex !h-full bg-white p-1 m-4 rounded-md">
           <div className={`rounded-sm p-8 w-full`}>
+            {topContent && <div className="mb-6">{topContent}</div>}
             <div className="flex justify-between w-full gap-6">
               <div className={`${leftContent ? "w-3/4" : "w-full"}`}>
                 {/* title and subtitle */}
@@ -401,6 +407,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                           ? `md:col-span-${columns}`
                           : ""
                       }`}
+                      valuePropName={
+                        field.type === "checkbox" ? "checked" : "value"
+                      }
                     >
                       {renderField(field)}
                     </Form.Item>
