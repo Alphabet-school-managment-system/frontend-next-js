@@ -162,7 +162,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
                 classNames="!w-full"
                 data={
                   data?.map((branch: Branch) => ({
-                    text: branch.name,
+                    label: branch.name,
                     value: branch.id ?? "",
                   })) ?? []
                 }

@@ -39,6 +39,11 @@ type props = {
   showRowSelection?: boolean;
   subHeader?: ReactElement;
   queryBy?: QueryBy;
+  showHeaderBar?: boolean;
+  showSearchInput?: boolean;
+  loading?: boolean;
+  queryParams?: { [key: string]: string };
+  enable?: boolean;
 };
 
 type actionPrevilageType = {
@@ -70,6 +75,11 @@ const Index = ({
   showRowSelection = false,
   subHeader,
   queryBy,
+  showHeaderBar,
+  showSearchInput,
+  loading,
+  queryParams,
+  enable = true,
 }: props) => {
   const router = useRouter();
 
@@ -83,19 +93,24 @@ const Index = ({
   const apiRoute = isRouteString ? route : route.api;
   const pageRoute = isRouteString ? route : route.page;
 
-  const query = new URLSearchParams(
+  const localQueryParams = new URLSearchParams(
     queryBy === QueryBy.ACADEMIC_YEAR
       ? { academic_year_id: Ids?.academicYearId }
       : ({ branch_id: Ids?.branchId } as any)
   ).toString();
 
-  const { data, isLoading } = useApiQuery(
-    [`${apiRoute}?${query}`],
-    `${apiRoute}?${query}`
-  );
+  const queryStringFromProps = queryParams
+    ? new URLSearchParams(queryParams as Record<string, string>).toString()
+    : "";
+
+  const query = [queryStringFromProps, localQueryParams].filter(Boolean).join("&");
+
+  const apiUrl = query ? `${apiRoute}?${query}` : apiRoute;
+
+  const { data, isLoading } = useApiQuery([apiUrl], apiUrl, enable);
 
   const { mutate: Delete, isPending: deleting } = useApiMutation(
-    [`${apiRoute}?${query}`],
+    [apiUrl],
     `${apiRoute}/${selectedRow?.id}/delete`,
     "DELETE"
   );
@@ -224,7 +239,7 @@ const Index = ({
           ...(showActionCols ? actionCol(actionPrevilage) : []),
         ]}
         rowKey="id"
-        loading={isLoading || deleting}
+        loading={loading || isLoading || deleting}
         onSearchInputChange={(value: string) => {
           setSearchValue(value);
         }}
@@ -265,6 +280,8 @@ const Index = ({
           },
           rowExpandable: (record: any) => record.isParent === true,
         }}
+        showHeaderBar={showHeaderBar}
+        showSearchInput={showSearchInput}
       />
     </div>
   );

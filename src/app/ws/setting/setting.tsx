@@ -43,8 +43,9 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
     try {
       const payload = { ...values };
       payload.school_id = Ids?.schoolId;
-      payload.sections_per_class = Number(values.sections_per_class);
+      payload.sections_per_grade = Number(values.sections_per_grade);
       payload.number_of_terms = Number(values.number_of_terms);
+      payload.periods_per_day = Number(values.periods_per_day);
 
       !data ? delete payload.id : null;
 
@@ -82,8 +83,8 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
               </Select>
             </Form.Item>
             <Form.Item
-              label="Sections per Class"
-              name="sections_per_class"
+              label="Sections per Grade"
+              name="sections_per_grade"
               rules={[{ required: true, message: "" }]}
             >
               <Input type="number" min={1} placeholder="e.g. 4" size="large" />
@@ -101,6 +102,13 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
                   College Preparatory
                 </Select.Option>
               </Select>
+            </Form.Item>
+            <Form.Item
+              label="Period per Day"
+              name="periods_per_day"
+              rules={[{ required: true, message: "" }]}
+            >
+              <Input type="number" min={1} placeholder="e.g. 7" size="large" />
             </Form.Item>
           </div>
           <Form.Item>

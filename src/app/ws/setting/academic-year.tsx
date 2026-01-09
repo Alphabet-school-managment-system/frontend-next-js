@@ -59,6 +59,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   const handleSubmit = async (values: any) => {
     try {
       const payload = { ...values };
+      !data ? delete payload.id : null;
       payload.branch_id = Ids?.branchId;
       if (values.start_end_date) {
         payload.start_date = values.start_end_date[0];

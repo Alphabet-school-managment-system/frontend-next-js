@@ -1,6 +1,6 @@
+import { selectType } from "@/types";
 import { Select as MainSelect } from "antd";
 
-type selectType = { text: string; value: string };
 
 export const Select = ({
   data,
@@ -22,11 +22,11 @@ export const Select = ({
   const { Option } = MainSelect;
 
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-end w-full!">
       <MainSelect
         placeholder={placeholderText}
         size="large"
-        className={`${classNames} !cursor-pointer`}
+        className={`${classNames} cursor-pointer!`}
         onChange={onChange}
         variant={variant}
         value={value}
@@ -34,7 +34,7 @@ export const Select = ({
       >
         {data.map((item: selectType) => (
           <Option key={item?.value} value={item?.value}>
-            {item?.text}
+            {item?.label}
           </Option>
         ))}
       </MainSelect>
