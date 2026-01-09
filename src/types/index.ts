@@ -9,6 +9,11 @@ import { ParentType } from "./enums";
 import { StaffRole } from "./enums";
 import { FeeType } from "@/app/ws/(finance)/fee/hook/useFee";
 
+export type selectType = {
+  label: string;
+  value: string | number | boolean | any;
+};
+
 export type AcademicYear = {
   id: string;
   branch_id: string | null;
@@ -235,7 +240,7 @@ export type Student = {
 };
 
 export type Teacher = {
-  _id: string;
+  id: string;
   better_auth_id?: string | null;
   first_name: string;
   last_name: string;
@@ -255,9 +260,12 @@ export type Term = {
 };
 
 export type Timetable = {
-  _id: string;
-  class_section_id?: string | null;
-  teacher_id?: string | null;
+  id: string;
+  academic_year_id: string;
+  term?: string;
+  grade: string;
+  section: string;
+  teacher_id: string;
   day: Day;
   period: number;
   note?: string | null;
@@ -272,8 +280,9 @@ export type levels_of_education =
 export interface Setting {
   id: string;
   number_of_terms: number;
-  sections_per_class: number;
+  sections_per_grade: number;
   levels_of_education: levels_of_education[];
+  periods_per_day: number;
   created_at?: Date | null;
   updated_at?: Date | null;
 }
