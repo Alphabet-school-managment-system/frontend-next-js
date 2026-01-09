@@ -91,7 +91,7 @@ export default function Home() {
     ServerDate,
     gettingServerDate,
     isEnrollmentPeriodExpired,
-  } = useEnrollment();
+  } = useEnrollment({ Ids });
   const [student, setStudent] = useState<Student>();
   const [enrolled_grade, setEnrolledClass] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();

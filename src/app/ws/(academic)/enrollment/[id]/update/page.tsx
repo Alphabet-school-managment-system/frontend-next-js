@@ -6,9 +6,10 @@ import { Enrollment, Student } from "@/types";
 import { useEnrollment } from "../../hook/useEnrollment";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { EnrollmentStudentDetail } from "../../new/page";
 import { Alert, Form } from "antd";
+import { IdsContext } from "@/store/idsContext";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -20,6 +21,7 @@ const FormGenerator = dynamic(
 
 export default function Update() {
   const { id } = useParams();
+  const { Ids } = useContext(IdsContext);
   const [form] = Form.useForm();
 
   const {
@@ -31,7 +33,7 @@ export default function Update() {
     ServerDate,
     gettingServerDate,
     isEnrollmentPeriodExpired,
-  } = useEnrollment();
+  } = useEnrollment({ Ids });
   const [data, setData] = useState<any>(null);
   const [student, setStudent] = useState<Student>();
   const [enrolled_grade, setEnrolledClass] = useState<string>("");
@@ -98,6 +100,7 @@ export default function Update() {
             form.setFieldValue("student_id", undefined);
           },
           isTransferredValue: result?.isTransferred,
+          includeId: true,
         })}
         title="Update Enrollment Information"
         apiRoute="enrollment"

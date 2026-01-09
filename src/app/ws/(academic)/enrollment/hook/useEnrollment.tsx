@@ -2,15 +2,19 @@ import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { ColumnsType } from "antd/es/table";
 import { Icon } from "@iconify-icon/react";
-import { AcademicYear, levels_of_education, Setting, Student } from "@/types";
-import { useContext, useState } from "react";
+import {
+  AcademicYear,
+  levels_of_education,
+  selectType,
+  Setting,
+  Student,
+} from "@/types";
+import { useState } from "react";
 import { useApiQuery } from "@/hooks/useApi";
-import { IdsContext } from "@/store/idsContext";
+import { IdsType } from "@/store/idsContext";
 import dayjs from "dayjs";
 
-export const useEnrollment = () => {
-  const { Ids } = useContext(IdsContext);
-
+export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
   const { data: AcademicYear, isLoading: gettingAcademicYear } =
     useApiQuery<AcademicYear>(
       [`academic-year/${Ids?.branchId}`],
@@ -58,27 +62,42 @@ export const useEnrollment = () => {
     return { message: "", status: false };
   };
 
-  const gradeMap: Record<levels_of_education, string[]> = {
-    kg: ["KG - 1", "KG - 2", "KG - 3"],
-    primary: [
-      "Grade 1",
-      "Grade 2",
-      "Grade 3",
-      "Grade 4",
-      "Grade 5",
-      "Grade 6",
-      "Grade 7",
-      "Grade 8",
+  const gradeMap: Record<
+    levels_of_education,
+    { label: string; value: number }[]
+  > = {
+    kg: [
+      { label: "KG - 1", value: -2 },
+      { label: "KG - 2", value: -1 },
+      { label: "KG - 3", value: 0 },
     ],
-    secondary: ["Grade 9", "Grade 10"],
-    college_prep: ["Grade 11", "Grade 12"],
+    primary: [
+      { label: "Grade 1", value: 1 },
+      { label: "Grade 2", value: 2 },
+      { label: "Grade 3", value: 3 },
+      { label: "Grade 4", value: 4 },
+      { label: "Grade 5", value: 5 },
+      { label: "Grade 6", value: 6 },
+      { label: "Grade 7", value: 7 },
+      { label: "Grade 8", value: 8 },
+    ],
+    secondary: [
+      { label: "Grade 9", value: 9 },
+      { label: "Grade 10", value: 10 },
+    ],
+    college_prep: [
+      { label: "Grade 11", value: 11 },
+      { label: "Grade 12", value: 12 },
+    ],
   };
 
-  const getGrades = (input: levels_of_education | levels_of_education[]) => {
+  const getGrades = (
+    input: levels_of_education | levels_of_education[]
+  ): selectType[] => {
     const types = Array.isArray(input) ? input : [input];
     return types
       .flatMap((type) => gradeMap[type])
-      .map((g) => ({ label: g, value: g }));
+      .map((g) => ({ label: g.label, value: g.value }));
   };
 
   const getTableColumns = (): ColumnsType<any> => {
@@ -177,7 +196,7 @@ export const useEnrollment = () => {
         searchInputProps: {
           apiRoute: "student",
           placeholder: "Search student by name",
-          queryKeys: ["first_name", "last_name"],
+          queryKeys: ["first_name", "middle_name", "last_name"],
           onSelect: (value: any) => {
             onStudentSelect(value);
           },

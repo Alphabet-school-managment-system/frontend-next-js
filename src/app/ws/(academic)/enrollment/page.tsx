@@ -4,6 +4,8 @@ import { useEnrollment } from "./hook/useEnrollment";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { QueryBy } from "@/components/list/index";
+import { IdsContext } from "@/store/idsContext";
+import { useContext } from "react";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -11,7 +13,8 @@ const List = dynamic(() => import("@/components/list/index"), {
 });
 
 export default function Home() {
-  const { getTableColumns } = useEnrollment();
+  const { Ids } = useContext(IdsContext);
+  const { getTableColumns } = useEnrollment({ Ids });
 
   return (
     <>
