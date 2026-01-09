@@ -36,11 +36,11 @@ export default function Home() {
             data={[
               {
                 value: "fee",
-                text: "Fees",
+                label: "Fees",
               },
               {
                 value: "expense",
-                text: "Expenses",
+                label: "Expenses",
               },
             ]}
             placeholderText="Apply filter"

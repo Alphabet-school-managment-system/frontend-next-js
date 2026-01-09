@@ -39,11 +39,11 @@ export default function Home() {
             data={[
               {
                 value: "student",
-                text: "Students",
+                label: "Students",
               },
               {
                 value: "teacher",
-                text: "Teachers",
+                label: "Teachers",
               },
             ]}
             placeholderText="Apply filter"
