@@ -1,9 +1,10 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { AutoComplete, Spin } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { useApiQuery } from "@/hooks/useApi";
+import { LibraryBook, Student, Teacher } from "@/types";
 
 export interface SearchInputProps {
   onSelect?: (value: any) => void;
@@ -13,6 +14,7 @@ export interface SearchInputProps {
   queryKeys: string[];
   suffixIcon?: ReactNode;
   allowClear?: boolean;
+  incomingOptions?: any[];
 }
 
 const SearchInput = ({
@@ -23,8 +25,11 @@ const SearchInput = ({
   queryKeys,
   suffixIcon,
   allowClear = true,
+  incomingOptions = [],
 }: SearchInputProps) => {
-  const [options, setOptions] = useState<{ value: string }[]>([]);
+  const [options, setOptions] = useState<Student[] | Teacher[] | LibraryBook[]>(
+    []
+  );
   const [value, setValue] = useState("");
   const [enabled, setEnabled] = useState(false);
 
@@ -45,6 +50,10 @@ const SearchInput = ({
       setOptions([]);
     }
   }, [data]);
+
+  useEffect(() => {
+    setOptions(incomingOptions);
+  }, [incomingOptions]);
 
   return (
     <AutoComplete
@@ -72,13 +81,16 @@ const SearchInput = ({
       }}
       onClear={() => onClear?.()}
       placeholder={placeholder}
-      options={options.map((item: any) => ({
-        value: `${item.first_name} ${item.last_name}`,
-        label: <span>{`${item.first_name} ${item.last_name}`}</span>,
-        data: item,
-      }))}
+      options={options.map((item: any) => {
+        return {
+          value: `${item.first_name} ${item.middle_name}`,
+          label: <span>{`${item.first_name} ${item.middle_name}`}</span>,
+          data: item,
+        };
+      })}
       className="w-full"
       allowClear={allowClear}
+      value={`${incomingOptions[0]?.first_name} ${incomingOptions[0]?.middle_name}`}
       prefix={
         <span className="flex items-center justify-center h-full">
           {isLoading ? (

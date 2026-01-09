@@ -170,7 +170,7 @@ const TableHeader = ({
             addonAfter={FilterOption && FilterOption}
           />
         ) : (
-          <div></div>
+          <div>{FilterOption && FilterOption}</div>
         )}
         {showAddButton && (
           <Button
