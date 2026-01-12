@@ -123,10 +123,10 @@ const Header = ({
   );
 
   useEffect(() => {
-    async function fetch() {
+    async function loadSession() {
       if (!userData?.better_auth_userId) {
         const { data: session, error } = await getSession();
-        
+
         if (error || !session) {
           router.replace("/auth/login");
           return;
@@ -144,8 +144,8 @@ const Header = ({
       }
     }
 
-    fetch();
-  }, [userData?.better_auth_userId]);
+    loadSession();
+  }, []);
 
   useEffect(() => {
     onLoading(gettingIds);

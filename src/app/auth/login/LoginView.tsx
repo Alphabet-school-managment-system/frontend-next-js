@@ -89,7 +89,6 @@ export const OTPInput = ({
 const LoginView = () => {
   const router = useRouter();
   const { setUserData, userData } = useContext(UserContext);
-
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -114,9 +113,10 @@ const LoginView = () => {
             image: context?.user?.image,
             better_auth_userId: context?.user?.id,
           });
-
-          setTimeout(() => router.push("/ws/dashboard"), 0);
-          setLoading(false);
+          setTimeout(() => {
+            setLoading(false);
+            router.push("/ws/dashboard");
+          }, 100);
         },
       }
     );

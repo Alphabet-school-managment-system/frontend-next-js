@@ -5,6 +5,9 @@ import { API_ENDPOINT } from "./constants";
 export const authClient = createAuthClient({
   baseURL: API_ENDPOINT,
   plugins: [emailOTPClient()],
+  fetchOptions: {
+    credentials: "include",
+  },
 });
 
 export const {
