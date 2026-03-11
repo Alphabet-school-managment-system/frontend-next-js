@@ -91,6 +91,27 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     ],
   };
 
+  const getGradeLabel = (grade: number) => {
+    const gradeLabels: Record<string, string> = {
+      "-2": "KG - 1",
+      "-1": "KG - 2",
+      "0": "KG - 3",
+      "1": "Grade 1",
+      "2": "Grade 2",
+      "3": "Grade 3",
+      "4": "Grade 4",
+      "5": "Grade 5",
+      "6": "Grade 6",
+      "7": "Grade 7",
+      "8": "Grade 8",
+      "9": "Grade 9",
+      "10": "Grade 10",
+      "11": "Grade 11",
+      "12": "Grade 12",
+    };
+    return gradeLabels[String(grade)] || "-";
+  };
+
   const getGrades = (
     input: levels_of_education | levels_of_education[]
   ): selectType[] => {
@@ -150,11 +171,13 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
         },
       },
       {
-        title: "Class",
-        dataIndex: "class_name",
-        key: "class_name",
+        title: "Grade (Class)",
+        dataIndex: "grade",
+        key: "grade",
         render: (val: string, record: any) => (
-          <span className="text-sm">{record?.grade || "-"}</span>
+          <span className="text-sm">
+            {getGradeLabel(Number(record?.grade)) || "-"}
+          </span>
         ),
       },
       {
@@ -281,6 +304,7 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     getTableColumns,
     getFormFields,
     getGrades,
+    getGradeLabel,
     AcademicYear,
     gettingAcademicYear,
     SchoolSetting,
