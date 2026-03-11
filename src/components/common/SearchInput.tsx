@@ -53,7 +53,7 @@ const SearchInput = ({
 
   useEffect(() => {
     setOptions(incomingOptions);
-  }, [incomingOptions]);
+  }, []);
 
   return (
     <AutoComplete
@@ -90,7 +90,11 @@ const SearchInput = ({
       })}
       className="w-full"
       allowClear={allowClear}
-      value={`${incomingOptions[0]?.first_name} ${incomingOptions[0]?.middle_name}`}
+      value={
+        incomingOptions.length > 0
+          ? `${incomingOptions[0]?.first_name} ${incomingOptions[0]?.middle_name}`
+          : undefined
+      }
       prefix={
         <span className="flex items-center justify-center h-full">
           {isLoading ? (

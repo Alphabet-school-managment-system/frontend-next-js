@@ -68,8 +68,8 @@ const Header = ({
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { Ids, setIds } = useContext(IdsContext);
-  const { setUserData, userData } = useContext(UserContext);
   const [getIds, setGetIds] = useState(false);
+  const { setUserData, userData } = useContext(UserContext);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
     ConfirmationModalContext
