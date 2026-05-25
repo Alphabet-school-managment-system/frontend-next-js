@@ -19,19 +19,19 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     useApiQuery<AcademicYear>(
       [`academic-year/${Ids?.branchId}`],
       `academic-year/${Ids?.branchId}`,
-      Ids?.branchId ? true : false
+      Ids?.branchId ? true : false,
     );
 
   const { data: SchoolSetting, isLoading: gettingSchoolSetting } =
     useApiQuery<Setting>(
       [`setting/${Ids?.schoolId}`],
       `setting/${Ids?.schoolId}`,
-      Ids?.schoolId ? true : false
+      Ids?.schoolId ? true : false,
     );
 
   const { data: ServerDate, isLoading: gettingServerDate } = useApiQuery<any>(
     [`util/server-date`],
-    `util/server-date`
+    `util/server-date`,
   );
 
   const isEnrollmentPeriodExpired = (): {
@@ -50,9 +50,9 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
       if (!result) {
         return {
           message: `Enrollment period has expired. Enrollment is allowed from ${dayjs(
-            AcademicYear.enrollment_start
+            AcademicYear.enrollment_start,
           ).format("MMM DD, YYYY")} to ${dayjs(
-            AcademicYear.enrollment_end
+            AcademicYear.enrollment_end,
           ).format("MMM DD, YYYY")}.`,
           status: true,
         };
@@ -71,13 +71,17 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
       { label: "KG - 2", value: -1 },
       { label: "KG - 3", value: 0 },
     ],
-    primary: [
+    lower_primary: [
       { label: "Grade 1", value: 1 },
       { label: "Grade 2", value: 2 },
       { label: "Grade 3", value: 3 },
       { label: "Grade 4", value: 4 },
+    ],
+    middle_primary: [
       { label: "Grade 5", value: 5 },
       { label: "Grade 6", value: 6 },
+    ],
+    upper_primary: [
       { label: "Grade 7", value: 7 },
       { label: "Grade 8", value: 8 },
     ],
@@ -113,12 +117,12 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
   };
 
   const getGrades = (
-    input: levels_of_education | levels_of_education[]
+    input: levels_of_education | levels_of_education[],
   ): selectType[] => {
     const types = Array.isArray(input) ? input : [input];
     return types
       .flatMap((type) => gradeMap[type])
-      .map((g) => ({ label: g.label, value: g.value }));
+      .map((g:any) => ({ label: g?.label, value: g?.value }));
   };
 
   const getTableColumns = (): ColumnsType<any> => {
@@ -171,6 +175,16 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
         },
       },
       {
+        title: "Stream",
+        dataIndex: "stream",
+        key: "stream",
+        render: (val: string) => (
+          <span className="text-sm border px-2 py-1 rounded bg-amber-50">
+            {val.replace(/_/g, " ") || "-"}
+          </span>
+        ),
+      },
+      {
         title: "Grade (Class)",
         dataIndex: "grade",
         key: "grade",
@@ -198,6 +212,7 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     levels_of_education,
     includeId = false,
     isTransferredValue = false,
+    onStreamSelect = () => {},
   }: {
     onStudentSelect: (student: Student) => void;
     onGradeSelect: (grade: string) => void;
@@ -205,6 +220,7 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     levels_of_education: levels_of_education[];
     includeId?: boolean;
     isTransferredValue?: boolean;
+    onStreamSelect?: (stream: string) => void;
   }): FieldConfig[] => {
     const [isTransferred, setIsTransferred] =
       useState<boolean>(isTransferredValue);
@@ -266,6 +282,22 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
             message: "please enter the previous school name",
           },
         ],
+      },
+      {
+        name: "stream",
+        label: "Stream",
+        type: FieldType.Select,
+        placeholder: "Select Stream",
+        selectProps: {
+          onChange: (value: string) => {
+            onStreamSelect(value);
+          },
+        },
+        options: [
+          { label: "Natural Sciences", value: "Natural_Sciences" },
+          { label: "Social Sciences", value: "Social_Sciences" },
+        ],
+        rules: [{ required: false, message: "" }],
       },
       {
         name: "note",

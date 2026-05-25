@@ -30,6 +30,7 @@ const ChangePassword = ({
               onResponse: () => {
                 onLoading(false);
               },
+              onClear: () => {},
             });
           },
           onError(context: any) {

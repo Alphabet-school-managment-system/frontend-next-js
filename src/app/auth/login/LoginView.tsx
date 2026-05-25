@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserContext } from "@/store/userContext";
+import { getLandingPath } from "@/lib/constants";
 
 export const PasswordInput = ({
   name = "password",
@@ -88,11 +89,11 @@ export const OTPInput = ({
 
 const LoginView = () => {
   const router = useRouter();
-  const { setUserData, userData } = useContext(UserContext);
+  const { setUserData } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
-    const result: any = await signIn.email(
+    await signIn.email(
       {
         email: values.email,
         password: values.password,
@@ -112,10 +113,11 @@ const LoginView = () => {
             first_name: context?.user?.name,
             image: context?.user?.image,
             better_auth_userId: context?.user?.id,
+            role: context?.user?.role,
           });
           setTimeout(() => {
             setLoading(false);
-            router.push("/ws/dashboard");
+            router.push(getLandingPath(context?.user?.role));
           }, 100);
         },
       }

@@ -269,8 +269,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
               typeof field?.value === "number"
                 ? field.value
                 : field?.value
-                ? Number(field.value.toString().replace(/,/g, ""))
-                : undefined
+                  ? Number(field.value.toString().replace(/,/g, ""))
+                  : undefined
             }
             formatter={(value) =>
               value !== undefined
@@ -331,12 +331,14 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   const { mutate, isPending } = useApiMutation(
     [apiRoute],
     data?.id ? `${apiRoute}/${data.id}/update` : apiRoute,
-    data?.id ? "PUT" : "POST"
+    data?.id ? "PUT" : "POST",
   );
 
   const handleFormSubmit = async (values: any) => {
     try {
       const payload = { ...values };
+      "grade" in payload && (payload.grade = payload.grade);
+      
       await mutate(
         { body: payload },
         {
@@ -347,7 +349,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
               router.back();
             }
           },
-        }
+        },
       );
     } catch (error) {
       toast.error(`"${error}`);

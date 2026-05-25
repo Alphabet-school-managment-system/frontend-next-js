@@ -14,7 +14,7 @@ export const Drawer = ({
   loading,
   footer,
   styles,
-  className
+  className,
 }: {
   title: string | React.ReactNode;
   isEdit?: boolean;
@@ -26,7 +26,7 @@ export const Drawer = ({
   buttonTitle?: string;
   buttonDanger?: boolean;
   loading?: boolean;
-  footer?: React.ReactNode;
+  footer?: React.ReactNode | null;
   styles?: DrawerStyles;
   className?: string;
 }) => {
@@ -39,7 +39,7 @@ export const Drawer = ({
       }}
       styles={styles && styles}
       footer={
-        footer ?? (
+        footer !== undefined ? footer : (
           <Button
             htmlType="button"
             className="h-10 w-full"

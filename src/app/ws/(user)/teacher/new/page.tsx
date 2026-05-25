@@ -14,7 +14,7 @@ const FormGenerator = dynamic(
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 
 export default function Home() {

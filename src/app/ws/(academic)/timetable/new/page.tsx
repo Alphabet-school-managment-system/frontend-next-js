@@ -25,6 +25,7 @@ export default function Home() {
   const { SchoolSetting, gettingSchoolSetting, getGrades } = useEnrollment({
     Ids,
   });
+  console.log('%csrc/app/ws/(academic)/timetable/new/page.tsx:28 getGrades', 'color: #007acc;', getGrades);
   const { getFormFields } = useTimetable({ SchoolSetting });
 
   const [loading, setLoading] = useState<boolean>();

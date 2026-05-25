@@ -1,6 +1,8 @@
-export const apiEndpoint: string = "http://localhost:4000/api/v1";
 import axios, { AxiosRequestConfig } from "axios";
+import { API_ENDPOINT } from "@/lib/constants";
 const token = process.env.NEXT_PUBLIC_API_TOKEN || null;
+
+export const apiEndpoint: string = `${API_ENDPOINT}/api/v1`;
 
 export const apiRequest = async <T>(
   url: string,
@@ -26,6 +28,15 @@ export const apiRequest = async <T>(
           "Backend error occurred"
       );
     } else {
+      if (
+        error?.message === "Network Error" &&
+        API_ENDPOINT.includes("localhost")
+      ) {
+        throw new Error(
+          "Network Error: localhost is not reachable from this device. Set NEXT_PUBLIC_API_URL to your machine IP, or use 10.0.2.2 for an Android emulator."
+        );
+      }
+
       throw new Error(error.message);
     }
   }
