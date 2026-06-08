@@ -14,6 +14,7 @@ const UserProfileInfo = ({
   nameStyle,
   subTitle,
   sex = "male",
+  onClick,
 }: {
   full_name: string;
   short_name?: string;
@@ -25,6 +26,7 @@ const UserProfileInfo = ({
   nameStyle?: string;
   subTitle?: string;
   sex?: "male" | "female" | undefined | null;
+  onClick?: () => void;
 }) => {
   return link ? (
     <Link className="flex items-center text-black!" href={link}>
@@ -53,7 +55,10 @@ const UserProfileInfo = ({
       </div>
     </Link>
   ) : (
-    <span className="flex items-center text-black!">
+    <span
+      className={`flex items-center text-black! ${onClick ? "hover:underline hover:cursor-pointer" : ""}`}
+      onClick={onClick}
+    >
       {photoUrl ? (
         <Avatar src={photoUrl} size={avatarSize} style={{ marginRight: 8 }} />
       ) : (
