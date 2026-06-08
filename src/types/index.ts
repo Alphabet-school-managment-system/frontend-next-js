@@ -186,6 +186,7 @@ export type Parent = {
   phone?: string | null;
   email?: string | null;
   address?: string | null;
+  sex?: Sex | null;
   note?: string | null;
   branch_id?: string | null;
 };
@@ -202,7 +203,10 @@ export type Staff = {
   _id: string;
   better_auth_id?: string | null;
   first_name: string;
-  last_name: string;
+  middle_name: string;
+  sex?: Sex | null;
+  phone?: string | null;
+  email?: string | null;
   role: StaffRole;
   branch_id?: string | null;
 };
@@ -283,7 +287,7 @@ export type levels_of_education =
   | "secondary"
   | "college_prep";
 
-  export type stream = "Natural_Sciences" | "Social_Sciences" | "General";
+export type stream = "Natural_Sciences" | "Social_Sciences" | "General";
 
 export interface Setting {
   id: string;

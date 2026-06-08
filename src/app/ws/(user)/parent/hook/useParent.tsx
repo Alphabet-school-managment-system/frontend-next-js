@@ -8,8 +8,10 @@ import { Button } from "antd";
 export const useParent = () => {
   const getTableColumns = ({
     onShowChildren,
+    onClick,
   }: {
     onShowChildren: (parent: any) => void;
+    onClick?: (parent: any) => void;
   }): any[] => {
     return [
       {
@@ -20,7 +22,7 @@ export const useParent = () => {
           <UserProfileInfo
             full_name={`${record?.first_name} ${record?.middle_name}`}
             photoUrl={record?.photoUrl}
-            link={`/ws/parent-detail/${record?.id}`}
+            onClick={() => onClick && onClick(record)}
           />
         ),
       },

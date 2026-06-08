@@ -5,7 +5,11 @@ import { get_formatted_sex } from "../../student/hook/useStudent";
 import { Sex } from "@/types/enums";
 
 export const useStaff = () => {
-  const getTableColumns = (): any[] => {
+  const getTableColumns = ({
+    onClick,
+  }: {
+    onClick?: (parent: any) => void;
+  }): any[] => {
     return [
       {
         title: "Name",
@@ -15,7 +19,7 @@ export const useStaff = () => {
           <UserProfileInfo
             full_name={`${record?.first_name} ${record?.middle_name}`}
             photoUrl={record?.photoUrl}
-            link={`/ws/staff-detail/${record?.id}`}
+            onClick={() => onClick && onClick(record)}
           />
         ),
       },

@@ -7,6 +7,7 @@ import { QueryBy } from "@/components/list/index";
 import { Parent } from "@/types";
 import { useParent } from "./hook/useParent";
 import { ParentChildrenDrawer } from "./ParentChildrenDrawer";
+import { UserDetailPage } from "../../../../components/common/userDetailPage";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -15,17 +16,20 @@ const List = dynamic(() => import("@/components/list/index"), {
 
 export default function Home() {
   const { getTableColumns } = useParent();
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState<{
+    detail: boolean;
+    children: boolean;
+  }>({ detail: false, children: false });
   const [selectedParent, setSelectedParent] = useState<Parent | undefined>();
 
   return (
     <>
-      {openDrawer && (
+      {openDrawer.children && (
         <Drawer
           title="Children Information"
           open
           onClose={() => {
-            setOpenDrawer(false);
+            setOpenDrawer((pre) => ({ ...pre, children: false }));
             setSelectedParent(undefined);
           }}
           width={800}
@@ -34,11 +38,29 @@ export default function Home() {
           <ParentChildrenDrawer parent={selectedParent} />
         </Drawer>
       )}
+      {openDrawer.detail && (
+        <Drawer
+          title="Parent Information"
+          open
+          onClose={() => {
+            setOpenDrawer((pre) => ({ ...pre, detail: false }));
+            setSelectedParent(undefined);
+          }}
+          width={600}
+          footer={null}
+        >
+          <UserDetailPage data={selectedParent} />
+        </Drawer>
+      )}
       <List
         columns={getTableColumns({
           onShowChildren: (parent) => {
             setSelectedParent(parent);
-            setOpenDrawer(true);
+            setOpenDrawer((pre) => ({ detail: false, children: true }));
+          },
+          onClick: (parent) => {
+            setSelectedParent(parent);
+            setOpenDrawer((pre) => ({ children: false, detail: true }));
           },
         })}
         searchByCols={["first_name", "last_name", "email", "phone"]}
