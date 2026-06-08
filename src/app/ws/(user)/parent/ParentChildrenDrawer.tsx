@@ -27,45 +27,41 @@ const getFullName = (student?: Student) =>
 
 const ParentStudentCardSkeleton = () => {
   return (
-    <div className="flex h-full flex-col rounded-md border border-gray-200 bg-gray-50 p-3 text-center shadow-none">
+    <div className="flex h-full min-h-[240px] flex-col rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm">
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <Skeleton.Avatar active size={72} />
+        <Skeleton.Avatar active size={72} shape="circle" />
 
-        <div className="min-w-0 w-full">
-          <div className="flex flex-col items-center gap-3">
+        <div className="w-full min-w-0">
+          <div className="flex flex-col items-center gap-2">
             <Skeleton.Input
               active
               size="small"
-              className="w-3/5!"
-              style={{ width: "60%" }}
+              style={{ width: "62%", height: 18 }}
             />
             <Skeleton.Input
               active
               size="small"
-              className="w-24!"
-              style={{ width: "96px" }}
+              style={{ width: "38%", height: 14 }}
             />
           </div>
 
-          <div className="mt-3 flex flex-col items-center gap-2">
+          <div className="mt-4 flex flex-col items-center gap-2">
             <Skeleton.Input
               active
               size="small"
-              className="w-4/5!"
-              style={{ width: "80%" }}
+              style={{ width: "78%", height: 14 }}
             />
             <Skeleton.Input
               active
               size="small"
-              className="w-1/2!"
-              style={{ width: "50%" }}
+              style={{ width: "52%", height: 14 }}
             />
           </div>
         </div>
       </div>
 
       <div className="mt-4 flex justify-center">
-        <Skeleton.Button active size="small" className="w-28!" />
+        <Skeleton.Button active size="small" style={{ width: 108 }} />
       </div>
     </div>
   );
