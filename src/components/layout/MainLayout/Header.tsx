@@ -26,9 +26,11 @@ type HeaderProps = {
 export const Logout = async ({
   onRequest,
   onResponse,
+  onClear,
 }: {
   onRequest: () => void;
   onResponse: () => void;
+  onClear: () => void;
 }) => {
   await signOut(
     {},
@@ -37,6 +39,7 @@ export const Logout = async ({
         onRequest();
       },
       onResponse: () => {
+        onClear();
         onResponse();
         window.location.replace("/auth/login");
       },
@@ -68,8 +71,8 @@ const Header = ({
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { Ids, setIds } = useContext(IdsContext);
-  const { setUserData, userData } = useContext(UserContext);
   const [getIds, setGetIds] = useState(false);
+  const { setUserData, userData, clearUserData } = useContext(UserContext);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
     ConfirmationModalContext
@@ -95,17 +98,20 @@ const Header = ({
       content: "Are you sure want to log out from system ?",
       okButtonText: "Yes, Proceed.",
       cancelButtonText: "Nuh, Stay!",
-      onOk: async () => {
-        await Logout({
-          onRequest: () => {
-            onLoading(true);
-          },
-          onResponse: () => {
-            onLoading(false);
-          },
-        });
-      },
-      show: true,
+        onOk: async () => {
+          await Logout({
+            onRequest: () => {
+              onLoading(true);
+            },
+            onResponse: () => {
+              onLoading(false);
+            },
+            onClear: () => {
+              clearUserData();
+            },
+          });
+        },
+        show: true,
     }));
   };
 

@@ -167,7 +167,7 @@ export const useLibraryItem = () => {
       {
         name: "isbn",
         label: "ISBN (International standard book number)",
-        type: FieldType.number,
+        type: FieldType.Input,
         placeholder: "########## or #############",
         prefix: (
           <span className="flex items-center justify-center h-full">
@@ -182,14 +182,17 @@ export const useLibraryItem = () => {
         rules: [
           {
             validator: (_: any, value: string) => {
-              if (!value || isValidISBN(value)) {
+              const raw = String(value ?? "")
+                .replace(/[\s-]+/g, "")
+                .toUpperCase();
+              if (!raw || isValidISBN(raw)) {
                 return Promise.resolve();
               }
               return Promise.reject("ISBN must be 10 or 13 characters");
             },
           },
         ],
-        max: 13,
+        max: undefined,
       },
       {
         name: "publication_date",

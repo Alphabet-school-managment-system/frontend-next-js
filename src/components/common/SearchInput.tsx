@@ -31,16 +31,15 @@ const SearchInput = ({
     []
   );
   const [value, setValue] = useState("");
-  const [enabled, setEnabled] = useState(false);
 
   const queryString = queryKeys
     .map((key) => `${key}=${encodeURIComponent(value)}`)
     .join("&");
   const route = apiRoute ?? "";
-  const { data, isLoading } = useApiQuery<any[]>(
-    [route],
+  const { data, isLoading, refetch } = useApiQuery<any[]>(
+    [route, value],
     `${route}/search/?${queryString}`,
-    enabled
+    false
   );
 
   useEffect(() => {
@@ -53,7 +52,18 @@ const SearchInput = ({
 
   useEffect(() => {
     setOptions(incomingOptions);
-  }, [incomingOptions]);
+  }, []);
+
+  const getOptionLabel = (item: any) => {
+    const parts = [item?.first_name, item?.middle_name, item?.last_name]
+      .filter(Boolean)
+      .join(" ");
+
+    if (parts) return parts;
+    if (item?.title) return item.title;
+    if (item?.name) return item.name;
+    return "";
+  };
 
   return (
     <AutoComplete
@@ -61,19 +71,16 @@ const SearchInput = ({
       onSearch={async (value: string) => {
         setValue(value);
         if (!value.trim()) {
-          setEnabled(false);
           setOptions([]);
         }
       }}
-      onKeyDown={(e) => {
+      onKeyDown={async (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
-          if (value.trim()) {
-            setEnabled(true);
-          } else {
-            setEnabled(false);
-          }
           setOptions([]);
+          if (value.trim()) {
+            await refetch();
+          }
         }
       }}
       onSelect={(_, option) => {
@@ -82,15 +89,20 @@ const SearchInput = ({
       onClear={() => onClear?.()}
       placeholder={placeholder}
       options={options.map((item: any) => {
+        const label = getOptionLabel(item);
         return {
-          value: `${item.first_name} ${item.middle_name}`,
-          label: <span>{`${item.first_name} ${item.middle_name}`}</span>,
+          value: label,
+          label: <span>{label}</span>,
           data: item,
         };
       })}
       className="w-full"
       allowClear={allowClear}
-      value={`${incomingOptions[0]?.first_name} ${incomingOptions[0]?.middle_name}`}
+      value={
+        incomingOptions.length > 0
+          ? getOptionLabel(incomingOptions[0])
+          : undefined
+      }
       prefix={
         <span className="flex items-center justify-center h-full">
           {isLoading ? (

@@ -3,31 +3,180 @@ import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
 import { get_formatted_sex } from "../../student/hook/useStudent";
 import { Sex } from "@/types/enums";
+import { levels_of_education, stream } from "@/types";
 
 export const useTeacher = () => {
-  const subjectOptions = [
-    { label: "Local language", value: "Local_language" },
-    { label: "Mathematics", value: "mathematics" },
-    { label: "Physics", value: "physics" },
-    { label: "Chemistry", value: "chemistry" },
-    { label: "Biology", value: "biology" },
-    { label: "English", value: "english" },
-    { label: "History", value: "history" },
-    { label: "Geography", value: "geography" },
-    { label: "Computer Science", value: "computer_science" },
-    { label: "Economics", value: "economics" },
-    { label: "Business Studies", value: "business_studies" },
-    { label: "Civics", value: "civics" },
-    { label: "Physical Education", value: "physical_education" },
-    { label: "Music", value: "music" },
-    { label: "Art", value: "art" },
-    { label: "Religious Studies", value: "religious_studies" },
-    { label: "Environmental Science", value: "environmental_science" },
-    { label: "Social Studies", value: "social_studies" },
-    { label: "Philosophy", value: "philosophy" },
-    { label: "Political Science", value: "political_science" },
-    { label: "Special Education", value: "special_education" },
-    { label: "Other", value: "other" },
+  const subjectOptions: {
+    label: string;
+    value: string;
+    Stream: stream;
+    enable: boolean;
+    levels_of_education: levels_of_education[];
+  }[] = [
+    {
+      label: "Mother Tongue Language",
+      value: "mother_tongue_language",
+      Stream: "General",
+      enable: true,
+      levels_of_education: [
+        "kg",
+        "lower_primary",
+        "middle_primary",
+        "upper_primary",
+      ],
+    },
+    {
+      label: "Amharic language",
+      value: "amharic_language",
+      Stream: "General",
+      enable: true,
+      levels_of_education: ["middle_primary", "upper_primary", "secondary"],
+    },
+    {
+      label: "Physics",
+      value: "physics",
+      Stream: "Natural_Sciences",
+      enable: true,
+      levels_of_education: ["upper_primary", "secondary", "college_prep"],
+    },
+    {
+      label: "Chemistry",
+      value: "chemistry",
+      Stream: "Natural_Sciences",
+      enable: true,
+      levels_of_education: ["upper_primary", "secondary", "college_prep"],
+    },
+    {
+      label: "Biology",
+      value: "biology",
+      Stream: "Natural_Sciences",
+      enable: true,
+      levels_of_education: ["upper_primary", "secondary", "college_prep"],
+    },
+    {
+      label: "History",
+      value: "history",
+      Stream: "Social_Sciences",
+      enable: true,
+      levels_of_education: ["secondary", "college_prep"],
+    },
+    {
+      label: "Geography",
+      value: "geography",
+      Stream: "Social_Sciences",
+      enable: true,
+      levels_of_education: ["secondary", "college_prep"],
+    },
+    {
+      label: "Economics",
+      value: "economics",
+      Stream: "Social_Sciences",
+      enable: true,
+      levels_of_education: ["college_prep"],
+    },
+    {
+      label: "Business Studies",
+      value: "business_studies",
+      Stream: "Social_Sciences",
+      enable: true,
+      levels_of_education: ["college_prep"],
+    },
+    {
+      label: "Technical Drawing",
+      value: "technical_drawing",
+      Stream: "Natural_Sciences",
+      enable: true,
+      levels_of_education: ["college_prep"],
+    },
+
+    {
+      label: "Mathematics",
+      value: "mathematics",
+      Stream: "General",
+      enable: true,
+      levels_of_education: [
+        "kg",
+        "lower_primary",
+        "middle_primary",
+        "upper_primary",
+        "secondary",
+        "college_prep",
+      ],
+    },
+    {
+      label: "English",
+      value: "english",
+      Stream: "General",
+      enable: true,
+      levels_of_education: [
+        "kg",
+        "lower_primary",
+        "middle_primary",
+        "upper_primary",
+        "secondary",
+        "college_prep",
+      ],
+    },
+    {
+      label: "Citizenship Education",
+      value: "citizenship_education",
+      Stream: "General",
+      enable: true,
+      levels_of_education: [
+        "middle_primary",
+        "upper_primary",
+        "secondary",
+        "college_prep",
+      ],
+    },
+    {
+      label: "Physical Education (PE)",
+      value: "physical_education",
+      Stream: "General",
+      enable: true,
+      levels_of_education: [
+        "lower_primary",
+        "middle_primary",
+        "upper_primary",
+        "secondary",
+      ],
+    },
+    {
+      label: "Information Technology (IT)",
+      value: "information_technology",
+      Stream: "General",
+      enable: true,
+      levels_of_education: ["upper_primary", "secondary", "college_prep"],
+    },
+
+    {
+      label: "Performing and Visual Arts (PVA)",
+      value: "performing_and_visual_arts",
+      Stream: "General",
+      enable: true,
+      levels_of_education: ["lower_primary", "middle_primary"],
+    },
+    {
+      label: "Environmental Science",
+      value: "environmental_science",
+      Stream: "General",
+      enable: true,
+      levels_of_education: ["lower_primary"],
+    },
+    {
+      label: "Social Studies",
+      value: "social_studies",
+      Stream: "General",
+      enable: true,
+      levels_of_education: ["middle_primary", "upper_primary"],
+    },
+    {
+      label: "General Science",
+      value: "general_science",
+      Stream: "General",
+      enable: true,
+      levels_of_education: ["middle_primary"],
+    },
   ];
 
   const get_speciality_label = (value: string): string => {

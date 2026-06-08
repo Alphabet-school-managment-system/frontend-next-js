@@ -172,17 +172,17 @@ export type Mark = {
 };
 
 export type ParentStudent = {
-  _id: string;
+  id: string;
   student_id: string;
   parent_id: string;
   type: ParentType;
 };
 
 export type Parent = {
-  _id: string;
+  id: string;
   better_auth_id?: string | null;
   first_name: string;
-  last_name: string;
+  middle_name: string;
   phone?: string | null;
   email?: string | null;
   address?: string | null;
@@ -239,6 +239,10 @@ export type Student = {
   student_registration_number?: string | null;
 };
 
+export type StudentWithEnrollment = Student & {
+  enrollment: Enrollment[];
+};
+
 export type Teacher = {
   id: string;
   better_auth_id?: string | null;
@@ -273,9 +277,13 @@ export type Timetable = {
 
 export type levels_of_education =
   | "kg"
-  | "primary"
+  | "lower_primary"
+  | "middle_primary"
+  | "upper_primary"
   | "secondary"
   | "college_prep";
+
+  export type stream = "Natural_Sciences" | "Social_Sciences" | "General";
 
 export interface Setting {
   id: string;

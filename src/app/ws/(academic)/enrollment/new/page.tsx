@@ -25,6 +25,7 @@ export const EnrollmentStudentDetail = ({
   student?: Student;
   enrolled_grade?: string;
 }) => {
+  const { getGradeLabel } = useEnrollment({ Ids: {} });
   const defaultPhoto =
     student?.sex === "Female"
       ? staticImages?.noPhotoGirlImg
@@ -46,7 +47,7 @@ export const EnrollmentStudentDetail = ({
           alt="Student image"
           width={80}
           height={80}
-          className="w-[150px] h-[150px] rounded-full object-cover mb-4"
+          className="w-37.5 h-37.5 rounded-full object-cover mb-4"
           priority
         />
       </div>
@@ -59,7 +60,7 @@ export const EnrollmentStudentDetail = ({
 
       <Descriptions column={1} layout="horizontal" size="middle" bordered>
         <Descriptions.Item label="Grade">
-          {enrolled_grade}
+          {getGradeLabel(Number(enrolled_grade))}
         </Descriptions.Item>
 
         <Descriptions.Item label="Email">{student.email}</Descriptions.Item>
@@ -71,7 +72,10 @@ export const EnrollmentStudentDetail = ({
         <Descriptions.Item label="Address">{student.address}</Descriptions.Item>
 
         <Descriptions.Item label="Registration No">
-          {student.student_registration_number}
+          {`STU-${String(student.student_registration_number).padStart(
+            6,
+            "0"
+          )}`}
         </Descriptions.Item>
       </Descriptions>
     </div>

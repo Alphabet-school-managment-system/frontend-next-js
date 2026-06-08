@@ -3,9 +3,14 @@ import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { Icon } from "@iconify-icon/react";
 import { get_formatted_sex } from "../../student/hook/useStudent";
 import { Sex } from "@/types/enums";
+import { Button } from "antd";
 
 export const useParent = () => {
-  const getTableColumns = (): any[] => {
+  const getTableColumns = ({
+    onShowChildren,
+  }: {
+    onShowChildren: (parent: any) => void;
+  }): any[] => {
     return [
       {
         title: "Name",
@@ -62,6 +67,22 @@ export const useParent = () => {
         dataIndex: "address",
         key: "address",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+      },
+      {
+        title: "Children",
+        dataIndex: "children",
+        key: "children",
+        render: (_: string, record: any) => (
+          <Button
+            type="link"
+            htmlType="button"
+            className="mt-2 rounded-sm!"
+            size="large"
+            onClick={() => onShowChildren(record)}
+          >
+            Show Children
+          </Button>
+        ),
       },
     ];
   };

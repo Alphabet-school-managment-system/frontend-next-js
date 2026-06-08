@@ -27,8 +27,11 @@ export const isValidISBN = (isbn: string): boolean => {
     for (let i = 0; i < 9; i++) {
       sum += (i + 1) * parseInt(isbn[i], 10);
     }
-    sum += isbn[9] === "X" ? 10 * 10 : 10 * parseInt(isbn[9], 10);
-    return sum % 11 === 0;
+    sum += isbn[9] === "X" ? 10 : 10 * parseInt(isbn[9], 10);
+
+    const result = sum % 11 === 0;
+
+    return result;
   }
 
   // ISBN-13
@@ -39,8 +42,10 @@ export const isValidISBN = (isbn: string): boolean => {
       sum += i % 2 === 0 ? digit : digit * 3;
     }
     const check = (10 - (sum % 10)) % 10;
-    return check === parseInt(isbn[12], 10);
+    const result = check === parseInt(isbn[12], 10);
+
+    return result;
   }
 
   return false;
-}
+};
