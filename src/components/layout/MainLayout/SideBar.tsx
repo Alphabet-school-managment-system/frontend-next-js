@@ -78,7 +78,7 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                     onClick={() => toggleGroup(item.key)}
                   >
                     <div className="flex items-center space-x-2 font-semibold">
-                      <span className="flex-shrink-0">{item.icon}</span>
+                      <span className="shrink-0">{item.icon}</span>
                       {!collapsed && <span>{item.label}</span>}
                     </div>
                     {!collapsed && (
@@ -88,7 +88,7 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                             ? "ph:caret-down-bold"
                             : "ph:caret-right-bold"
                         }
-                        className="!font-bold transition-transform duration-300"
+                        className="font-bold! transition-transform duration-300"
                         width={20}
                         height={20}
                       />
@@ -100,10 +100,10 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                         <li key={child.key}>
                           <Link
                             href={child.path}
-                            className={`flex items-center px-2 py-2 rounded-md text-sm font-semibold !text-gray-800 hover:cursor-pointer ${
+                            className={`flex items-center px-2 py-2 rounded-md text-sm !text-gray-800 hover:cursor-pointer ${
                               selectedMenuItem === child.key
-                                ? "!bg-blue-50 !font-semibold"
-                                : "hover:!bg-blue-50"
+                                ? "!bg-gray-100 !font-semibold"
+                                : "hover:!bg-gray-100"
                             }`}
                             onClick={() => onSelect(child)}
                           >
@@ -119,14 +119,14 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                 // Single menu item
                 <Link
                   href={item.path}
-                  className={`flex items-center px-2 py-2 rounded-md !text-gray-800 font-semibold hover:cursor-pointer ${
+                  className={`flex items-center px-2 py-2 rounded-md text-gray-800! font-semibold hover:cursor-pointer ${
                     selectedMenuItem === item.key
-                      ? "!font-semibold !bg-blue-50"
-                      : "hover:!bg-blue-50"
+                      ? "font-semibold! bg-gray-100!"
+                      : "hover:bg-gray-100!"
                   }`}
                   onClick={() => onSelect(item)}
                 >
-                  <span className="flex-shrink-0">{item.icon}</span>
+                  <span className="shrink-0">{item.icon}</span>
                   <span
                     className={`ml-3 ${
                       collapsed ? "hidden" : "block"
