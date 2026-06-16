@@ -44,6 +44,7 @@ type props = {
   loading?: boolean;
   queryParams?: { [key: string]: string };
   enable?: boolean;
+  reloadKey?: number;
 };
 
 type actionPrevilageType = {
@@ -80,6 +81,7 @@ const Index = ({
   loading,
   queryParams,
   enable = true,
+  reloadKey = 0,
 }: props) => {
   const router = useRouter();
 
@@ -94,25 +96,39 @@ const Index = ({
   const pageRoute = isRouteString ? route : route.page;
 
   const localQueryParams = new URLSearchParams(
-    queryBy === QueryBy.ACADEMIC_YEAR
-      ? { academic_year_id: Ids?.academicYearId }
-      : ({ branch_id: Ids?.branchId } as any)
-  ).toString();
+    queryBy === QueryBy.ACADEMIC_YEAR ? {} : {},
+  );
+
+  if (queryBy === QueryBy.ACADEMIC_YEAR) {
+    if (Ids?.academicYearId) {
+      localQueryParams.set("academic_year_id", Ids.academicYearId);
+    }
+  } else if (Ids?.branchId) {
+    localQueryParams.set("branch_id", Ids.branchId);
+  }
+
+  const localQueryParamsString = localQueryParams.toString();
 
   const queryStringFromProps = queryParams
     ? new URLSearchParams(queryParams as Record<string, string>).toString()
     : "";
 
-  const query = [queryStringFromProps, localQueryParams].filter(Boolean).join("&");
+  const query = [queryStringFromProps, localQueryParamsString]
+    .filter(Boolean)
+    .join("&");
 
   const apiUrl = query ? `${apiRoute}?${query}` : apiRoute;
 
-  const { data, isLoading } = useApiQuery([apiUrl], apiUrl, enable);
+  const { data, isLoading } = useApiQuery(
+    [apiUrl, String(reloadKey)],
+    apiUrl,
+    enable,
+  );
 
   const { mutate: Delete, isPending: deleting } = useApiMutation(
-    [apiUrl],
+    [apiUrl, String(reloadKey)],
     `${apiRoute}/${selectedRow?.id}/delete`,
-    "DELETE"
+    "DELETE",
   );
 
   useEffect(() => {
@@ -135,7 +151,7 @@ const Index = ({
   }, [searchValue, datasCopy]);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
-    ConfirmationModalContext
+    ConfirmationModalContext,
   );
 
   useEffect(() => {
@@ -153,7 +169,7 @@ const Index = ({
           onSuccess: (res) => {
             setcmProps({ ...defaultConfirmationModalProps });
           },
-        }
+        },
       );
     } catch (error) {
       console.log("Item deletion error:", error);
