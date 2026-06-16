@@ -9,17 +9,18 @@ import { Staff } from "@/types";
 import { Drawer } from "@/components/common/Drawer";
 import { UserDetailPage } from "@/components/common/userDetailPage";
 
+const List = dynamic(() => import("@/components/list/index"), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+});
+
 export default function Home() {
   const { getTableColumns } = useStaff();
   const [openDrawer, setOpenDrawer] = useState<{
     detail: boolean;
   }>({ detail: false });
   const [selectedStaff, setSelectedStaff] = useState<Staff | undefined>();
-
-  const List = dynamic(() => import("@/components/list/index"), {
-    ssr: false,
-    loading: () => <TableSkeleton />,
-  });
+  const [reloadKey, setReloadKey] = useState(0);
 
   return (
     <>
@@ -31,10 +32,20 @@ export default function Home() {
             setOpenDrawer((pre) => ({ ...pre, detail: false }));
             setSelectedStaff(undefined);
           }}
-          width={600}
+          width={550}
           footer={null}
         >
-          <UserDetailPage data={selectedStaff} />
+          <UserDetailPage
+            data={selectedStaff}
+            userType="staff"
+            onClose={(refetch: boolean) => {
+              setOpenDrawer((pre) => ({ ...pre, detail: false }));
+              setSelectedStaff(undefined);
+              if (refetch) {
+                setReloadKey((prev) => prev + 1);
+              }
+            }}
+          />
         </Drawer>
       )}
       <List
@@ -51,6 +62,7 @@ export default function Home() {
         route={"staff"}
         addButtonTitle={"Add new staff"}
         queryBy={QueryBy.BRANCH}
+        reloadKey={reloadKey}
       />
     </>
   );

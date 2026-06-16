@@ -21,6 +21,7 @@ export default function Home() {
     children: boolean;
   }>({ detail: false, children: false });
   const [selectedParent, setSelectedParent] = useState<Parent | undefined>();
+  const [reloadKey, setReloadKey] = useState(0);
 
   return (
     <>
@@ -46,10 +47,20 @@ export default function Home() {
             setOpenDrawer((pre) => ({ ...pre, detail: false }));
             setSelectedParent(undefined);
           }}
-          width={600}
+          width={550}
           footer={null}
         >
-          <UserDetailPage data={selectedParent} />
+          <UserDetailPage
+            data={selectedParent}
+            userType="parent"
+            onClose={(refetch: boolean) => {
+              setOpenDrawer((pre) => ({ ...pre, detail: false }));
+              setSelectedParent(undefined);
+              if (refetch) {
+                setReloadKey((prev) => prev + 1);
+              }
+            }}
+          />
         </Drawer>
       )}
       <List
@@ -70,6 +81,7 @@ export default function Home() {
         route={"parent"}
         addButtonTitle={"Add new parent"}
         queryBy={QueryBy.BRANCH}
+        reloadKey={reloadKey}
       />
     </>
   );

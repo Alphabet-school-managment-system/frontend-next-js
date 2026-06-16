@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+// @ts-ignore: allow side-effect import of CSS without type declarations
 import "../styles/globals.css";
+// @ts-ignore: allow side-effect import of CSS without type declarations
 import "antd/dist/reset.css";
 import "@ant-design/v5-patch-for-react-19";
 import { ConfigProvider } from "antd";
 import QueryProvider from "@/store/query-provider";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "@/store/userContext";
+import { MessageProvider } from "@/store/messageContext";
 
 export const metadata: Metadata = {
   title: "Alphabet",
@@ -31,9 +34,11 @@ export default function RootLayout({
             },
           }}
         >
-          <QueryProvider>
-            <UserProvider>{children}</UserProvider>
-          </QueryProvider>
+          <MessageProvider>
+            <QueryProvider>
+              <UserProvider>{children}</UserProvider>
+            </QueryProvider>
+          </MessageProvider>
         </ConfigProvider>
       </body>
     </html>

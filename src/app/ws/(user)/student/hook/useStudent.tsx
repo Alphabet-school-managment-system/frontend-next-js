@@ -18,7 +18,11 @@ export const get_formatted_sex = (sex?: Sex) => {
 };
 
 export const useStudent = () => {
-  const getTableColumns = (): any[] => {
+  const getTableColumns = ({
+    onClick,
+  }: {
+    onClick?: (parent: any) => void;
+  }): any[] => {
     return [
       {
         title: "Name",
@@ -28,7 +32,7 @@ export const useStudent = () => {
           <UserProfileInfo
             full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
             photoUrl={record?.photoUrl}
-            link={`/ws/student-detail/${record?.id}`}
+            onClick={() => onClick && onClick(record)}
           />
         ),
       },
@@ -93,7 +97,7 @@ export const useStudent = () => {
 
   const getCommonFormFields = (
     showLastName: boolean,
-    includeId: boolean = false
+    includeId: boolean = false,
   ): FieldConfig[] => {
     const fields = [
       {

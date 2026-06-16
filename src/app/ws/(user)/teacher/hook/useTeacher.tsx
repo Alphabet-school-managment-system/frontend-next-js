@@ -183,7 +183,11 @@ export const useTeacher = () => {
     return subjectOptions.find((s) => s.value === value)?.label ?? "Unknown";
   };
 
-  const getTableColumns = (): any[] => {
+  const getTableColumns = ({
+    onClick,
+  }: {
+    onClick?: (parent: any) => void;
+  }): any[] => {
     return [
       {
         title: "Name",
@@ -193,7 +197,7 @@ export const useTeacher = () => {
           <UserProfileInfo
             full_name={`${record?.first_name} ${record?.middle_name}`}
             photoUrl={record?.photoUrl}
-            link={`/ws/teacher-detail/${record?.id}`}
+            onClick={() => onClick && onClick(record)}
           />
         ),
       },
@@ -230,7 +234,7 @@ export const useTeacher = () => {
         dataIndex: "email",
         key: "email",
         render: (val: string) => (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-md bg-gray-200 w-fit py-1 px-2">
             <Icon
               icon="mdi:email"
               width={20}

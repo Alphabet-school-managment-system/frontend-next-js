@@ -249,13 +249,15 @@ export type StudentWithEnrollment = Student & {
 
 export type Teacher = {
   id: string;
-  better_auth_id?: string | null;
+  better_auth_id: string;
   first_name: string;
-  last_name: string;
-  subject_specialization?: string | null;
-  phone?: string | null;
-  email?: string | null;
+  middle_name: string;
+  phone: string;
+  email: string;
+  sex: Sex;
+  subject_specialization: string;
   note?: string | null;
+  image: string;
   branch_id?: string | null;
 };
 
