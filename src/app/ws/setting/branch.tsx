@@ -14,11 +14,17 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Icon } from "@iconify-icon/react";
 
-const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
+const Index = ({
+  onLoading,
+  onConfirmationRequest,
+}: {
+  onLoading: (value: boolean) => void;
+  onConfirmationRequest: (fnc: () => void, frmName: string) => void;
+}) => {
   const apiRoute = "branch";
 
   const { setConfirmationModalProps: setcmProps } = useContext(
-    ConfirmationModalContext
+    ConfirmationModalContext,
   );
 
   useEffect(() => {
@@ -39,7 +45,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   const { data, isLoading } = useApiQuery<Branch[]>(
     [`${apiRoute}/${Ids?.schoolId}`],
-    `${apiRoute}/${Ids?.schoolId}`
+    `${apiRoute}/${Ids?.schoolId}`,
   );
 
   const { mutate, isPending } = useApiMutation(
@@ -47,20 +53,20 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
     isEditBranch
       ? `${apiRoute}/${branchForm.getFieldValue("id")}/update`
       : apiRoute,
-    isEditBranch ? "PUT" : "POST"
+    isEditBranch ? "PUT" : "POST",
   );
 
   const { mutate: changeCurrent, isPending: changingCurrentBranch } =
     useApiMutation(
       [`${apiRoute}/${Ids?.schoolId}`],
       `${apiRoute}/change-current`,
-      "PUT"
+      "PUT",
     );
 
   const { mutate: Delete, isPending: deleting } = useApiMutation(
     [`${apiRoute}/${Ids?.schoolId}`],
     `${apiRoute}/${id}/delete`,
-    "DELETE"
+    "DELETE",
   );
 
   useEffect(() => {
@@ -75,7 +81,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   const handleSubmit = async (
     values: any,
-    isChangeCurrent: boolean = false
+    isChangeCurrent: boolean = false,
   ) => {
     try {
       if (isChangeCurrent) {
@@ -91,7 +97,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
                 });
               }
             },
-          }
+          },
         );
       } else {
         const payload = isEditBranch
@@ -103,7 +109,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
             onSuccess: (res) => {
               handleDrawerClose();
             },
-          }
+          },
         );
       }
     } catch (error) {
@@ -125,7 +131,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
           onSuccess: (res) => {
             setcmProps({ ...defaultConfirmationModalProps });
           },
-        }
+        },
       );
     } catch (error) {
       console.log("Item deletion error:", error);
@@ -147,9 +153,12 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
         <div className=" flex flex-col mb-4">
           <Form
             layout="vertical"
-            onFinish={async (values: any) => {
-              handleSubmit({ id: values?.id }, true);
-            }}
+            onFinish={(values: any) =>
+              onConfirmationRequest(
+                async () => await handleSubmit({ id: values?.id }, true),
+                "branch",
+              )
+            }
             form={changeCurrentBranchForm}
           >
             <Form.Item

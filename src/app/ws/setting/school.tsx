@@ -5,7 +5,13 @@ import { Button, Card, Form, Input } from "antd";
 import { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
+const Index = ({
+  onLoading,
+  onConfirmationRequest,
+}: {
+  onLoading: (value: boolean) => void;
+  onConfirmationRequest: (fnc: () => void, frmName: string) => void;
+}) => {
   const [schoolForm] = Form.useForm();
 
   const { Ids } = useContext(IdsContext);
@@ -14,12 +20,12 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   const { data, isLoading } = useApiQuery<School>(
     [`${apiRoute}/${Ids?.schoolId}`],
-    `${apiRoute}/${Ids?.schoolId}`
+    `${apiRoute}/${Ids?.schoolId}`,
   );
   const { mutate, isPending: isUpdating } = useApiMutation(
     [`${apiRoute}/${Ids?.schoolId}`],
     `${apiRoute}/${Ids?.schoolId}/update`,
-    "PUT"
+    "PUT",
   );
 
   useEffect(() => {
@@ -45,7 +51,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
         { body: payload },
         {
           onSuccess: (res) => {},
-        }
+        },
       );
     } catch (error) {
       toast.error(`${error}`);
@@ -58,7 +64,16 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
       title="School Information"
       style={{ marginBottom: 24 }}
     >
-      <Form layout="vertical" form={schoolForm} onFinish={handleSubmit}>
+      <Form
+        layout="vertical"
+        form={schoolForm}
+        onFinish={(values: any) =>
+          onConfirmationRequest(
+            async () => await handleSubmit(values),
+            "school",
+          )
+        }
+      >
         <div className={`grid gap-4 md:grid-cols-2`}>
           <Form.Item label="id" name="id" hidden>
             <Input hidden />
@@ -97,7 +112,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
           <Button
             type="link"
             htmlType="submit"
-            className="!rounded-sm"
+            className="rounded-sm!"
             size="large"
             loading={isUpdating}
           >

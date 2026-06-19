@@ -9,7 +9,13 @@ import { IdsContext } from "@/store/idsContext";
 
 const { RangePicker } = DatePicker;
 
-const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
+const Index = ({
+  onLoading,
+  onConfirmationRequest,
+}: {
+  onLoading: (value: boolean) => void;
+  onConfirmationRequest: (fnc: () => void, frmName: string) => void;
+}) => {
   const [ayForm] = Form.useForm();
   const { Ids } = useContext(IdsContext);
 
@@ -18,18 +24,18 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   const { data, isLoading } = useApiQuery<AcademicYear>(
     [`${apiRoute}/${Ids?.branchId}`],
-    `${apiRoute}/${Ids?.branchId}`
+    `${apiRoute}/${Ids?.branchId}`,
   );
 
   const { data: ServerDate, isLoading: gettingServerDate } = useApiQuery<any>(
     [`util/server-date`],
-    `util/server-date`
+    `util/server-date`,
   );
 
   const { mutate, isPending: isUpdating } = useApiMutation(
     [`${apiRoute}/${Ids?.branchId}`],
     data ? `${apiRoute}/${id}/update` : apiRoute,
-    data ? "PUT" : "POST"
+    data ? "PUT" : "POST",
   );
 
   useEffect(() => {
@@ -76,7 +82,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
         { body: payload },
         {
           onSuccess: (res) => {},
-        }
+        },
       );
     } catch (error) {
       toast.error(`${error}`);
@@ -89,7 +95,16 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
         title="Academic Year"
         style={{ marginBottom: 24 }}
       >
-        <Form layout="vertical" form={ayForm} onFinish={handleSubmit}>
+        <Form
+          layout="vertical"
+          form={ayForm}
+          onFinish={(values: any) =>
+            onConfirmationRequest(
+              async () => await handleSubmit(values),
+              "AY",
+            )
+          }
+        >
           <div className={`grid gap-4 md:grid-cols-2`}>
             <Form.Item label="id" name="id" hidden>
               <Input hidden />
