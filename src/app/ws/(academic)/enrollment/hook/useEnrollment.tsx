@@ -2,17 +2,12 @@ import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { ColumnsType } from "antd/es/table";
 import { Icon } from "@iconify-icon/react";
-import {
-  AcademicYear,
-  levels_of_education,
-  selectType,
-  Setting,
-  Student,
-} from "@/types";
+import { AcademicYear, levels_of_education, Setting, Student } from "@/types";
 import { useState } from "react";
 import { useApiQuery } from "@/hooks/useApi";
 import { IdsType } from "@/store/idsContext";
 import dayjs from "dayjs";
+import { useUtils } from "@/hooks/useUtils";
 
 export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
   const { data: AcademicYear, isLoading: gettingAcademicYear } =
@@ -62,70 +57,8 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     return { message: "", status: false };
   };
 
-  const gradeMap: Record<
-    levels_of_education,
-    { label: string; value: number }[]
-  > = {
-    kg: [
-      { label: "KG - 1", value: -2 },
-      { label: "KG - 2", value: -1 },
-      { label: "KG - 3", value: 0 },
-    ],
-    lower_primary: [
-      { label: "Grade 1", value: 1 },
-      { label: "Grade 2", value: 2 },
-      { label: "Grade 3", value: 3 },
-      { label: "Grade 4", value: 4 },
-    ],
-    middle_primary: [
-      { label: "Grade 5", value: 5 },
-      { label: "Grade 6", value: 6 },
-    ],
-    upper_primary: [
-      { label: "Grade 7", value: 7 },
-      { label: "Grade 8", value: 8 },
-    ],
-    secondary: [
-      { label: "Grade 9", value: 9 },
-      { label: "Grade 10", value: 10 },
-    ],
-    college_prep: [
-      { label: "Grade 11", value: 11 },
-      { label: "Grade 12", value: 12 },
-    ],
-  };
-
-  const getGradeLabel = (grade: number) => {
-    const gradeLabels: Record<string, string> = {
-      "-2": "KG - 1",
-      "-1": "KG - 2",
-      "0": "KG - 3",
-      "1": "Grade 1",
-      "2": "Grade 2",
-      "3": "Grade 3",
-      "4": "Grade 4",
-      "5": "Grade 5",
-      "6": "Grade 6",
-      "7": "Grade 7",
-      "8": "Grade 8",
-      "9": "Grade 9",
-      "10": "Grade 10",
-      "11": "Grade 11",
-      "12": "Grade 12",
-    };
-    return gradeLabels[String(grade)] || "-";
-  };
-
-  const getGrades = (
-    input: levels_of_education | levels_of_education[],
-  ): selectType[] => {
-    const types = Array.isArray(input) ? input : [input];
-    return types
-      .flatMap((type) => gradeMap[type])
-      .map((g:any) => ({ label: g?.label, value: g?.value }));
-  };
-
   const getTableColumns = (): ColumnsType<any> => {
+    const { getGradeLabel } = useUtils();
     return [
       {
         title: "Full Name",
@@ -224,6 +157,7 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
   }): FieldConfig[] => {
     const [isTransferred, setIsTransferred] =
       useState<boolean>(isTransferredValue);
+    const { getGrades } = useUtils();
 
     const fields = [
       {
@@ -254,7 +188,7 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
             onGradeSelect(value);
           },
         },
-        options: getGrades(levels_of_education),
+        options: getGrades(),
         rules: [{ required: true, message: "" }],
       },
       {
@@ -335,8 +269,6 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
   return {
     getTableColumns,
     getFormFields,
-    getGrades,
-    getGradeLabel,
     AcademicYear,
     gettingAcademicYear,
     SchoolSetting,

@@ -10,6 +10,7 @@ import { useEnrollment } from "../../../enrollment/hook/useEnrollment";
 import { useTimetable } from "../../hook/useTimetable";
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
+import { useUtils } from "@/hooks/useUtils";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -24,9 +25,10 @@ export default function Home() {
   const { Ids } = useContext(IdsContext);
   const [form] = Form.useForm();
 
-  const { SchoolSetting, gettingSchoolSetting, getGrades } = useEnrollment({
+  const { SchoolSetting, gettingSchoolSetting } = useEnrollment({
     Ids,
   });
+  const {getGrades} = useUtils()
   const { getFormFields } = useTimetable({ SchoolSetting });
   const [loading, setLoading] = useState<boolean>();
   const [data, setData] = useState<any>(null);

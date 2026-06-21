@@ -185,7 +185,7 @@ const Index = ({
               <Button
                 type="link"
                 htmlType="submit"
-                className="!rounded-sm"
+                className="rounded-sm!"
                 size="large"
                 loading={changingCurrentBranch}
               >
@@ -198,8 +198,9 @@ const Index = ({
         <Row gutter={[16, 16]}>
           {data &&
             data.map((branch: Branch) => {
-              if (branch?.isCurrent)
+              if (branch?.isCurrent) {
                 changeCurrentBranchForm.setFieldValue("id", branch.id);
+              }
               return (
                 <Col key={branch?.id} xs={24} sm={12} md={8}>
                   <Card

@@ -9,6 +9,7 @@ import { Teacher } from "@/types";
 import { useContext, useEffect, useState } from "react";
 import { IdsContext } from "@/store/idsContext";
 import { Form } from "antd";
+import { useUtils } from "@/hooks/useUtils";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -22,13 +23,13 @@ export default function Home() {
   const { Ids } = useContext(IdsContext);
   const [form] = Form.useForm();
 
-  const { SchoolSetting, gettingSchoolSetting, getGrades } = useEnrollment({
+  const { SchoolSetting, gettingSchoolSetting } = useEnrollment({
     Ids,
   });
-  console.log('%csrc/app/ws/(academic)/timetable/new/page.tsx:28 getGrades', 'color: #007acc;', getGrades);
   const { getFormFields } = useTimetable({ SchoolSetting });
 
   const [loading, setLoading] = useState<boolean>();
+  const {getGrades} = useUtils()
 
   useEffect(() => {
     if (gettingSchoolSetting) {

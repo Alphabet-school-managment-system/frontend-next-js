@@ -3,7 +3,6 @@
 import { useEnrollment } from "./hook/useEnrollment";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { QueryBy } from "@/components/list/index";
 import { IdsContext } from "@/store/idsContext";
 import { useContext } from "react";
 
@@ -31,7 +30,12 @@ export default function Home() {
           delete: true,
           detail: false,
         }}
-        queryBy={QueryBy.ACADEMIC_YEAR}
+        queryBy={[
+          {
+            type: "ACADEMIC_YEAR",
+            value: undefined,
+          },
+        ]}
       />
     </>
   );

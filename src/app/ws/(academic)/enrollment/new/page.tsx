@@ -9,6 +9,7 @@ import { staticImages } from "@/lib/static-images";
 import { useContext, useEffect, useState } from "react";
 import { IdsContext } from "@/store/idsContext";
 import { Alert, Descriptions, Empty, Form } from "antd";
+import { useUtils } from "@/hooks/useUtils";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
@@ -25,7 +26,7 @@ export const EnrollmentStudentDetail = ({
   student?: Student;
   enrolled_grade?: string;
 }) => {
-  const { getGradeLabel } = useEnrollment({ Ids: {} });
+  const { getGradeLabel } = useUtils();
   const defaultPhoto =
     student?.sex === "Female"
       ? staticImages?.noPhotoGirlImg

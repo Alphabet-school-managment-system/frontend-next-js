@@ -1,16 +1,10 @@
 "use client";
 
-import { useContext, useState } from "react";
-import { Form, Spin, FormInstance, Modal } from "antd";
+import { useState } from "react";
+import { Spin } from "antd";
 import dynamic from "next/dynamic";
 import { BaseSkeleton } from "@/components/forms/FormSkeleton";
-import {
-  ConfirmationModalContext,
-  ConfirmationModalPropsType,
-} from "@/store/confirmationModalContext";
-import { PasswordInput } from "@/app/auth/login/LoginView";
-import { useApiMutation } from "@/hooks/useApi";
-import toast from "react-hot-toast";
+import { useConfirmationRequest } from "@/components/common/PasswordConfirmationForm";
 
 const School = dynamic(() => import("@/app/ws/setting/school"), {
   ssr: false,
@@ -32,108 +26,9 @@ const Branch = dynamic(() => import("@/app/ws/setting/branch"), {
   loading: () => <BaseSkeleton />,
 });
 
-export const PasswordConfirmationForm = ({
-  frmName,
-  form,
-  onFinish,
-}: {
-  frmName: string;
-  form: FormInstance;
-  onFinish: (value: any) => void;
-}) => {
-  return (
-    <div>
-      <span className="">
-        {`Are you sure you want to save these ${frmName.toLowerCase()} changes ? If so, enter your password to confirm`}
-      </span>
-      <Form
-        form={form}
-        name="confirmation"
-        layout="vertical"
-        onFinish={onFinish}
-        autoComplete="off"
-        requiredMark={false}
-      >
-        <PasswordInput
-          label=""
-          showPrefix={false}
-          required={true}
-          requiredMSG={"* required"}
-        />
-      </Form>
-    </div>
-  );
-};
 export default function Home() {
   const [isLoading, setIsloading] = useState(false);
-  const [form] = Form.useForm();
-
-  const { setConfirmationModalProps: setcmProps } = useContext(
-    ConfirmationModalContext,
-  );
-
-  const [modal, contextHolder] = Modal.useModal();
-
-  const { mutate } = useApiMutation(
-    ["auth/verify-password"],
-    "auth/verify-password",
-    "POST",
-  );
-
-  const handleSubmit = async ({
-    values,
-    callbackFnc,
-  }: {
-    values: any;
-    callbackFnc: () => void;
-  }) => {
-    try {
-      const payload = { ...values };
-      await mutate(
-        { body: payload },
-        {
-          onSuccess: async (res: any) => {
-            await callbackFnc();
-            await Modal.destroyAll();
-            form.resetFields(["password"]);
-          },
-        },
-      );
-    } catch (error) {
-      toast.error(`${error}`);
-    }
-  };
-
-  const onConfirmationRequest = (callbackFnc: () => void, frmName: string) => {
-    setcmProps((prev: ConfirmationModalPropsType) => ({
-      ...prev,
-      title: "Confirmation",
-      content: (
-        <PasswordConfirmationForm
-          frmName={frmName}
-          onFinish={async (values: any) => {
-            handleSubmit({ values, callbackFnc });
-          }}
-          form={form}
-        />
-      ),
-      okButtonText: "Yes, Proceed.",
-      cancelButtonText: "Cancel",
-      onOk: async () => {
-        await form.submit();
-      },
-      onCancel: () => {
-        setcmProps((p: ConfirmationModalPropsType) => ({
-          ...p,
-        }));
-      },
-      okButtonProps: {
-        danger: false,
-      },
-      show: true,
-      closeOnOk: false,
-    }));
-  };
+  const onConfirmationRequest = useConfirmationRequest();
 
   return (
     <Spin spinning={isLoading}>

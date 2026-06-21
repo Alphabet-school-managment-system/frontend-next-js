@@ -111,7 +111,16 @@ const Index = ({
             >
               <Select placeholder="Select level" mode="multiple" size="large">
                 <Select.Option value="kg">KG</Select.Option>
-                <Select.Option value="primary">Primary</Select.Option>
+                <Select.Option value="lower_primary">
+                  Lower Primary (1 - 4)
+                </Select.Option>
+                <Select.Option value="middle_primary">
+                  Middle Primary (5 & 6)
+                </Select.Option>
+                <Select.Option value="upper_primary">
+                  Upper Primary (7 & 8)
+                </Select.Option>
+
                 <Select.Option value="secondary">Secondary</Select.Option>
                 <Select.Option value="college_prep">
                   College Preparatory

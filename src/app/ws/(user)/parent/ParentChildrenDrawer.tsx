@@ -19,6 +19,7 @@ import SearchInput from "@/components/common/SearchInput";
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { Select } from "@/components/common/Select";
 import { useEnrollment } from "../../(academic)/enrollment/hook/useEnrollment";
+import { useUtils } from "@/hooks/useUtils";
 
 const getFullName = (student?: Student) =>
   [student?.first_name, student?.middle_name, student?.last_name]
@@ -72,7 +73,7 @@ const ParentStudentCard = ({ relation }: { relation: ParentStudent }) => {
     ConfirmationModalContext,
   );
 
-  const { getGradeLabel } = useEnrollment({ Ids: {} });
+  const { getGradeLabel } = useUtils();
 
   const { data: enrollment, isLoading: loadingEnrollment } =
     useApiQuery<Enrollment>(
