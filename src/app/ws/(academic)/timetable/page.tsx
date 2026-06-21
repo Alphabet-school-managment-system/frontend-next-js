@@ -3,11 +3,11 @@
 import { useTimetable } from "./hook/useTimetable";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { QueryBy } from "@/components/list/index";
 import { Select } from "@/components/common/Select";
 import { useEnrollment } from "../enrollment/hook/useEnrollment";
 import { useContext, useEffect, useState } from "react";
 import { IdsContext } from "@/store/idsContext";
+import { useUtils } from "@/hooks/useUtils";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -26,11 +26,12 @@ export const FilterOption = ({
     day?: string;
   }>({});
   const { Ids } = useContext(IdsContext);
-  const { getGrades, SchoolSetting, gettingSchoolSetting } = useEnrollment({
+  const { SchoolSetting, gettingSchoolSetting } = useEnrollment({
     Ids,
   });
 
   const { getDaysOfWeek } = useTimetable({ SchoolSetting });
+  const { getGrades } = useUtils();
 
   useEffect(() => {
     if (gettingSchoolSetting) {
@@ -46,9 +47,7 @@ export const FilterOption = ({
     <div className="flex items-center justify-between w-full gap-4">
       <div className="">
         <Select
-          data={getGrades(
-            SchoolSetting ? SchoolSetting.levels_of_education : []
-          )}
+          data={getGrades()}
           onChange={(value: any) => {
             setQueryParams((prev) => ({ ...prev, grade: value }));
             onChange && onChange({ ...queryParams, grade: value });
@@ -102,7 +101,12 @@ export default function Home() {
           delete: true,
           detail: false,
         }}
-        queryBy={QueryBy.ACADEMIC_YEAR}
+        queryBy={[
+          {
+            type: "ACADEMIC_YEAR",
+            value: undefined,
+          },
+        ]}
         showSearchInput={false}
         loading={loading}
         enable={enableQuery}

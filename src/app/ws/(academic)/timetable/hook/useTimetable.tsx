@@ -1,46 +1,18 @@
 import { useTeacher } from "@/app/ws/(user)/teacher/hook/useTeacher";
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
+import { useUtils } from "@/hooks/useUtils";
 import { levels_of_education, selectType, Setting, Teacher } from "@/types";
 import { Icon } from "@iconify-icon/react";
 
 const { get_speciality_label, subjectOptions } = useTeacher();
-
 export const useTimetable = ({
   SchoolSetting,
 }: {
   SchoolSetting?: Setting;
 }) => {
-  const getDaysOfWeek = (): selectType[] => [
-    { label: "Monday", value: "Mon" },
-    { label: "Tuesday", value: "Tue" },
-    { label: "Wednesday", value: "Wed" },
-    { label: "Thursday", value: "Thu" },
-    { label: "Friday", value: "Fri" },
-    { label: "Saturday", value: "Sat" },
-    { label: "Sunday", value: "Sun" },
-  ];
-
-  const getPeriods = (maxPeriods: number): selectType[] => {
-    const periods: selectType[] = [];
-    for (let i = 1; i <= maxPeriods; i++) {
-      periods.push({ label: `Period ${i}`, value: `Period ${i}` });
-    }
-    return periods;
-  };
-
-  const getGradeSections = (): selectType[] => {
-    const sections: selectType[] = [];
-    const totalSections =
-      SchoolSetting?.sections_per_grade && SchoolSetting.sections_per_grade > 0
-        ? SchoolSetting.sections_per_grade
-        : 1;
-
-    for (let i = 1; i <= totalSections; i++) {
-      sections.push({ label: `Section ${i}`, value: `Section ${i}` });
-    }
-    return sections;
-  };
+  const { getSections, getPeriods, getDaysOfWeek } = useUtils();
+  
 
   const getTableColumns = (): any[] => [
     {
@@ -91,7 +63,7 @@ export const useTimetable = ({
     onSearchClear: () => void;
     includeId?: boolean;
     levels_of_education: levels_of_education[];
-    getGrades: (levels_of_education: levels_of_education[]) => selectType[];
+    getGrades: () => selectType[];
     SearchInputOptions?: Teacher[];
   }): FieldConfig[] => {
     const fields: FieldConfig[] = [
@@ -117,7 +89,7 @@ export const useTimetable = ({
             console.log("Selected grade:", value);
           },
         },
-        options: getGrades(levels_of_education),
+        options: getGrades(),
         prefix: (
           <span className="flex items-center justify-center h-full">
             <Icon
@@ -134,7 +106,7 @@ export const useTimetable = ({
         name: "section",
         label: "Section",
         type: FieldType.Select,
-        options: getGradeSections(),
+        options: getSections(),
         placeholder: "e.g. Section 1",
         prefix: (
           <span className="flex items-center justify-center h-full">

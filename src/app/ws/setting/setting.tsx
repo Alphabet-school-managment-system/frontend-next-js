@@ -5,7 +5,13 @@ import { Button, Card, Form, Input, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
+const Index = ({
+  onLoading,
+  onConfirmationRequest,
+}: {
+  onLoading: (value: boolean) => void;
+  onConfirmationRequest: (fnc: () => void, frmName: string) => void;
+}) => {
   const [settingForm] = Form.useForm();
   const [id, setId] = useState<string | undefined>("");
   const { Ids } = useContext(IdsContext);
@@ -14,12 +20,12 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
 
   const { data, isLoading } = useApiQuery<Setting>(
     [`${apiRoute}/${Ids?.schoolId}`],
-    `${apiRoute}/${Ids?.schoolId}`
+    `${apiRoute}/${Ids?.schoolId}`,
   );
   const { mutate, isPending: isUpdating } = useApiMutation(
     [`${apiRoute}/${Ids?.schoolId}`],
     data ? `${apiRoute}/${id}/update` : apiRoute,
-    data ? "PUT" : "POST"
+    data ? "PUT" : "POST",
   );
 
   useEffect(() => {
@@ -53,7 +59,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
         { body: payload },
         {
           onSuccess: (res) => {},
-        }
+        },
       );
     } catch (error) {
       toast.error(`${error}`);
@@ -63,7 +69,16 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
   return (
     <div>
       <Card variant="borderless" title="Setting" style={{ marginBottom: 24 }}>
-        <Form layout="vertical" form={settingForm} onFinish={handleSubmit}>
+        <Form
+          layout="vertical"
+          form={settingForm}
+          onFinish={(values: any) =>
+            onConfirmationRequest(
+              async () => await handleSubmit(values),
+              "setting",
+            )
+          }
+        >
           <div className={`grid gap-4 md:grid-cols-2`}>
             <Form.Item label="id" name="id" hidden>
               <Input hidden />
@@ -96,7 +111,16 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
             >
               <Select placeholder="Select level" mode="multiple" size="large">
                 <Select.Option value="kg">KG</Select.Option>
-                <Select.Option value="primary">Primary</Select.Option>
+                <Select.Option value="lower_primary">
+                  Lower Primary (1 - 4)
+                </Select.Option>
+                <Select.Option value="middle_primary">
+                  Middle Primary (5 & 6)
+                </Select.Option>
+                <Select.Option value="upper_primary">
+                  Upper Primary (7 & 8)
+                </Select.Option>
+
                 <Select.Option value="secondary">Secondary</Select.Option>
                 <Select.Option value="college_prep">
                   College Preparatory
@@ -115,7 +139,7 @@ const Index = ({ onLoading }: { onLoading: (value: boolean) => void }) => {
             <Button
               type="link"
               htmlType="submit"
-              className="!rounded-sm"
+              className="rounded-sm!"
               size="large"
             >
               Save Changes

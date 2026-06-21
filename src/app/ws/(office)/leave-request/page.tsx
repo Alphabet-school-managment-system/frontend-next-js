@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { Select } from "@/components/common/Select";
 import { useState } from "react";
-import { QueryBy } from "@/components/list/index";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -53,7 +52,12 @@ export default function Home() {
             classNames="shadow-none focus:shadow-none outline-none bg-transparent min-w-[150px]"
           />
         }
-        queryBy={QueryBy.ACADEMIC_YEAR}
+        queryBy={[
+          {
+            type: "ACADEMIC_YEAR",
+            value: undefined,
+          },
+        ]}
       />
     </>
   );

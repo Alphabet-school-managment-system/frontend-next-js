@@ -3,7 +3,6 @@
 import { useStaff } from "./hook/useStaff";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { QueryBy } from "@/components/list/index";
 import { useState } from "react";
 import { Staff } from "@/types";
 import { Drawer } from "@/components/common/Drawer";
@@ -61,7 +60,12 @@ export default function Home() {
         }
         route={"staff"}
         addButtonTitle={"Add new staff"}
-        queryBy={QueryBy.BRANCH}
+        queryBy={[
+          {
+            type: "BRANCH",
+            value: undefined,
+          },
+        ]}
         reloadKey={reloadKey}
       />
     </>

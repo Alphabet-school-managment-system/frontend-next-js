@@ -3,7 +3,6 @@
 import { useTeacher } from "./hook/useTeacher";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { QueryBy } from "@/components/list/index";
 import { useState } from "react";
 import { Teacher } from "@/types";
 import { UserDetailPage } from "@/components/common/userDetailPage";
@@ -60,7 +59,12 @@ export default function Home() {
         }
         route={"teacher"}
         addButtonTitle={"Add new teacher"}
-        queryBy={QueryBy.BRANCH}
+        queryBy={[
+          {
+            type: "BRANCH",
+            value: undefined,
+          },
+        ]}
         reloadKey={reloadKey}
       />
     </>

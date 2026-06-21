@@ -3,7 +3,6 @@
 import { useStudent } from "./hook/useStudent";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { QueryBy } from "@/components/list/index";
 import { useState } from "react";
 import { Student } from "@/types";
 import { Drawer } from "@/components/common/Drawer";
@@ -69,7 +68,12 @@ export default function Home() {
           edit: true,
           delete: true,
         }}
-        queryBy={QueryBy.BRANCH}
+        queryBy={[
+          {
+            type: "BRANCH",
+            value: undefined,
+          },
+        ]}
         loading={loading}
         reloadKey={reloadKey}
       />

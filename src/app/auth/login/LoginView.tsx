@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserContext } from "@/store/userContext";
 import { getLandingPath } from "@/lib/constants";
+import { SizeType } from "antd/es/config-provider/SizeContext";
 
 export const PasswordInput = ({
   name = "password",
@@ -14,12 +15,20 @@ export const PasswordInput = ({
   dependencies,
   rules,
   prefix,
+  required = true,
+  size = "middle",
+  showPrefix = true,
+  requiredMSG = "",
 }: {
   name?: string;
   label?: string;
   dependencies?: string[];
   rules?: any[];
   prefix?: React.ReactNode;
+  required?: boolean;
+  size?: SizeType;
+  showPrefix?: boolean;
+  requiredMSG?: string;
 }) => {
   return (
     <Form.Item
@@ -27,7 +36,7 @@ export const PasswordInput = ({
       name={name}
       dependencies={dependencies}
       rules={[
-        { required: true, message: "" },
+        { required: true, message: requiredMSG },
         { min: 5, message: "Password must be at least 5 characters." },
         { max: 12, message: "Password must be at most 12 characters." },
         {
@@ -40,10 +49,10 @@ export const PasswordInput = ({
     >
       <Input.Password
         placeholder="It must be 5-12 alphanumeric length"
-        size="large"
-        required
+        size={size}
+        required={required}
         prefix={
-          prefix ?? (
+          (showPrefix && prefix) ?? (
             <span className="flex items-center justify-center h-full">
               <Icon
                 icon="mdi-light:lock"
@@ -75,12 +84,12 @@ export const OTPInput = ({
       label={<span className="text-gray-900">{label}</span>}
       name={name}
       rules={[{ required: true, message: "" }, ...(rules ?? [])]}
-      className="!w-full"
+      className="w-full!"
     >
       <Input.OTP
         onChange={onChange}
         length={6}
-        className="!w-full"
+        className="w-full!"
         style={{ width: "100%" }}
       />
     </Form.Item>
@@ -120,7 +129,7 @@ const LoginView = () => {
             router.push(getLandingPath(context?.user?.role));
           }, 100);
         },
-      }
+      },
     );
   };
 

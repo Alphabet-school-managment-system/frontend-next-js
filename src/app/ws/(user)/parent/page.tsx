@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Drawer } from "@/components/common/Drawer";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { QueryBy } from "@/components/list/index";
 import { Parent } from "@/types";
 import { useParent } from "./hook/useParent";
 import { ParentChildrenDrawer } from "./ParentChildrenDrawer";
@@ -80,7 +79,12 @@ export default function Home() {
         }
         route={"parent"}
         addButtonTitle={"Add new parent"}
-        queryBy={QueryBy.BRANCH}
+        queryBy={[
+          {
+            type: "BRANCH",
+            value: undefined,
+          },
+        ]}
         reloadKey={reloadKey}
       />
     </>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ButtonProps } from "antd";
 import React, {
   createContext,
   useState,
@@ -15,6 +16,8 @@ export type ConfirmationModalPropsType = {
   cancelButtonText?: string;
   onOk: () => void;
   onCancel: () => void;
+  okButtonProps?: ButtonProps;
+  closeOnOk?: boolean;
 };
 
 export type ConfirmationModalContextType = {
@@ -34,6 +37,12 @@ export const ConfirmationModalContext =
       show: false,
       onOk: () => {},
       onCancel: () => {},
+      okButtonProps: {
+        danger: true,
+        type: "primary",
+        disabled: false,
+      },
+      closeOnOk: true,
     },
     setConfirmationModalProps: () => {},
   });
@@ -46,6 +55,12 @@ export const defaultConfirmationModalProps: ConfirmationModalPropsType = {
   show: false,
   onOk: () => {},
   onCancel: () => {},
+  okButtonProps: {
+    danger: true,
+    type: "primary",
+    disabled: false,
+  },
+  closeOnOk: true,
 };
 
 export const ConfirmationModalProvider: React.FC<{ children: ReactNode }> = ({

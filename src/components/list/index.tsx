@@ -15,10 +15,10 @@ import { Icon } from "@iconify-icon/react";
 import { IdsContext } from "@/store/idsContext";
 import { Table } from "antd";
 
-export enum QueryBy {
-  ACADEMIC_YEAR = "academic_year_id",
-  BRANCH = "branch_id",
-}
+export type QueryBy = {
+  type: "ACADEMIC_YEAR" | "BRANCH" | "OTHER";
+  value: undefined | { key: string; value: string | number | boolean }[];
+};
 
 type props = {
   columns: any[];
@@ -38,7 +38,7 @@ type props = {
   onRowSelection?: (values: React.Key[]) => void;
   showRowSelection?: boolean;
   subHeader?: ReactElement;
-  queryBy?: QueryBy;
+  queryBy?: QueryBy[];
   showHeaderBar?: boolean;
   showSearchInput?: boolean;
   loading?: boolean;
@@ -75,7 +75,7 @@ const Index = ({
   onRowSelection,
   showRowSelection = false,
   subHeader,
-  queryBy,
+  queryBy = [],
   showHeaderBar,
   showSearchInput,
   loading,
@@ -95,16 +95,30 @@ const Index = ({
   const apiRoute = isRouteString ? route : route.api;
   const pageRoute = isRouteString ? route : route.page;
 
-  const localQueryParams = new URLSearchParams(
-    queryBy === QueryBy.ACADEMIC_YEAR ? {} : {},
-  );
+  const localQueryParams = new URLSearchParams();
 
-  if (queryBy === QueryBy.ACADEMIC_YEAR) {
-    if (Ids?.academicYearId) {
-      localQueryParams.set("academic_year_id", Ids.academicYearId);
-    }
-  } else if (Ids?.branchId) {
-    localQueryParams.set("branch_id", Ids.branchId);
+  if (queryBy.length > 0) {
+    queryBy.forEach((qb: any) => {
+      if (!qb || !qb.type) return;
+
+      if (qb.type === "ACADEMIC_YEAR") {
+        if (Ids?.academicYearId) {
+          localQueryParams.set("academic_year_id", String(Ids.academicYearId));
+        }
+      } else if (qb.type === "BRANCH") {
+        if (Ids?.branchId) {
+          localQueryParams.set("branch_id", String(Ids.branchId));
+        }
+      } else if (qb.type === "OTHER") {
+        const val: { key: string; value: string | number | boolean }[] =
+          qb.value;
+        val?.forEach(
+          (item: { key: string; value: string | number | boolean }) => {
+            localQueryParams.set(item.key, String(item.value));
+          },
+        );
+      }
+    });
   }
 
   const localQueryParamsString = localQueryParams.toString();
@@ -132,21 +146,22 @@ const Index = ({
   );
 
   useEffect(() => {
-    if (data) {
-      setDatas(data);
-      setDatasCopy(data);
+    // Ensure we update the local state even when the API returns `null` or an empty array.
+    // Treat `null`/`undefined` as an empty list so the UI refreshes correctly.
+    if (data !== undefined) {
+      const normalized = (data as any) ?? [];
+      setDatas(normalized);
+      setDatasCopy(normalized);
     }
   }, [data]);
 
   useEffect(() => {
-    if (datasCopy.length > 0) {
-      if (searchValue) {
-        const result = ArraySearch({ searchValue }, datas, searchByCols);
-
-        setDatas(result);
-      } else {
-        setDatas(datasCopy);
-      }
+    const source = Array.isArray(datasCopy) ? datasCopy : [];
+    if (searchValue) {
+      const result = ArraySearch({ searchValue }, source, searchByCols);
+      setDatas(result);
+    } else {
+      setDatas(source);
     }
   }, [searchValue, datasCopy]);
 

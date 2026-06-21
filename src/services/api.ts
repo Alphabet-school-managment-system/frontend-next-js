@@ -16,6 +16,8 @@ export const apiRequest = async <T>(
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options?.headers,
       },
+      // Send cookies (session) by default. Allow override via options.
+      withCredentials: options?.withCredentials ?? true,
       ...options,
     });
 
