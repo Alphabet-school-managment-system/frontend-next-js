@@ -43,6 +43,13 @@ export const useMainLayout = () => {
           path: "/ws/timetable",
           description: "Schedule classes and subjects",
         },
+        {
+          key: "assign-student-section",
+          icon: <Icon icon="mdi:account-group" width={22} height={22} />,
+          label: "Assign Student Section",
+          path: "/ws/assign-student-section",
+          description: "Assign selected students to a class section",
+        },
       ],
     },
     {
