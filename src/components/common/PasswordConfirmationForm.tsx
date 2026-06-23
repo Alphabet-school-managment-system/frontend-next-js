@@ -10,18 +10,18 @@ import toast from "react-hot-toast";
 
 export const PasswordConfirmationForm = ({
   frmName,
+  message = "Are you sure you want to save these changes",
   form,
   onFinish,
 }: {
   frmName: string;
+  message?: string;
   form: FormInstance;
   onFinish: (value: any) => void;
 }) => {
   return (
     <div>
-      <span className="">
-        {`Are you sure you want to save these ${frmName.toLowerCase()} changes ? If so, enter your password to confirm`}
-      </span>
+      <span className="">{`${message} ? If so, enter your password to confirm`}</span>
       <Form
         form={form}
         name="confirmation"
@@ -80,6 +80,7 @@ export const useConfirmationRequest = () => {
   const onConfirmationRequest = (
     callbackFnc: () => void,
     frmName: string,
+    message?: string,
   ) => {
     setcmProps((prev: ConfirmationModalPropsType) => ({
       ...prev,
@@ -91,6 +92,7 @@ export const useConfirmationRequest = () => {
             handleSubmit({ values, callbackFnc });
           }}
           form={form}
+          message={message}
         />
       ),
       okButtonText: "Yes, Proceed.",
