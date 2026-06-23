@@ -16,6 +16,7 @@ import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 import { useUtils } from "@/hooks/useUtils";
 import dayjs, { type Dayjs } from "dayjs";
+import { useConfirmationRequest } from "@/components/common/PasswordConfirmationForm";
 
 type userBan = {
   banned: boolean;
@@ -57,6 +58,7 @@ export const UserDetailPage = ({
   const isStudent = userType === "student";
 
   const { ShowMessage } = useUtils();
+  const onConfirmationRequest = useConfirmationRequest();
 
   useEffect(() => {
     if (onLoading) {
@@ -104,7 +106,48 @@ export const UserDetailPage = ({
         {
           userId: data?.better_auth_id,
           banReason: banReason,
-          banExpiresIn: banExpiresDate ? dayjs(banExpiresDate).valueOf() : undefined,
+          banExpiresIn: banExpiresDate
+            ? dayjs(banExpiresDate).valueOf()
+            : undefined,
+        },
+        {
+          onSuccess() {
+            ShowMessage({
+              content: `User account unbaned successfully${
+                banReason ? ` (${banReason})` : ""
+              }${
+                banExpiresDate
+                  ? ` for ${banExpiresDate.format("D MMM, YYYY")}`
+                  : ""
+              }.`,
+              type: "success",
+            });
+            onClose?.(true);
+          },
+          onError(context: any) {
+            ShowMessage({
+              content: context.error.message,
+              type: "error",
+            });
+          },
+        },
+      );
+    } catch (error: any) {
+      ShowMessage({
+        content: error?.message || "Something went wrong!",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onUnBanUser = async () => {
+    setLoading(true);
+    try {
+      await authClient.admin.unbanUser(
+        {
+          userId: data?.better_auth_id,
         },
         {
           onSuccess() {
@@ -132,75 +175,12 @@ export const UserDetailPage = ({
     }
   };
 
-  const onUnBanUser = async ({
-    reason,
-    effectiveDate,
-  }: {
-    reason?: string;
-    effectiveDate?: Dayjs | null;
-  }) => {
-    setLoading(true);
-    try {
-      await authClient.admin.unbanUser(
-        {
-          userId: data?.better_auth_id,
-        },
-        {
-          onSuccess() {
-            ShowMessage({
-              content: `User account unbaned successfully${
-                reason ? ` (${reason})` : ""
-              }${
-                effectiveDate
-                  ? ` for ${effectiveDate.format("D MMM, YYYY")}`
-                  : ""
-              }.`,
-              type: "success",
-            });
-            onClose?.(true);
-          },
-          onError(context: any) {
-            ShowMessage({
-              content: context.error.message,
-              type: "error",
-            });
-          },
-        },
-      );
-    } catch (error: any) {
-      ShowMessage({
-        content: error?.message || "Something went wrong!",
-        type: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const confirmationCopy = useMemo(() => {
-    if (confirmState.action === "reset") {
-      return {
-        title: "Reset password",
-        content:
-          "This will trigger a password reset for this user account. Continue?",
-        okText: "Yes, reset",
-      };
-    }
-
     if (confirmState.action === "ban") {
       return {
         title: "Ban account",
         content: "This will ban this user account from signing in. Continue?",
         okText: "Yes, ban",
-      };
-    }
-
-    if (confirmState.action === "unban") {
-      return {
-        title: "Unban account",
-        content:
-          "Select a reason and effective date before unbaning this account.",
-        okText: "Yes, unban",
       };
     }
 
@@ -212,31 +192,45 @@ export const UserDetailPage = ({
   }, [confirmState.action]);
 
   const openConfirmation = (action: "reset" | "ban" | "unban") => {
-    if (action === "unban") {
-      setBanReason(undefined);
-      setBanExpiresDate(null);
-    }
-
     setConfirmState({
-      open: true,
+      open: false,
       action,
     });
+
+    if (action === "ban") {
+      setBanReason(undefined);
+      setBanExpiresDate(null);
+
+      setConfirmState({
+        open: true,
+        action,
+      });
+    }
+
+    if (action === "unban") {
+      onConfirmationRequest(
+        async () => await onUnBanUser(),
+        "",
+        "This will unban this user account to signing in. Continue",
+      );
+    }
+
+    if (action === "reset") {
+      onConfirmationRequest(
+        async () => await onResetPassword(),
+        "",
+        "This will trigger a password reset for this user account. Continue",
+      );
+    }
   };
 
   const handleConfirm = async () => {
-    if (confirmState.action === "reset") {
-      await onResetPassword();
-    }
-
     if (confirmState.action === "ban") {
-      await onBanUser();
-    }
-
-    if (confirmState.action === "unban") {
-      await onUnBanUser({
-        reason: banReason,
-        effectiveDate: banExpiresDate,
-      });
+      onConfirmationRequest(
+        async () => await onBanUser(),
+        "",
+        "This will ban this user account from signing in. Continue",
+      );
     }
 
     setConfirmState({
@@ -385,9 +379,7 @@ export const UserDetailPage = ({
                   )
                 }
               >
-                {data?.user?.banned === true
-                  ? "Unban Account"
-                  : "Ban Account"}
+                {data?.user?.banned === true ? "Unban Account" : "Ban Account"}
               </Button>
             </>
           </div>
