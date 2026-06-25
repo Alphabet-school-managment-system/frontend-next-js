@@ -253,7 +253,7 @@ const Header = ({
             <Button
               type="primary"
               htmlType="button"
-              className="!rounded-sm flex w-full"
+              className="rounded-sm! flex w-full"
               size="large"
               onClick={() => form.submit()}
               loading={loading}

@@ -8,6 +8,7 @@ import {
   type NavigationItem,
 } from "./useMainLayout";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type SidebarProps = {
   activeKey?: string;
@@ -30,19 +31,21 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
   const toggleGroup = (key: string) => {
     setOpenGroups((prev) => ({ [key]: !prev[key] }));
   };
+  const router = useRouter();
 
   return (
     <aside
       className={`h-screen bg-white shadow-lg transition-all duration-300 ease-in-out fixed top-0 left-0 z-1 ${
-        collapsed ? "w-20" : "w-64"
+        collapsed ? "w-20" : "w-75"
       }`}
     >
       {/* Collapse Icon button */}
       <span className="flex justify-between items-center p-3 px-5">
         <span
-          className={`text-gray-800 font-bold ${collapsed ? "hidden" : ""} `}
+          className={`text-gray-600  ${collapsed ? "hidden" : ""} flex flex-col justify-center gap-2`}
         >
-          Alphabet
+          <span className={"font-bold uppercase"}>Alphabet</span>
+          <span className={``}>Student Record MGT System </span>
         </span>
 
         <span
@@ -72,12 +75,14 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
               {item.children && item.children.length > 0 ? (
                 <>
                   <button
-                    className={`w-full flex items-center justify-between px-2 py-2 rounded-md ${
-                      collapsed ? "justify-center" : ""
-                    }  hover:cursor-pointer`}
+                    className={`w-full flex items-center px-2 py-2 rounded-md hover:cursor-pointer text-gray-400 font-semibold ${
+                      collapsed ? "justify-center" : "justify-between"
+                    } ${openGroups[item.key] ? "border-blue-200 border-solid border-2 bg-slate-50 shadow shadow-blue-100" : ""}`}
                     onClick={() => toggleGroup(item.key)}
                   >
-                    <div className="flex items-center space-x-2 font-semibold">
+                    <div
+                      className={`${openGroups[item.key] ? "text-blue-500" : ""} flex items-center space-x-2`}
+                    >
                       <span className="shrink-0">{item.icon}</span>
                       {!collapsed && <span>{item.label}</span>}
                     </div>
@@ -85,33 +90,39 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                       <Icon
                         icon={
                           openGroups[item.key]
-                            ? "ph:caret-down-bold"
-                            : "ph:caret-right-bold"
+                            ? "ph:caret-up-bold"
+                            : "ph:caret-down-bold"
                         }
-                        className="font-bold! transition-transform duration-300"
-                        width={20}
-                        height={20}
+                        className="transition-transform duration-300"
+                        width={18}
+                        height={18}
+                        color={"gray"}
                       />
                     )}
                   </button>
                   {openGroups[item.key] && !collapsed && (
-                    <ul className="ml-4 space-y-1">
-                      {item.children.map((child) => (
-                        <li key={child.key}>
-                          <Link
-                            href={child.path}
-                            className={`flex items-center px-2 py-2 rounded-md text-sm !text-gray-800 hover:cursor-pointer ${
-                              selectedMenuItem === child.key
-                                ? "!bg-gray-100 !font-semibold"
-                                : "hover:!bg-gray-100"
-                            }`}
-                            onClick={() => onSelect(child)}
-                          >
-                            <span className="flex-shrink-0">{child.icon}</span>
-                            <span className="ml-2">{child.label}</span>
-                          </Link>
-                        </li>
-                      ))}
+                    <ul className="space-y-1 border-l-gray-400 border-l-solid border-l-[2] pl-2.5 mt-2! ml-2">
+                      {item.children.map((child) => {
+                        return (
+                          <li key={child.key}>
+                            <span
+                              className={`flex items-center px-2 py-2 rounded-md text-sm hover:cursor-pointer ${
+                                selectedMenuItem === child.key
+                                  ? "font-semibold text-blue-500 bg-slate-100 "
+                                  : "hover:bg-gray-100 text-gray-500 font-semibold"
+                              }`}
+                              onClick={() => {
+                                setSelectedMenuItem(child.key);
+                                onSelect(child);
+                                router.push(child.path);
+                              }}
+                            >
+                              <span className="shrink-0">{child.icon}</span>
+                              <span className="ml-2">{child.label}</span>
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                 </>
@@ -119,12 +130,15 @@ const SideBar = ({ activeKey, onSelect, onCollapsed }: SidebarProps) => {
                 // Single menu item
                 <Link
                   href={item.path}
-                  className={`flex items-center px-2 py-2 rounded-md text-gray-800! font-semibold hover:cursor-pointer ${
+                  className={`flex items-center px-2 py-2 rounded-md  font-semibold hover:cursor-pointer ${
                     selectedMenuItem === item.key
-                      ? "font-semibold! bg-gray-100!"
-                      : "hover:bg-gray-100!"
+                      ? "border-blue-300 border-solid border-2 bg-[#dfe7f3]! font-semibold! text-blue-500"
+                      : "hover:bg-gray-100! text-gray-800!"
                   }`}
-                  onClick={() => onSelect(item)}
+                  onClick={() => {
+                    setSelectedMenuItem(item.key);
+                    onSelect(item);
+                  }}
                 >
                   <span className="shrink-0">{item.icon}</span>
                   <span

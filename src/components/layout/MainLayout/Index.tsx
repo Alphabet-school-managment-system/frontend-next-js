@@ -66,7 +66,7 @@ const Index: React.FC<LayoutProps> = ({ children }) => {
 
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
-            collapsed ? "ml-20" : "ml-64"
+            collapsed ? "ml-20" : "ml-75"
           }  relative`}
         >
           <Header
