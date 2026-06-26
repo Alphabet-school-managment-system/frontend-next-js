@@ -67,6 +67,7 @@ export default function Home() {
           },
         ]}
         reloadKey={reloadKey}
+        name="Staff"
       />
     </>
   );

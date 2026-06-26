@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { Icon } from "@iconify-icon/react";
 import { IdsContext } from "@/store/idsContext";
-import { Table } from "antd";
+import { Popover, Table } from "antd";
 
 export type QueryBy = {
   type: "ACADEMIC_YEAR" | "BRANCH" | "OTHER";
@@ -45,6 +45,7 @@ type props = {
   queryParams?: { [key: string]: string };
   enable?: boolean;
   reloadKey?: number;
+  name?: string;
 };
 
 type actionPrevilageType = {
@@ -82,6 +83,7 @@ const Index = ({
   queryParams,
   enable = true,
   reloadKey = 0,
+  name,
 }: props) => {
   const router = useRouter();
 
@@ -191,6 +193,103 @@ const Index = ({
     }
   };
 
+  const actionColContent = (value?: actionPrevilageType, record?: any) => {
+    return (
+      <div className="flex-col justify-between items-center min-w-48 cursor-pointer">
+        {value?.edit ? (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push(`/ws/${pageRoute}/${record.id}/update`)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                router.push(`/ws/${pageRoute}/${record.id}/update`);
+              }
+            }}
+            className="flex items-center gap-3 p-2 text-gray-700 font-semibold hover:cursor-pointer hover:bg-gray-100 rounded-md transition"
+            title={`Edit ${name}`}
+          >
+            <Icon
+              icon="tabler:edit-filled"
+              width={22}
+              height={22}
+              className="text-gray-700"
+            />
+
+            <span className="text-base font-medium">Edit {name}</span>
+          </span>
+        ) : (
+          <span></span>
+        )}
+        {value?.delete ? (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={() =>
+              setcmProps((prev: ConfirmationModalPropsType) => ({
+                ...prev,
+                show: true,
+                onOk: () => {
+                  setSelectedRow(record);
+                  handleDelete();
+                },
+              }))
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setcmProps((prev: ConfirmationModalPropsType) => ({
+                  ...prev,
+                  show: true,
+                  onOk: () => {
+                    setSelectedRow(record);
+                    handleDelete();
+                  },
+                }));
+              }
+            }}
+            className="flex items-center gap-3 p-2 text-red-600 font-semibold hover:cursor-pointer hover:bg-gray-100 rounded-md transition"
+            title={`Delete ${name}`}
+          >
+            <Icon
+              icon="mdi-light:delete"
+              width={22}
+              height={22}
+              className="text-red-600"
+            />
+
+            <span className="text-base font-medium">Delete {name}</span>
+          </span>
+        ) : (
+          <span></span>
+        )}
+        {value?.detail ? (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={() => {}}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+              }
+            }}
+            className="flex items-center gap-3 p-2 text-gray-700 font-semibold hover:cursor-pointer hover:bg-gray-100 rounded-md transition"
+            title={`Detail ${name}`}
+          >
+            <Icon
+              icon="bx:detail"
+              width={22}
+              height={22}
+              className="text-gray-700"
+            />
+
+            <span className="text-base font-medium">Detail {name}</span>
+          </span>
+        ) : (
+          <span></span>
+        )}
+      </div>
+    );
+  };
+
   const actionCol = (value?: actionPrevilageType) => {
     return [
       {
@@ -199,63 +298,22 @@ const Index = ({
         key: "action",
         width: 150,
         render: (_: string, record: any) => (
-          <div className="flex justify-between items-center">
-            {value?.edit ? (
-              <span
-                className="flex p-2 hover:cursor-pointer"
-                title="edit"
-                onClick={() => {
-                  router.push(`/ws/${pageRoute}/${record.id}/update`);
-                }}
-              >
-                <Icon
-                  icon="line-md:edit"
-                  width={22}
-                  height={22}
-                  className="text-gray-900"
-                />
-              </span>
-            ) : (
-              <span></span>
-            )}
-            {value?.delete ? (
-              <span
-                className="flex p-2 hover:cursor-pointer"
-                title="delete"
-                onClick={() => {
-                  setcmProps((prev: ConfirmationModalPropsType) => ({
-                    ...prev,
-                    show: true,
-                    onOk: () => {
-                      setSelectedRow(record);
-                      handleDelete();
-                    },
-                  }));
-                }}
-              >
-                <Icon
-                  icon="mdi:trash-outline"
-                  width={22}
-                  height={22}
-                  className="text-gray-900"
-                />
-              </span>
-            ) : (
-              <span></span>
-            )}
-            {value?.detail ? (
-              <span className="flex p-2 hover:cursor-pointer" title="detail">
-                <Icon
-                  icon="bx:detail"
-                  width={22}
-                  height={22}
-                  className="text-gray-900"
-                />
-              </span>
-            ) : (
-              <span></span>
-            )}
-          </div>
+          <Popover
+            placement="bottom"
+            content={actionColContent(value, record)}
+            arrow={false}
+            trigger="click"
+            mouseEnterDelay={0}
+            mouseLeaveDelay={0}
+            className="cursor-pointer!"
+          >
+            <Icon
+              icon="pepicons-pop:dots-y"
+              width={25}
+              height={25}
+              className="text-gray-900"
+            />
+          </Popover>
         ),
       },
     ];

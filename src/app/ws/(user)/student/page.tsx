@@ -76,6 +76,7 @@ export default function Home() {
         ]}
         loading={loading}
         reloadKey={reloadKey}
+        name="Student"
       />
     </>
   );

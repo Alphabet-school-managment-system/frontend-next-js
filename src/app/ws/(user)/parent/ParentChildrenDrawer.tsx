@@ -1,5 +1,4 @@
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
-import { getData } from "@/services/api";
 import { staticImages } from "@/lib/static-images";
 import { ConfirmationModalContext } from "@/store/confirmationModalContext";
 import {
@@ -9,16 +8,12 @@ import {
   Student,
   StudentWithEnrollment,
 } from "@/types";
-import { useContext, useEffect, useState } from "react";
-import Image from "next/image";
-import { Button, Empty, Skeleton, Tag, Typography } from "antd";
-import { Icon } from "@iconify-icon/react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { Avatar, Button, Empty, List, Skeleton, Typography } from "antd";
 import toast from "react-hot-toast";
-import { get_formatted_sex } from "../student/hook/useStudent";
 import SearchInput from "@/components/common/SearchInput";
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { Select } from "@/components/common/Select";
-import { useEnrollment } from "../../(academic)/enrollment/hook/useEnrollment";
 import { useUtils } from "@/hooks/useUtils";
 
 const getFullName = (student?: Student) =>
@@ -28,7 +23,7 @@ const getFullName = (student?: Student) =>
 
 const ParentStudentCardSkeleton = () => {
   return (
-    <div className="flex h-full min-h-[240px] flex-col rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm">
+    <div className="flex h-full min-h-60 flex-col rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm">
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <Skeleton.Avatar active size={72} shape="circle" />
 
@@ -116,46 +111,42 @@ const ParentStudentCard = ({ relation }: { relation: ParentStudent }) => {
   };
 
   return (
-    <div className="flex h-full flex-col rounded-md border border-gray-200 bg-gray-50 p-3 text-center shadow-none">
-      <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <Image
-          src={student?.image ?? defaultPhoto}
-          alt="Student photo"
-          width={72}
-          height={72}
-          className="h-18 w-18 rounded-full border border-gray-200 object-cover"
-        />
-
-        <div className="min-w-0">
-          <div className="flex flex-col items-center gap-3">
-            <Typography.Title level={5} className="mb-1! mt-0! text-gray-700!">
-              {getFullName(student)}
-            </Typography.Title>
-           
-          </div>
-
-          <div className="mt-2 flex flex-col items-center gap-1 text-sm text-gray-800!">
-            <span className="text-center">
-              <span>{`${getGradeLabel(Number(enrollment?.grade) || 0)} ${enrollment?.section ? `- Section ${enrollment?.section}` : ""}`}</span>
-            </span>
-            <span className="text-center">
-              <span>{`STU-${String(student?.student_registration_number).padStart(6, "0")}`}</span>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="mt-4 flex justify-center">
+    <List.Item
+      key={student?.id}
+      actions={[
         <Button
-          type="dashed"
+          key="remove"
+          type="default"
           danger
-          icon={<Icon icon="mdi:trash-can-outline" width={18} height={18} />}
           onClick={handleDelete}
           loading={deletingRelation}
         >
           Remove
-        </Button>
-      </div>
-    </div>
+        </Button>,
+      ]}
+      className="bg-gray-50 p-3! rounded-lg"
+    >
+      <List.Item.Meta
+        avatar={<Avatar size={50} src={student?.image || defaultPhoto.src} />}
+        title={
+          <span>
+            {`STU-${String(student?.student_registration_number).padStart(6, "0")}`}
+          </span>
+        }
+        description={
+          <div className="flex flex-col gap-1 text-sm text-gray-600">
+            <span className="font-semibold text-gray-700 uppercase">
+              {getFullName(student)}
+            </span>
+            <span className="font-semibold">
+              {`${getGradeLabel(Number(enrollment?.grade) || 0)}${
+                enrollment?.section ? ` - ${enrollment.section}` : ""
+              }`}
+            </span>
+          </div>
+        }
+      />
+    </List.Item>
   );
 };
 
@@ -191,7 +182,11 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
   }, [parent?.id]);
 
   const handleAddStudent = async () => {
-    if (!parent?.id || !selectedStudent?.id) return;
+    if (!parent?.id) return;
+
+    if (!selectedStudent?.id)
+      return toast.error("Please select the student first.");
+    if (!parentType) return toast.error("Please select the parent type first.");
 
     try {
       setLookingUpEnrollment(true);
@@ -234,14 +229,17 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
     fetchingChildren ||
     lookingUpEnrollment ||
     addingRelation;
-  const selectedStudentEnrollment = selectedStudent?.enrollment?.[0];
-  const selectedStudentSubtitle = selectedStudentEnrollment
-    ? `Grade ${selectedStudentEnrollment.grade}${
-        selectedStudentEnrollment.section
-          ? `, Section ${selectedStudentEnrollment.section}`
-          : ""
-      }`
-    : undefined;
+
+  const subTitle = useMemo(() => {
+    const enrollment = selectedStudent?.enrollment?.[0];
+
+    if (!enrollment) return undefined;
+
+    const grade = enrollment.grade ? `${enrollment.grade}` : "";
+    const section = enrollment.section ? `(${enrollment.section})` : "";
+
+    return [grade, section].filter(Boolean).join(" - ") || undefined;
+  }, [selectedStudent]);
 
   const parentTypeOptions = [
     { label: "Guardian", value: "Guardian" },
@@ -258,16 +256,12 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
     <div className="flex h-full flex-col gap-4">
       <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
         <div className="mb-3">
-          <Typography.Title level={4} className="mb-1! mt-0!">
-            {parent
-              ? `${parent.first_name} ${parent?.middle_name}`
-              : "Children"}
-          </Typography.Title>
           <p className="text-sm text-gray-600">
             Search for a student, then add them to this parent.
           </p>
         </div>
 
+        {/* search student form */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="flex-1">
             <SearchInput
@@ -279,6 +273,7 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
                 setSelectedStudent(value as StudentWithEnrollment)
               }
               onClear={() => setSelectedStudent(undefined)}
+              size="middle"
             />
           </div>
 
@@ -298,7 +293,7 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
             <div className="min-w-0">
               <UserProfileInfo
                 full_name={`${selectedStudent?.first_name} ${selectedStudent?.middle_name}`}
-                subTitle={selectedStudentSubtitle}
+                subTitle={subTitle}
                 photoUrl={selectedStudent?.image ?? ""}
                 sex={
                   selectedStudent?.sex?.toLowerCase() as
@@ -328,14 +323,14 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
             </div>
             <div>
               <Button
-                type="dashed"
+                type="text"
                 onClick={() => {
                   setSelectedStudent(undefined);
                   setParentType(undefined);
                 }}
                 danger
               >
-                Remove
+                Cancel
               </Button>
             </div>
           </div>
@@ -363,10 +358,14 @@ export const ParentChildrenDrawer = ({ parent }: { parent?: Parent }) => {
             <Empty description="No students are linked to this parent yet." />
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {parentStudents.map((relation) => (
-              <ParentStudentCard key={relation.id} relation={relation} />
-            ))}
+          <div className="">
+            <List
+              itemLayout="horizontal"
+              dataSource={parentStudents}
+              renderItem={(student) => (
+                <ParentStudentCard key={student.id} relation={student} />
+              )}
+            />
           </div>
         )}
       </div>

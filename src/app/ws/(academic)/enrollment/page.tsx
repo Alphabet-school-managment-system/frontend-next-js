@@ -36,6 +36,7 @@ export default function Home() {
             value: undefined,
           },
         ]}
+        name="Enrollment"
       />
     </>
   );

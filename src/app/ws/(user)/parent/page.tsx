@@ -29,10 +29,9 @@ export default function Home() {
           title="Children Information"
           open
           onClose={() => {
-            setOpenDrawer((pre) => ({ ...pre, children: false }));
-            setSelectedParent(undefined);
+            setOpenDrawer((pre) => ({ detail: true, children: false }));
           }}
-          width={800}
+          width={600}
           footer={null}
         >
           <ParentChildrenDrawer parent={selectedParent} />
@@ -46,7 +45,7 @@ export default function Home() {
             setOpenDrawer((pre) => ({ ...pre, detail: false }));
             setSelectedParent(undefined);
           }}
-          width={550}
+          width={600}
           footer={null}
         >
           <UserDetailPage
@@ -58,6 +57,10 @@ export default function Home() {
               if (refetch) {
                 setReloadKey((prev) => prev + 1);
               }
+            }}
+            onClick={() => {
+              setSelectedParent(selectedParent);
+              setOpenDrawer((pre) => ({ detail: true, children: true }));
             }}
           />
         </Drawer>
@@ -86,6 +89,7 @@ export default function Home() {
           },
         ]}
         reloadKey={reloadKey}
+        name={"Parent"}
       />
     </>
   );
