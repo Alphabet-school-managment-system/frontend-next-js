@@ -4,7 +4,7 @@ import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { useStudent } from "../hook/useStudent";
 import { useContext, useEffect, useState } from "react";
-import { Button, Image as AntdImage, Upload, UploadProps } from "antd";
+import { Button, Image as AntdImage, Upload } from "antd";
 import { staticImages } from "@/lib/static-images";
 import { UploadOutlined } from "@ant-design/icons";
 import { getFileUrl } from "@/app/ws/(finance)/expense/new/page";

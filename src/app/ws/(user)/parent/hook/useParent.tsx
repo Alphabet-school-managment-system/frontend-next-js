@@ -70,22 +70,6 @@ export const useParent = () => {
         key: "address",
         render: (val: string) => <span className="text-sm">{val || "-"}</span>,
       },
-      {
-        title: "Children",
-        dataIndex: "children",
-        key: "children",
-        render: (_: string, record: any) => (
-          <Button
-            type="link"
-            htmlType="button"
-            className="mt-2 rounded-sm!"
-            size="large"
-            onClick={() => onShowChildren(record)}
-          >
-            Show Children
-          </Button>
-        ),
-      },
     ];
   };
 

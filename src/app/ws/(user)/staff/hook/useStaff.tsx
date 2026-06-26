@@ -65,7 +65,7 @@ export const useStaff = () => {
         title: "Role",
         dataIndex: "role",
         key: "role",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: string) => <span className="text-sm uppercase">{val || "-"}</span>,
       },
     ];
   };
@@ -78,9 +78,9 @@ export const useStaff = () => {
         type: FieldType.Select,
         placeholder: "Select role",
         options: [
-          { label: "Librarian", value: "Librarian" },
-          { label: "Accountant", value: "Accountant" },
-          { label: "Admin", value: "Admin" },
+          { label: "Librarian", value: "librarian" },
+          { label: "Accountant", value: "accountant" },
+          { label: "Admin", value: "admin" },
         ],
         rules: [{ required: true, message: "" }],
       },

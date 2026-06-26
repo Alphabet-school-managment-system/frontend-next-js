@@ -5,6 +5,7 @@ import { AutoComplete, Spin } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { useApiQuery } from "@/hooks/useApi";
 import { LibraryBook, Student, Teacher } from "@/types";
+import { SizeType } from "antd/es/config-provider/SizeContext";
 
 export interface SearchInputProps {
   onSelect?: (value: any) => void;
@@ -15,6 +16,7 @@ export interface SearchInputProps {
   suffixIcon?: ReactNode;
   allowClear?: boolean;
   incomingOptions?: any[];
+  size?: SizeType
 }
 
 const SearchInput = ({
@@ -26,6 +28,7 @@ const SearchInput = ({
   suffixIcon,
   allowClear = true,
   incomingOptions = [],
+  size = "large"
 }: SearchInputProps) => {
   const [options, setOptions] = useState<Student[] | Teacher[] | LibraryBook[]>(
     []
@@ -67,7 +70,7 @@ const SearchInput = ({
 
   return (
     <AutoComplete
-      size="large"
+      size={size}
       onSearch={async (value: string) => {
         setValue(value);
         if (!value.trim()) {

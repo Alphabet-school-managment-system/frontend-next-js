@@ -29,6 +29,7 @@ export const UserDetailPage = ({
   userType,
   onLoading,
   onClose,
+  onClick,
 }: {
   data:
     | (Parent & { user: userBan })
@@ -39,6 +40,7 @@ export const UserDetailPage = ({
   userType: "parent" | "staff" | "teacher" | "student";
   onLoading?: (value: boolean) => void;
   onClose?: (refetch: boolean) => void;
+  onClick?: (type: string) => void;
 }) => {
   const [confirmState, setConfirmState] = useState<{
     open: boolean;
@@ -315,6 +317,21 @@ export const UserDetailPage = ({
               {data.note || "N/A"}
             </Descriptions.Item>
           )}
+          {data.note && (
+            <Descriptions.Item label="Note" span={2}>
+              {data.note || "N/A"}
+            </Descriptions.Item>
+          )}
+          <Descriptions.Item label="Children" span={2}>
+            <Button
+              type="default"
+              onClick={() => {
+                onClick && onClick("show-children");
+              }}
+            >
+              Show me
+            </Button>
+          </Descriptions.Item>
         </>
       );
     }
