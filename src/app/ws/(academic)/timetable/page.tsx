@@ -43,17 +43,22 @@ export const FilterOption = ({
     }
   }, [gettingSchoolSetting]);
 
+  useEffect(() => {
+    onChange && onChange({ ...queryParams });
+  }, [queryParams]);
+
   return (
     <div className="flex items-center justify-between w-full gap-4">
       <div className="">
         <Select
-          data={getGrades()}
-          onChange={(value: any) => {
+          data={getGrades({})}
+          onChange={async (value: any) => {
             setQueryParams((prev) => ({ ...prev, grade: value }));
             onChange && onChange({ ...queryParams, grade: value });
           }}
           classNames="min-w-[450px] h-full!"
           placeholderText="Select grade to filter timetables"
+          allowSearch
         />
       </div>
       <div className="">
@@ -61,10 +66,14 @@ export const FilterOption = ({
           data={getDaysOfWeek()}
           onChange={(value: any) => {
             setQueryParams((prev) => ({ ...prev, day: value }));
-            onChange && onChange({ ...queryParams, day: value });
           }}
           classNames="min-w-[450px] h-full!"
           placeholderText="Select day to filter timetables"
+          allowClear
+          allowSearch
+          onClear={() => {
+            setQueryParams((prev) => ({ ...prev, day: undefined }));
+          }}
         />
       </div>
     </div>
@@ -74,15 +83,26 @@ export const FilterOption = ({
 export default function Home() {
   const { getTableColumns } = useTimetable({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [enableQuery, setEnableQuery] = useState<boolean>(false);
-  const [queryParams, setQueryParams] = useState<{
-    grade?: string;
-    day?: string;
-  }>({});
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const [queryParams, setQueryParams] = useState<
+    | {
+        grade?: string;
+        day?: string;
+      }
+    | undefined
+  >({});
 
   useEffect(() => {
-    if (queryParams?.day && queryParams?.grade) {
-      setEnableQuery(true);
+    if (queryParams?.day !== undefined && queryParams?.grade !== undefined) {
+      setReloadKey((prev) => prev + 1);
+    } else {
+      console.log(
+        "%csrc/app/ws/(academic)/timetable/page.tsx:104 queryParams",
+        "color: #007acc;",
+        queryParams,
+      );
+      setQueryParams(undefined);
     }
   }, [queryParams]);
 
@@ -109,7 +129,6 @@ export default function Home() {
         ]}
         showSearchInput={false}
         loading={loading}
-        enable={enableQuery}
         FilterOption={
           <FilterOption
             onLoading={(value: boolean) => {
@@ -122,6 +141,8 @@ export default function Home() {
         }
         queryParams={queryParams}
         name="Schedule"
+        reloadKey={reloadKey}
+        enable={reloadKey > 0 ? true : false}
       />
     </>
   );

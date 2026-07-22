@@ -13,13 +13,16 @@ import {
   ConfirmationModalContext,
   ConfirmationModalPropsType,
 } from "@/store/confirmationModalContext";
+import { UtilContext } from "@/store/utilContext";
+import { Form } from "antd";
+import { OnFormValuesChangeProps } from "@/components/forms/FormGenerator";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 
 export default function Update() {
@@ -31,15 +34,17 @@ export default function Update() {
     type?: ExpenseType;
     otherType?: ExpenseType;
   }>({});
+  const [form] = Form.useForm();
+  const { formData, setFormData } = useContext(UtilContext);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
-    ConfirmationModalContext
+    ConfirmationModalContext,
   );
 
   const { data: result, isLoading } = useApiQuery<Expense>(
     [],
     `expense/${id}`,
-    Boolean(id)
+    Boolean(id),
   );
 
   useEffect(() => {
@@ -55,6 +60,13 @@ export default function Update() {
       setData(payload);
     }
   }, [result]);
+
+  useEffect(() => {
+    if (formData) {
+      form.setFieldsValue(formData.allValues);
+      setData(formData.allValues);
+    }
+  }, [formData]);
 
   return (
     <div className="">
@@ -125,6 +137,12 @@ export default function Update() {
         isFetching={isLoading}
         isCreate={false}
         leftContent={<ReceiptPreview previewImage={previewImage} />}
+        formInstance={form}
+        onValuesChange={({ allValues }: OnFormValuesChangeProps) => {
+          setFormData((prev: any) => ({
+            allValues,
+          }));
+        }}
       />
     </div>
   );

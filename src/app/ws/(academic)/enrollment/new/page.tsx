@@ -10,27 +10,32 @@ import { useContext, useEffect, useState } from "react";
 import { IdsContext } from "@/store/idsContext";
 import { Alert, Descriptions, Empty, Form } from "antd";
 import { useUtils } from "@/hooks/useUtils";
+import { UtilContext } from "@/store/utilContext";
+import { OnFormValuesChangeProps } from "@/components/forms/FormGenerator";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 
 export const EnrollmentStudentDetail = ({
   student,
   enrolled_grade,
+  stream,
 }: {
   student?: Student;
   enrolled_grade?: string;
+  stream?: string;
 }) => {
-  const { getGradeLabel } = useUtils();
   const defaultPhoto =
     student?.sex === "Female"
       ? staticImages?.noPhotoGirlImg
       : staticImages?.noPhotoBoyImg;
+
+  const { getGradeLabel, getFormattedIds } = useUtils();
 
   if (!student || !enrolled_grade) {
     return (
@@ -61,8 +66,13 @@ export const EnrollmentStudentDetail = ({
 
       <Descriptions column={1} layout="horizontal" size="middle" bordered>
         <Descriptions.Item label="Grade">
-          {getGradeLabel(Number(enrolled_grade))}
+          {getGradeLabel(+enrolled_grade)}
         </Descriptions.Item>
+        {stream && (
+          <Descriptions.Item label="Stream">
+            {stream.replace(/_/g, " ")}
+          </Descriptions.Item>
+        )}
 
         <Descriptions.Item label="Email">{student.email}</Descriptions.Item>
 
@@ -73,10 +83,7 @@ export const EnrollmentStudentDetail = ({
         <Descriptions.Item label="Address">{student.address}</Descriptions.Item>
 
         <Descriptions.Item label="Registration No">
-          {`STU-${String(student.student_registration_number).padStart(
-            6,
-            "0"
-          )}`}
+          {getFormattedIds(String(student.student_registration_number))}
         </Descriptions.Item>
       </Descriptions>
     </div>
@@ -86,7 +93,7 @@ export const EnrollmentStudentDetail = ({
 export default function Home() {
   const { Ids } = useContext(IdsContext);
   const [form] = Form.useForm();
-
+  const { formData, setFormData } = useContext(UtilContext);
   const {
     getFormFields,
     AcademicYear,
@@ -97,13 +104,17 @@ export default function Home() {
     gettingServerDate,
     isEnrollmentPeriodExpired,
   } = useEnrollment({ Ids });
+
   const [student, setStudent] = useState<Student>();
-  const [enrolled_grade, setEnrolledClass] = useState<string>("");
+  const [enrolled_grade, setEnrolledClass] = useState<string | undefined>(
+    undefined,
+  );
   const [loading, setLoading] = useState<boolean>();
   const [enrollmentExpiredMessage, setEnrollmentExpiredMessage] = useState<
     string | undefined
   >();
   const [disableForm, setDisableForm] = useState<boolean>(false);
+  const { getGradeDetail } = useUtils();
 
   useEffect(() => {
     if (AcademicYear && ServerDate) {
@@ -124,23 +135,35 @@ export default function Home() {
     }
   }, [gettingAcademicYear, gettingServerDate, gettingSchoolSetting]);
 
+  useEffect(() => {
+    if (formData?.allValues) {
+      form.setFieldsValue(formData.allValues);
+    }
+  }, [formData]);
+
   return (
     <div className="">
       <FormGenerator
         columns={1}
         fields={getFormFields({
           onStudentSelect: async (student: Student) => {
-            setStudent(student);
+            // setStudent(student);
             form.setFieldValue("student_id", student?.id);
           },
           levels_of_education: SchoolSetting?.levels_of_education ?? [],
-          onGradeSelect: async (grade: string) => {
-            setEnrolledClass(grade);
+          onGradeSelect: async (value: string) => {
+            setEnrolledClass(value);
+            getGradeDetail({ value })?.hasStream === false
+              ? form.resetFields(["stream"])
+              : null;
           },
           onClear: async () => {
-            setEnrolledClass("");
+            setEnrolledClass(undefined);
             setStudent(undefined);
             form.setFieldValue("student_id", undefined);
+          },
+          onIsTransferredValueChange: (value: boolean) => {
+            form.resetFields(["transferredFrom"]);
           },
         })}
         title="Create new enrollment"
@@ -152,6 +175,7 @@ export default function Home() {
           <EnrollmentStudentDetail
             student={student}
             enrolled_grade={enrolled_grade}
+            stream={form.getFieldValue("stream")}
           />
         }
         topContent={
@@ -167,6 +191,12 @@ export default function Home() {
         isFetching={loading}
         disableForm={disableForm}
         formInstance={form}
+        onValuesChange={({ allValues }: OnFormValuesChangeProps) => {
+          setFormData((prev: any) => ({
+            ...prev,
+            allValues,
+          }));
+        }}
       />
     </div>
   );

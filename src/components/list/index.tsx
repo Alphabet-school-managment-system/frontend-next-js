@@ -6,7 +6,7 @@ import {
   ConfirmationModalPropsType,
   defaultConfirmationModalProps,
 } from "@/store/confirmationModalContext";
-import { ReactElement, useContext, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { useRouter } from "next/navigation";
@@ -21,7 +21,7 @@ export type QueryBy = {
 };
 
 type props = {
-  columns: any[];
+  columns: columnType[];
   searchByCols: string[];
   searchInputPlaceholderText: string;
   route:
@@ -52,6 +52,13 @@ type actionPrevilageType = {
   edit?: boolean;
   delete?: boolean;
   detail?: boolean;
+};
+
+export type columnType = {
+  title: string;
+  dataIndex: string;
+  key: string;
+  render?: (_: string, record: any) => void;
 };
 
 const MainTable = dynamic(() => import("@/components/common/Table"), {
@@ -178,6 +185,24 @@ const Index = ({
     }));
   }, []);
 
+  const processedColumns = useMemo(() => {
+    return columns
+      .map((item: columnType) => {
+        if (!item) return undefined;
+        return {
+          title: () => (
+            <span className="uppercase text-gray-600 font-semiBold">
+              {item.title ? item?.title : undefined}
+            </span>
+          ),
+          dataIndex: item.dataIndex,
+          key: item.key ?? item.dataIndex,
+          render: item.render,
+        };
+      })
+      .filter((c) => c !== undefined) as any[];
+  }, [columns]);
+
   const handleDelete = () => {
     try {
       Delete(
@@ -293,7 +318,7 @@ const Index = ({
   const actionCol = (value?: actionPrevilageType) => {
     return [
       {
-        title: "Action",
+        title: <span className="uppercase text-gray-600 font-semiBold">Action</span>,
         dataIndex: "action",
         key: "action",
         width: 150,
@@ -324,7 +349,7 @@ const Index = ({
       <MainTable
         data={datas}
         columns={[
-          ...columns,
+          ...processedColumns,
           ...(showActionCols ? actionCol(actionPrevilage) : []),
         ]}
         rowKey="id"
@@ -360,7 +385,7 @@ const Index = ({
             return (
               <Table
                 dataSource={parent.sub}
-                columns={col}
+                columns={processedColumns}
                 pagination={false}
                 rowKey={"id"}
                 showHeader={false}
@@ -371,6 +396,7 @@ const Index = ({
         }}
         showHeaderBar={showHeaderBar}
         showSearchInput={showSearchInput}
+        
       />
     </div>
   );

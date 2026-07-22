@@ -8,6 +8,8 @@ import { LeaveStatus } from "./enums";
 import { ParentType } from "./enums";
 import { StaffRole } from "./enums";
 import { FeeType } from "@/app/ws/(finance)/fee/hook/useFee";
+import { DrawerStyles } from "antd/es/drawer/DrawerPanel";
+// import { User } from "better-auth/types";
 
 export type selectType = {
   label: string;
@@ -74,6 +76,7 @@ export type Enrollment = {
   student_id: string;
   grade: string;
   section?: string | null;
+  stream?: stream;
   isTransferred: boolean;
   transferredFrom?: string | null;
   note?: string | null;
@@ -141,25 +144,30 @@ export type StaffLeaveRequest = {
   status: LeaveStatus;
 };
 
-export type LibraryBook = {
-  _id: string;
-  branch_id?: string | null;
+export type LibraryItem = {
+  id: string;
+  branch_id: string | null;
   title: string;
-  author?: string | null;
+  author: string | null;
+  item_type: string | null;
+  subject: string | null;
   isbn?: string | null;
   copies_available?: number | null;
+  note?: number | null;
+  publication_date?: string | null;
 };
 
 export type LibraryTransaction = {
-  _id: string;
-  book_id?: string | null;
+  id: string;
+  item_id?: string | null;
   student_id?: string | null;
   teacher_id?: string | null;
   issue_date?: Date | null;
   return_date?: Date | null;
-  status?: string | null;
-  islost?: boolean | null;
+  status?: BorrowStatusType | null;
   note?: string | null;
+  created_at?: Date | null;
+  updated_at?: Date | null;
 };
 
 export type Mark = {
@@ -241,10 +249,12 @@ export type Student = {
   branch_id?: string | null;
   image?: string | null;
   student_registration_number?: string | null;
+  user?: User;
 };
 
 export type StudentWithEnrollment = Student & {
   enrollment: Enrollment[];
+  user: User;
 };
 
 export type Teacher = {
@@ -259,6 +269,7 @@ export type Teacher = {
   note?: string | null;
   image: string;
   branch_id?: string | null;
+  user?: User;
 };
 
 export type Term = {
@@ -283,6 +294,7 @@ export type Timetable = {
 
 export type levels_of_education =
   | "kg"
+  | "0"
   | "lower_primary"
   | "middle_primary"
   | "upper_primary"
@@ -300,3 +312,36 @@ export interface Setting {
   created_at?: Date | null;
   updated_at?: Date | null;
 }
+
+export interface User {
+  id: String;
+  name: String;
+  email: String;
+  emailVerified: Boolean;
+  image?: String;
+  createdAt: Date;
+  updatedAt: Date;
+  role?: String;
+  banned?: Boolean;
+  banReason?: String;
+  banExpires?: Date;
+}
+
+export interface DrawerProps {
+  title: string | React.ReactNode;
+  isEdit?: boolean;
+  onClose: () => void;
+  form?: any;
+  children: React.ReactNode;
+  open: boolean;
+  width?: number | string;
+  buttonTitle?: string;
+  buttonDanger?: boolean;
+  loading?: boolean;
+  footer?: React.ReactNode | null;
+  styles?: DrawerStyles;
+  className?: string;
+}
+
+export type UserType = "student" | "teacher" | "parent" | "staff";
+export type BorrowStatusType = "returned" | "borrowed" | "reserved" | "lost";

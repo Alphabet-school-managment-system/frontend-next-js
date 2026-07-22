@@ -10,6 +10,7 @@ import { Button } from "antd";
 import toast from "react-hot-toast";
 import { useUtils } from "@/hooks/useUtils";
 import { useApiMutation } from "@/hooks/useApi";
+import { selectType } from "@/types";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -72,13 +73,16 @@ export default function HomePage() {
   };
 
   const subHeader = (
-    <div className="flex items-center justify-between w-full gap-4">
+    <div className="flex items-center justify-evenly w-full gap-4">
       <div className="flex-1">
         <Select
-          data={getGrades()}
-          onChange={(v: any) => setGrade(v)}
+          data={getGrades({})}
+          onChange={async (value: string) => {
+            setGrade(value);
+          }}
           classNames="min-w-[300px] w-full!"
           placeholderText="Select grade to assign"
+          allowSearch
         />
       </div>
       <div className="flex-1">
@@ -111,27 +115,41 @@ export default function HomePage() {
           delete: false,
           detail: false,
         }}
-        queryBy={[
-          {
-            type: "OTHER",
-            value: grade
+        queryBy={
+          grade !== undefined
+            ? [
+                {
+                  type: "OTHER",
+                  value: [
+                    {
+                      key: "grade",
+                      value: grade.toString(),
+                    },
+                    ...(Ids.academicYearId
+                      ? [
+                          {
+                            key: "academic_year_id",
+                            value: Ids.academicYearId.toString(),
+                          },
+                        ]
+                      : []),
+                  ],
+                },
+              ]
+            : Ids.academicYearId
               ? [
                   {
-                    key: "grade",
-                    value: grade.toString(),
+                    type: "OTHER",
+                    value: [
+                      {
+                        key: "academic_year_id",
+                        value: Ids.academicYearId.toString(),
+                      },
+                    ],
                   },
-                  ...(Ids.academicYearId
-                    ? [
-                        {
-                          key: "academic_year_id",
-                          value: Ids.academicYearId.toString(),
-                        },
-                      ]
-                    : []),
                 ]
-              : undefined,
-          },
-        ]}
+              : []
+        }
         showAddButton={false}
         showRowSelection={true}
         onRowSelection={(values: React.Key[]) => {

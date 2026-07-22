@@ -1,5 +1,7 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
+import { useUtils } from "@/hooks/useUtils";
+import { Student, StudentWithEnrollment } from "@/types";
 import dayjs from "dayjs";
 
 export const enum FeeType {
@@ -15,19 +17,24 @@ export const FeeTypeOptions = [
 ];
 
 export const useFee = () => {
+  const { getFormattedIds } = useUtils();
   const getTableColumns = (): any[] => {
     return [
       {
         title: "Student Name",
         dataIndex: "student",
         key: "student",
-        render: (_: string, record: any) => (
-          <UserProfileInfo
-            full_name={`${record?.first_name} ${record?.middle_name} ${record?.last_name}`}
-            photoUrl={record?.photoUrl}
-            link={`/ws/student-detail/${record?.id}`}
-          />
-        ),
+        render: (_: string, record: any) => {
+          let student = record?.enrollment?.student;
+          return (
+            <UserProfileInfo
+              full_name={`${student.first_name} ${student.middle_name} ${student.last_name}`}
+              photoUrl={record?.photoUrl}
+              subTitle={getFormattedIds(student.student_registration_number)}
+              link={undefined}
+            />
+          );
+        },
       },
       {
         title: "Amount",
@@ -52,7 +59,11 @@ export const useFee = () => {
         title: "Due Date",
         dataIndex: "due_date",
         key: "due_date",
-        render: (val: string) => <span className="text-sm">{val || "-"}</span>,
+        render: (val: string) => (
+          <span className="text-sm font-semibold">
+            {val ? dayjs(val).format("MMM D, YYYY") : "-"}
+          </span>
+        ),
       },
       {
         title: "Status",
@@ -86,6 +97,9 @@ export const useFee = () => {
     other_type,
     onOtherTypeChange,
     includeId = false,
+    onStudentSelect,
+    onClear,
+    SearchInputOptions,
   }: {
     onFileChange: (fileList: any[]) => void;
     onTypeChange: (value: FeeType) => void;
@@ -93,19 +107,28 @@ export const useFee = () => {
     other_type?: string;
     onOtherTypeChange?: (e: any) => void;
     includeId?: boolean;
+    onStudentSelect: (student: StudentWithEnrollment) => void;
+    onClear: () => void;
+    SearchInputOptions?: Student[];
   }): FieldConfig[] => {
     const fields = [
       {
         name: "student_id",
         label: "Student",
         type: FieldType.searchInput,
-        placeholder: "Select the student",
+        placeholder: "Select student",
         rules: [{ required: true, message: "" }],
         searchInputProps: {
-          apiRoute: "student",
+          apiRoute: "enrollment",
           placeholder: "Search student by name",
-          queryKeys: ["first_name", "last_name"],
-          onSelect: (value: string) => {},
+          queryKeys: ["first_name", "middle_name", "last_name"],
+          onSelect: (value: any) => {
+            onStudentSelect(value);
+          },
+          onClear: () => {
+            onClear();
+          },
+          incomingOptions: SearchInputOptions,
         },
       },
       {

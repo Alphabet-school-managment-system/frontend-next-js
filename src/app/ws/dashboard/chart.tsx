@@ -82,7 +82,7 @@ export const Chart = ({
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-md p-6">
+    <div className="w-full bg-white rounded-md p-6">
       <h2 className="text-lg font-semibold mb-4 text-gray-800">{HeaderText}</h2>
       {type === "bar" ? (
         <Bar data={payload} options={options} />

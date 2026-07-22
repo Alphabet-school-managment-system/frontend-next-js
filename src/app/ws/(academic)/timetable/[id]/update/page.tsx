@@ -10,14 +10,13 @@ import { useEnrollment } from "../../../enrollment/hook/useEnrollment";
 import { useTimetable } from "../../hook/useTimetable";
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
-import { useUtils } from "@/hooks/useUtils";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 
 export default function Home() {
@@ -28,7 +27,6 @@ export default function Home() {
   const { SchoolSetting, gettingSchoolSetting } = useEnrollment({
     Ids,
   });
-  const {getGrades} = useUtils()
   const { getFormFields } = useTimetable({ SchoolSetting });
   const [loading, setLoading] = useState<boolean>();
   const [data, setData] = useState<any>(null);
@@ -36,7 +34,7 @@ export default function Home() {
   const { data: result, isLoading } = useApiQuery<Timetable>(
     [],
     `timetable/${id}`,
-    Boolean(id)
+    Boolean(id),
   );
 
   useEffect(() => {
@@ -68,9 +66,12 @@ export default function Home() {
           onSearchClear: async () => {
             form.setFieldValue("teacher_id", undefined);
           },
-          getGrades: getGrades,
+          onGradeSelect: async (value: string) => {
+            form.resetFields(["subject", "stream"]);
+          },
           includeId: true,
           SearchInputOptions: data?.teacher,
+          data,
         })}
         title="Update timetable Information"
         apiRoute="timetable"

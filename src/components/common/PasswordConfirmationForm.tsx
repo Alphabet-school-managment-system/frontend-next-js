@@ -81,6 +81,7 @@ export const useConfirmationRequest = () => {
     callbackFnc: () => void,
     frmName: string,
     message?: string,
+    onCancel?: () => void,
   ) => {
     setcmProps((prev: ConfirmationModalPropsType) => ({
       ...prev,
@@ -104,6 +105,7 @@ export const useConfirmationRequest = () => {
         setcmProps((p: ConfirmationModalPropsType) => ({
           ...p,
         }));
+        onCancel && onCancel();
       },
       okButtonProps: {
         danger: false,

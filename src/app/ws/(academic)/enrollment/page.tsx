@@ -24,7 +24,7 @@ export default function Home() {
           "Search by enrollment information (first name, last name & class_name)"
         }
         route={"enrollment"}
-        addButtonTitle={"Add new enrollment"}
+        addButtonTitle={"Create new enrollment"}
         actionPrevilage={{
           edit: true,
           delete: true,

@@ -1,10 +1,15 @@
 "use client";
 
-import React, { ReactElement, useEffect, useState } from "react";
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Form,
   Input,
-  Select,
   DatePicker,
   Button,
   Spin,
@@ -23,6 +28,8 @@ import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import SearchInput, { SearchInputProps } from "../common/SearchInput";
 import { UploadOutlined } from "@ant-design/icons";
+import { Select } from "../common/Select";
+import { UtilContext } from "@/store/utilContext";
 
 export enum FieldType {
   Input = "input",
@@ -65,6 +72,11 @@ export interface CheckboxTypeProps {
   label?: string;
 }
 
+export interface OnFormValuesChangeProps {
+  changedValues: any;
+  allValues: any;
+}
+
 export interface FieldConfig {
   name: string;
   label: string;
@@ -88,6 +100,7 @@ export interface FieldConfig {
   value?: any;
   selectProps?: {
     onChange?: (value: any) => void;
+    allowSearch?: boolean;
   };
   onChange?: (e: any) => void;
   allowClear?: boolean;
@@ -108,6 +121,11 @@ interface FormGeneratorProps {
   topContent?: ReactElement;
   formInstance?: FormInstance;
   disableForm?: boolean;
+  payloadExtraData?: any;
+  onValuesChange?: ({
+    changedValues,
+    allValues,
+  }: OnFormValuesChangeProps) => void;
 }
 
 const FormGenerator: React.FC<FormGeneratorProps> = ({
@@ -125,16 +143,50 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   topContent,
   formInstance,
   disableForm = false,
+  payloadExtraData,
+  onValuesChange,
 }) => {
-  const [form] = Form.useForm(formInstance);
+  const [internalForm] = Form.useForm();
+  const form = formInstance || internalForm;
   const router = useRouter();
   const [isLoading, setIsloading] = useState(false);
+  const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { setFormData } = useContext(UtilContext);
+
+  const normalizeFormValue = (field: FieldConfig, value: any) => {
+    if (value === null || value === undefined) return value;
+
+    if (field.type === FieldType.Date) {
+      if (dayjs.isDayjs(value)) return value;
+
+      const dateValue = dayjs(value);
+      return dateValue.isValid() ? dateValue : value;
+    }
+
+    return value;
+  };
 
   useEffect(() => {
     if (data) {
-      form.setFieldsValue(data);
+      const normalizedData = fields.reduce<Record<string, any>>(
+        (acc, field) => {
+          acc[field.name] = normalizeFormValue(field, data[field.name]);
+          return acc;
+        },
+        {},
+      );
+      form.setFieldsValue(normalizedData);
     }
-  }, [data]);
+  }, [data, fields]);
+
+  useEffect(() => {
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+      setFormData(undefined);
+    };
+  }, [setFormData, loadingTimeoutRef]);
 
   const renderField = (field: FieldConfig) => {
     switch (field.type) {
@@ -166,25 +218,24 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       case "select":
         return (
           <Select
-            placeholder={field.placeholder}
+            placeholderText={field.placeholder}
             size="large"
-            className="w-full"
+            classNames="w-full"
             prefix={field?.prefix}
             suffixIcon={field?.suffix}
             mode={field.selectMode}
             disabled={field?.disabled}
             value={field?.value}
-            onChange={field.selectProps?.onChange}
-          >
-            {field.options?.map((opt) => (
-              <Select.Option key={opt.value} value={opt.value}>
-                {opt.label}
-              </Select.Option>
-            ))}
-          </Select>
+            onChange={(value: any) => {
+              field.selectProps?.onChange && field.selectProps?.onChange(value);
+            }}
+            data={field?.options ?? []}
+            allowSearch={field.selectProps?.allowSearch}
+          />
         );
       case "date":
         const dateField = field as DateFieldConfig;
+        const dateValue = normalizeFormValue(field, field.value);
 
         return (
           <DatePicker
@@ -205,7 +256,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             format={"YYYY-MM-DD"}
             disabledDate={dateField.disabledDate}
             disabled={field.disabled}
-            value={field?.value}
+            value={dateValue}
           />
         );
       case "phone":
@@ -247,7 +298,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       case "number":
         return (
           <InputNumber
-            className="!w-full"
+            className="w-full!"
             size="large"
             placeholder={field.placeholder}
             min={field?.min ?? 1}
@@ -286,9 +337,15 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       case "searchInput": {
         const sip = field.searchInputProps;
         return (
-          <SearchInput {...(sip ?? {})} queryKeys={sip?.queryKeys ?? []} />
+          <SearchInput
+            {...(sip ?? {})}
+            queryKeys={sip?.queryKeys ?? []}
+            incomingValue={field?.value}
+          />
         );
       }
+      case "hidden":
+        return <Input type="hidden" />;
       case "file":
         const fileProps = field.fileTypeProps!;
         return (
@@ -301,7 +358,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             }
             maxCount={fileProps?.maxCount}
           >
-            <Button size="large" className="!w-full" icon={<UploadOutlined />}>
+            <Button size="large" className="w-full!" icon={<UploadOutlined />}>
               {field.placeholder || "Upload File"}
             </Button>
           </Upload>
@@ -336,9 +393,10 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
 
   const handleFormSubmit = async (values: any) => {
     try {
-      const payload = { ...values };
+      const payload = { ...values, ...payloadExtraData };
       "grade" in payload && (payload.grade = payload.grade);
-      
+      "user" in payload && delete payload.user;
+
       await mutate(
         { body: payload },
         {
@@ -357,10 +415,15 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   };
 
   useEffect(() => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+
     if (isPending) {
       setIsloading(true);
     } else {
-      setTimeout(() => {
+      loadingTimeoutRef.current = setTimeout(() => {
         setIsloading(false);
       }, 500);
     }
@@ -371,19 +434,25 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
       form={form}
       layout="vertical"
       onFinish={handleFormSubmit}
+      onFinishFailed={(errorInfo) => {
+        console.log("Validation failed:", errorInfo);
+      }}
       initialValues={initialValues}
       requiredMark={true}
       disabled={disableForm}
+      onValuesChange={(changedValues, allValues) => {
+        onValuesChange && onValuesChange({ changedValues, allValues });
+      }}
     >
       <Spin spinning={isFetching || isLoading}>
-        <div className="flex !h-full bg-white p-1 m-4 rounded-md">
+        <div className="flex h-full! bg-white p-1 m-4 rounded-md">
           <div className={`rounded-sm p-8 w-full`}>
             {topContent && <div className="mb-6">{topContent}</div>}
             <div className="flex justify-between w-full gap-6">
               <div className={`${leftContent ? "w-3/4" : "w-full"}`}>
                 {/* title and subtitle */}
                 <div className="text-gray-800 mb-4">
-                  <h1 className="!font-bold text-lg">{title}</h1>
+                  <h1 className="font-bold! text-lg">{title}</h1>
                   {subTitle && <h2 className="font-semibold">{subTitle}</h2>}
                 </div>
                 <p className="text-gray-600 mt-4 ">
@@ -425,8 +494,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                       type="default"
                       danger
                       htmlType="button"
-                      className="mt-2 !rounded-sm"
+                      className="mt-2 rounded-sm!"
                       size="large"
+                      disabled={false}
                       onClick={() => {
                         router.back();
                       }}
@@ -436,7 +506,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                     <Button
                       type="primary"
                       htmlType="submit"
-                      className="mt-2 !rounded-sm !ml-4 !items-center flex"
+                      className="mt-2 rounded-sm! ml-4! items-center! flex"
                       size="large"
                       icon={
                         <span className="flex items-center">

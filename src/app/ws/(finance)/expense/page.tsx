@@ -25,12 +25,25 @@ export default function Home() {
         actionPrevilage={{
           edit: true,
           delete: true,
-          detail: true,
+          detail: false,
         }}
         queryBy={[
           {
             type: "ACADEMIC_YEAR",
             value: undefined,
+          },
+          {
+            type: "OTHER",
+            value: [
+              {
+                key: "sort_by",
+                value: "updated_at",
+              },
+              {
+                key: "sort_dir",
+                value: "desc",
+              }
+            ],
           },
         ]}
         name="Expense"

@@ -4,6 +4,7 @@ import { Icon } from "@iconify-icon/react";
 import { get_formatted_sex } from "../../student/hook/useStudent";
 import { Sex } from "@/types/enums";
 import { levels_of_education, stream } from "@/types";
+import { useUtils } from "@/hooks/useUtils";
 
 export const useTeacher = () => {
   const subjectOptions: {
@@ -183,6 +184,8 @@ export const useTeacher = () => {
     return subjectOptions.find((s) => s.value === value)?.label ?? "Unknown";
   };
 
+  const { getFormattedIds } = useUtils();
+
   const getTableColumns = ({
     onClick,
   }: {
@@ -205,7 +208,7 @@ export const useTeacher = () => {
         title: "Registration #",
         dataIndex: "teacher_registration_number",
         key: "teacher_registration_number",
-        render: (val: number) => `TEA-${String(val).padStart(6, "0")}`,
+        render: (val: number) => getFormattedIds(String(val), "TEA"),
       },
       {
         title: "Sex",

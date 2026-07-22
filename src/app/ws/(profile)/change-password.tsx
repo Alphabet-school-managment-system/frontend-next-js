@@ -36,7 +36,7 @@ const ChangePassword = ({
           onError(context: any) {
             toast.error(context.error.message);
           },
-        }
+        },
       );
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong!");
@@ -57,8 +57,12 @@ const ChangePassword = ({
         onFinish={onFinish}
         layout="vertical"
       >
-        <PasswordInput name="currentPassword" label="Current Password" />
-        <PasswordInput name="newPassword" label="New Password" />
+        <PasswordInput
+          name="currentPassword"
+          label="Current Password"
+          size="large"
+        />
+        <PasswordInput name="newPassword" label="New Password" size="large" />
         <PasswordInput
           name="confirmPassword"
           label="Confirm Password"
@@ -73,6 +77,7 @@ const ChangePassword = ({
               },
             }),
           ]}
+          size="large"
         />
       </Form>
     </div>

@@ -1,23 +1,46 @@
 "use client";
-import { Drawer } from "@/components/common/Drawer";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SignUpForm } from "./signupPage";
 import { useSearchParams } from "next/navigation";
 import { Icon } from "@iconify-icon/react";
 import Image from "next/image";
 import { staticImages } from "@/lib/static-images";
+import { UtilContext } from "@/store/utilContext";
 
 export const Index = () => {
   const params = useSearchParams();
   const q = params.get("q");
+  const [openDrawer, setopenDrawer] = useState(false);
 
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const { setDrawerProps } = useContext(UtilContext);
 
   useEffect(() => {
-    if (q === "signup") {
-      setOpenDrawer(true);
+    if (q === "signup" || openDrawer === true) {
+      setDrawerProps((prev) => ({
+        ...prev,
+        open: true,
+        title: "Register",
+        width: 500,
+        footer: <div></div>,
+        styles: {
+          header: { display: "none" },
+          body: { borderWidth: 0 },
+          content: { boxShadow: "none" },
+        },
+        className: "bg-transparent! border-none! !custom-scrollbar",
+        children: (
+          <SignUpForm
+            onSuccess={() => {
+              setDrawerProps((prev) => ({ ...prev, open: false }));
+            }}
+            onCancel={() =>
+              setDrawerProps((prev) => ({ ...prev, open: false }))
+            }
+          />
+        ),
+      }));
     }
-  }, [q]);
+  }, [q, openDrawer]);
 
   return (
     <>
@@ -28,7 +51,7 @@ export const Index = () => {
             alt="School Logo"
             width={50}
             height={50}
-            className="w-[50px] h-[50px]"
+            className="w-12.5 h-12.5"
             priority
           />
           <h1 className="text-xl font-semibold pt-2">Alphabet</h1>
@@ -55,9 +78,12 @@ export const Index = () => {
         </nav>
 
         <button
-          className="bg-gray-900 rounded-md px-6 py-3 !text-white cursor-pointer"
+          className="bg-gray-900 rounded-md px-6 py-3 text-white! cursor-pointer"
           type="button"
-          onClick={() => setOpenDrawer(true)}
+          onClick={() => {
+            setDrawerProps((prev) => ({ ...prev, open: true }));
+            setopenDrawer(true);
+          }}
         >
           <div className="flex items-center justify-between gap-2">
             <span className="flex items-center justify-center">
@@ -74,33 +100,6 @@ export const Index = () => {
           </div>
         </button>
       </header>
-
-      {openDrawer && (
-        <Drawer
-          title={"Register"}
-          open
-          onClose={() => {}}
-          width={500}
-          footer={<div></div>}
-          styles={{
-            header: {
-              display: "none",
-            },
-            body: {
-              borderWidth: 0,
-            },
-            content: { boxShadow: "none" },
-          }}
-          className="!bg-transparent !border-none !custom-scrollbar"
-        >
-          <SignUpForm
-            onSuccess={() => {
-              setOpenDrawer(false);
-            }}
-            onCancel={() => setOpenDrawer(false)}
-          />
-        </Drawer>
-      )}
     </>
   );
 };

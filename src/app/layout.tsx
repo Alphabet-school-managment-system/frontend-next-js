@@ -9,6 +9,7 @@ import QueryProvider from "@/store/query-provider";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "@/store/userContext";
 import { MessageProvider } from "@/store/messageContext";
+import { UtilProvider } from "@/store/utilContext";
 
 export const metadata: Metadata = {
   title: "Alphabet",
@@ -35,9 +36,11 @@ export default function RootLayout({
           }}
         >
           <MessageProvider>
-            <QueryProvider>
-              <UserProvider>{children}</UserProvider>
-            </QueryProvider>
+            <UtilProvider>
+              <QueryProvider>
+                <UserProvider>{children}</UserProvider>
+              </QueryProvider>
+            </UtilProvider>
           </MessageProvider>
         </ConfigProvider>
       </body>

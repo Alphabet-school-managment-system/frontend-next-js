@@ -110,7 +110,7 @@ const Index = ({
               rules={[{ required: true, message: "" }]}
             >
               <Select placeholder="Select level" mode="multiple" size="large">
-                <Select.Option value="kg">KG</Select.Option>
+                <Select.Option value="0">KG</Select.Option>
                 <Select.Option value="lower_primary">
                   Lower Primary (1 - 4)
                 </Select.Option>

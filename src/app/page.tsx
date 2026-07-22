@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { UserContext } from "@/store/userContext";
 import { getLandingPath } from "@/lib/constants";
+import { Drawer } from "@/components/common/Drawer";
 
 function HomeContent() {
   const { data: session, isPending } = useSession();
@@ -51,6 +52,7 @@ export default function Home() {
         </div>
       }
     >
+      <Drawer />
       <HomeContent />
     </Suspense>
   );

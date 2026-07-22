@@ -22,7 +22,7 @@ export default function Home() {
     <div className="">
       <FormGenerator
         columns={2}
-        fields={getFormFields()}
+        fields={getFormFields({})}
         title="Create new Library Book"
         apiRoute="library-item"
         data={{

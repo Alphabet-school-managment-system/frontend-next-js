@@ -2,17 +2,28 @@ import { useTeacher } from "@/app/ws/(user)/teacher/hook/useTeacher";
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
 import { useUtils } from "@/hooks/useUtils";
-import { levels_of_education, selectType, Setting, Teacher } from "@/types";
+import {
+  levels_of_education,
+  selectType,
+  Setting,
+  stream,
+  Teacher,
+} from "@/types";
 import { Icon } from "@iconify-icon/react";
+import { useEffect, useState } from "react";
 
-const { get_speciality_label, subjectOptions } = useTeacher();
 export const useTimetable = ({
   SchoolSetting,
 }: {
   SchoolSetting?: Setting;
 }) => {
-  const { getSections, getPeriods, getDaysOfWeek } = useUtils();
-  
+  const {
+    getSections,
+    getPeriods,
+    getDaysOfWeek,
+    getFormattedIds,
+    get_speciality_label,
+  } = useUtils();
 
   const getTableColumns = (): any[] => [
     {
@@ -23,8 +34,22 @@ export const useTimetable = ({
         <UserProfileInfo
           full_name={`${record?.teacher?.first_name} ${record?.teacher?.middle_name}`}
           photoUrl={record?.teacher?.photoUrl}
-          link={`/ws/teacher-detail/${record?.teacher?.id}`}
+          subTitle={getFormattedIds(
+            String(record?.teacher?.teacher_registration_number),
+            "TEA",
+          )}
+          link={undefined}
         />
+      ),
+    },
+    {
+      title: "Day",
+      dataIndex: "day",
+      key: "day",
+      render: (val: string) => (
+        <span className="text-sm p-2 rounded-md uppercase">
+          {getDaysOfWeek?.()?.find((item: selectType) => item?.value === val)?.label || "-"}
+        </span>
       ),
     },
     {
@@ -32,7 +57,7 @@ export const useTimetable = ({
       dataIndex: "subject",
       key: "subject",
       render: (val: string) => (
-        <span className="text-sm p-2 rounded-md bg-gray-300 text-gray-800 uppercase">
+        <span className="text-sm p-2 rounded-md uppercase">
           {get_speciality_label(val) || "-"}
         </span>
       ),
@@ -56,16 +81,55 @@ export const useTimetable = ({
     onSearchClear,
     includeId = false,
     levels_of_education,
-    getGrades,
     SearchInputOptions,
+    onGradeSelect,
+    data,
   }: {
     onTeacherSelect: (student: Teacher) => void;
     onSearchClear: () => void;
     includeId?: boolean;
     levels_of_education: levels_of_education[];
-    getGrades: () => selectType[];
     SearchInputOptions?: Teacher[];
+    onGradeSelect?: (value: string) => void;
+    data?: any;
   }): FieldConfig[] => {
+    type fieldOptionType = {
+      show: {
+        subject: boolean;
+        stream: boolean;
+      };
+      selectedValue: {
+        grade: string;
+        stream: stream | undefined;
+      };
+    };
+    const [fieldOption, setFieldOption] = useState<fieldOptionType | undefined>(
+      undefined,
+    );
+
+    useEffect(() => {
+      if (data) {
+        setFieldOption((prev) => {
+          if (!prev) return prev;
+
+          return {
+            ...prev,
+            show: {
+              stream: data?.stream ? true : false,
+              subject: true,
+            },
+            selectedValue: {
+              grade: data?.grade,
+              stream: data?.stream,
+            },
+          };
+        });
+      }
+    }, [data]);
+
+    const { getGrades, getSubjectsForEnrollment, getStreams, getGradeDetail } =
+      useUtils();
+
     const fields: FieldConfig[] = [
       {
         name: "academic_year_id",
@@ -85,11 +149,30 @@ export const useTimetable = ({
         type: FieldType.Select,
         placeholder: "e.g. Grade 1",
         selectProps: {
-          onChange(value) {
-            console.log("Selected grade:", value);
+          onChange: async (value: string) => {
+            let hasStream = getGradeDetail({ value })?.hasStream;
+
+            setFieldOption((prev) => {
+              if (!prev) return prev;
+
+              return {
+                ...prev,
+                show: {
+                  stream: hasStream ?? false,
+                  subject: !hasStream,
+                },
+                selectedValue: {
+                  ...prev.selectedValue,
+                  grade: value,
+                },
+              };
+            });
+
+            onGradeSelect && onGradeSelect(value);
           },
+          allowSearch: true,
         },
-        options: getGrades(),
+        options: getGrades({ returnSingleValue: true }),
         prefix: (
           <span className="flex items-center justify-center h-full">
             <Icon
@@ -102,6 +185,37 @@ export const useTimetable = ({
         ),
         rules: [{ required: true, message: "" }],
       },
+      ...(fieldOption?.show?.stream
+        ? [
+            {
+              name: "stream",
+              label: "Stream",
+              type: FieldType.Select,
+              placeholder: "Select Stream",
+              selectProps: {
+                onChange: (value: string) => {
+                  setFieldOption((prev) => {
+                    if (!prev) return prev;
+
+                    return {
+                      ...prev,
+                      show: {
+                        ...prev.show,
+                        subject: true,
+                      },
+                      selectedValue: {
+                        ...prev.selectedValue,
+                        stream: value as stream,
+                      },
+                    };
+                  });
+                },
+              },
+              options: getStreams(),
+              rules: [{ required: true, message: "" }],
+            },
+          ]
+        : []),
       {
         name: "section",
         label: "Section",
@@ -120,24 +234,34 @@ export const useTimetable = ({
         ),
         rules: [{ required: true, message: "" }],
       },
-      {
-        name: "subject",
-        label: "Subject",
-        type: FieldType.Select,
-        placeholder: "e.g. Mathematics, Biology",
-        options: subjectOptions,
-        rules: [{ required: true, message: "" }],
-        prefix: (
-          <span className="flex items-center justify-center h-full">
-            <Icon
-              icon="material-symbols:subject"
-              className="text-gray-500"
-              width={22}
-              height={22}
-            />
-          </span>
-        ),
-      },
+      ...(fieldOption?.show?.subject
+        ? [
+            {
+              name: "subject",
+              label: "Subject",
+              type: FieldType.Select,
+              placeholder: "e.g. Mathematics, Biology",
+              options: getSubjectsForEnrollment(
+                fieldOption?.selectedValue?.grade,
+                fieldOption?.selectedValue?.stream,
+              ),
+              rules: [{ required: true, message: "" }],
+              prefix: (
+                <span className="flex items-center justify-center h-full">
+                  <Icon
+                    icon="material-symbols:subject"
+                    className="text-gray-500"
+                    width={22}
+                    height={22}
+                  />
+                </span>
+              ),
+              selectProps: {
+                allowSearch: true,
+              },
+            },
+          ]
+        : []),
       {
         name: "teacher_id",
         label: "Teacher",

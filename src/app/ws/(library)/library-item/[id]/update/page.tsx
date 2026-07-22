@@ -2,7 +2,7 @@
 
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
-import { LibraryBook } from "@/types";
+import { LibraryItem } from "@/types";
 import { useLibraryItem } from "../../hook/useLibraryItem";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
@@ -13,7 +13,7 @@ export default function Update() {
   const { getFormFields } = useLibraryItem();
   const [data, setData] = useState<any>(null);
 
-  const { data: result, isLoading } = useApiQuery<LibraryBook>(
+  const { data: result, isLoading } = useApiQuery<LibraryItem>(
     [],
     `library-item/${id}`,
     Boolean(id)
@@ -38,7 +38,7 @@ export default function Update() {
     <div className="">
       <FormGenerator
         columns={2}
-        fields={getFormFields()}
+        fields={getFormFields({includeId: true})}
         title="Update Book Information"
         apiRoute="library-item"
         data={data}

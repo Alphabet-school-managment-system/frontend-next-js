@@ -105,16 +105,12 @@ export const useLibraryItem = () => {
 
   const { subjectOptions } = useTeacher();
 
-  const getFormFields = (): FieldConfig[] => {
-    return [
-      {
-        name: "id",
-        label: "",
-        type: FieldType.hidden,
-        placeholder: "",
-        rules: [{ required: false, message: "" }],
-        hidden: true,
-      },
+  const getFormFields = ({
+    includeId,
+  }: {
+    includeId?: boolean;
+  }): FieldConfig[] => {
+    const fields: FieldConfig[] = [
       {
         name: "title",
         label: "Title",
@@ -154,6 +150,9 @@ export const useLibraryItem = () => {
             />
           </span>
         ),
+        selectProps: {
+          allowSearch: true,
+        },
       },
       {
         name: "copies_available",
@@ -199,7 +198,7 @@ export const useLibraryItem = () => {
         label: "Publication Date",
         type: FieldType.Date,
         placeholder: "",
-        disabledDate: (current) => current > dayjs().endOf("day"),
+        disabledDate: (current: any) => current > dayjs().endOf("day"),
         rules: [{ required: true, message: "" }],
       },
       {
@@ -219,6 +218,22 @@ export const useLibraryItem = () => {
         rules: [{ required: false, message: "" }],
       },
     ];
+
+    if (includeId) {
+      return [
+        {
+          name: "id",
+          label: "",
+          type: FieldType.hidden,
+          placeholder: "",
+          rules: [{ required: false, message: "" }],
+          hidden: true,
+        },
+        ...fields,
+      ];
+    } else {
+      return fields;
+    }
   };
 
   return {

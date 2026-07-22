@@ -68,7 +68,7 @@ const ParentStudentCard = ({ relation }: { relation: ParentStudent }) => {
     ConfirmationModalContext,
   );
 
-  const { getGradeLabel } = useUtils();
+  const { getGradeLabel, getFormattedIds } = useUtils();
 
   const { data: enrollment, isLoading: loadingEnrollment } =
     useApiQuery<Enrollment>(
@@ -129,9 +129,7 @@ const ParentStudentCard = ({ relation }: { relation: ParentStudent }) => {
       <List.Item.Meta
         avatar={<Avatar size={50} src={student?.image || defaultPhoto.src} />}
         title={
-          <span>
-            {`STU-${String(student?.student_registration_number).padStart(6, "0")}`}
-          </span>
+          <span>{getFormattedIds(student?.student_registration_number ?? "")}</span>
         }
         description={
           <div className="flex flex-col gap-1 text-sm text-gray-600">

@@ -26,42 +26,37 @@ import { IdsContext } from "@/store/idsContext";
 
 const gradeMap: Record<
   levels_of_education,
-  { label: string; value: number }[]
+  { label: string; value: number; hasStream?: boolean }[]
 > = {
-  kg: [
-    { label: "KG - 1", value: -2 },
-    { label: "KG - 2", value: -1 },
-    { label: "KG - 3", value: 0 },
-  ],
+  0: [{ label: "Kinder Garden (KG)", value: 0, hasStream: false }],
   lower_primary: [
-    { label: "Grade 1", value: 1 },
-    { label: "Grade 2", value: 2 },
-    { label: "Grade 3", value: 3 },
-    { label: "Grade 4", value: 4 },
+    { label: "Grade 1", value: 1, hasStream: false },
+    { label: "Grade 2", value: 2, hasStream: false },
+    { label: "Grade 3", value: 3, hasStream: false },
+    { label: "Grade 4", value: 4, hasStream: false },
   ],
   middle_primary: [
-    { label: "Grade 5", value: 5 },
-    { label: "Grade 6", value: 6 },
+    { label: "Grade 5", value: 5, hasStream: false },
+    { label: "Grade 6", value: 6, hasStream: false },
   ],
   upper_primary: [
-    { label: "Grade 7", value: 7 },
-    { label: "Grade 8", value: 8 },
+    { label: "Grade 7", value: 7, hasStream: false },
+    { label: "Grade 8", value: 8, hasStream: false },
   ],
   secondary: [
-    { label: "Grade 9", value: 9 },
-    { label: "Grade 10", value: 10 },
+    { label: "Grade 9", value: 9, hasStream: false },
+    { label: "Grade 10", value: 10, hasStream: false },
   ],
   college_prep: [
-    { label: "Grade 11", value: 11 },
-    { label: "Grade 12", value: 12 },
+    { label: "Grade 11", value: 11, hasStream: true },
+    { label: "Grade 12", value: 12, hasStream: true },
   ],
+  kg: [],
 };
 
 export const getGradeLabel = (grade: number) => {
   const gradeLabels: Record<string, string> = {
-    "-2": "KG - 1",
-    "-1": "KG - 2",
-    "0": "KG - 3",
+    "0": "Kinder Garden (KG)",
     "1": "Grade 1",
     "2": "Grade 2",
     "3": "Grade 3",
@@ -92,7 +87,7 @@ const subjects: {
     Stream: "General",
     enable: true,
     levels_of_education: [
-      "kg",
+      "0",
       "lower_primary",
       "middle_primary",
       "upper_primary",
@@ -178,7 +173,7 @@ const subjects: {
     Stream: "General",
     enable: true,
     levels_of_education: [
-      "kg",
+      "0",
       "lower_primary",
       "middle_primary",
       "upper_primary",
@@ -193,7 +188,7 @@ const subjects: {
     Stream: "General",
     enable: true,
     levels_of_education: [
-      "kg",
+      "0",
       "lower_primary",
       "middle_primary",
       "upper_primary",
@@ -286,7 +281,7 @@ const getEducationLevelFromGrade = (
   if (Number.isNaN(numericGrade)) {
     return undefined;
   }
-
+  if (numericGrade === 0) return "0";
   if (numericGrade >= 1 && numericGrade <= 4) return "lower_primary";
   if (numericGrade >= 5 && numericGrade <= 6) return "middle_primary";
   if (numericGrade >= 7 && numericGrade <= 8) return "upper_primary";
@@ -304,13 +299,40 @@ export const useUtils = () => {
     `util/server-date`,
   );
 
-  const getGrades = (): selectType[] => {
+  const getGrades = ({
+    returnSingleValue = true,
+  }: {
+    returnSingleValue?: boolean;
+  }): (selectType & { hasStream?: boolean })[] => {
     const input = SchoolSetting ? SchoolSetting?.levels_of_education : [];
     const types = Array.isArray(input) ? input : [input];
-
     return types
       .flatMap((type) => gradeMap[type])
-      .map((g: any) => ({ label: g?.label, value: g?.value }));
+      .map((g: any) => ({
+        label: g?.label,
+        value: returnSingleValue ? g?.value : JSON.stringify(g),
+      }));
+  };
+
+  const getGradeDetail = ({
+    value,
+  }: {
+    value?: number | string | levels_of_education | null;
+  }): (selectType & { hasStream?: boolean }) | undefined => {
+    if (value === undefined || value === null || value === "") {
+      return undefined;
+    }
+
+    const normalizedGrade =
+      typeof value === "string" && value in gradeMap
+        ? (value as levels_of_education)
+        : getEducationLevelFromGrade(value);
+
+    if (!normalizedGrade) {
+      return undefined;
+    }
+
+    return gradeMap[normalizedGrade]?.[0];
   };
 
   const GRADE_VALUES = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -359,8 +381,8 @@ export const useUtils = () => {
     { label: "Wednesday", value: "Wed" },
     { label: "Thursday", value: "Thu" },
     { label: "Friday", value: "Fri" },
-    { label: "Saturday", value: "Sat" },
-    { label: "Sunday", value: "Sun" },
+    // { label: "Saturday", value: "Sat" },
+    // { label: "Sunday", value: "Sun" },
   ];
 
   const getPeriods = (maxPeriods: number): selectType[] => {
@@ -369,6 +391,17 @@ export const useUtils = () => {
       periods.push({ label: `Period ${i}`, value: `Period ${i}` });
     }
     return periods;
+  };
+
+  const getStreams = (): selectType[] => {
+    return [
+      { label: "Natural Sciences", value: "Natural_Sciences" },
+      { label: "Social Sciences", value: "Social_Sciences" },
+    ];
+  };
+
+  const getFormattedIds = (id: string | undefined, prefix: string = "STU") => {
+    return `${prefix}-${String(id).padStart(6, "0")}`;
   };
 
   return {
@@ -387,5 +420,9 @@ export const useUtils = () => {
     getSections,
     getDaysOfWeek,
     getPeriods,
+    getStreams,
+    getFormattedIds,
+    gradeMap,
+    getGradeDetail
   };
 };

@@ -15,6 +15,7 @@ import { Drawer } from "@/components/common/Drawer";
 import { Button, Form } from "antd";
 import { useApiQuery } from "@/hooks/useApi";
 import { IdsContext } from "@/store/idsContext";
+import { UtilContext } from "@/store/utilContext";
 
 type HeaderProps = {
   pageTitle?: string;
@@ -46,7 +47,7 @@ export const Logout = async ({
       onError: (ctx) => {
         toast.error(ctx.error.message);
       },
-    }
+    },
   );
 };
 
@@ -57,7 +58,6 @@ const Header = ({
 }: HeaderProps) => {
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerView, setDrawerView] = useState(<></>);
   const [titles, setTitles] = useState<{
     header: string;
@@ -75,7 +75,7 @@ const Header = ({
   const { setUserData, userData, clearUserData } = useContext(UserContext);
 
   const { setConfirmationModalProps: setcmProps } = useContext(
-    ConfirmationModalContext
+    ConfirmationModalContext,
   );
 
   useEffect(() => {
@@ -98,20 +98,20 @@ const Header = ({
       content: "Are you sure want to log out from system ?",
       okButtonText: "Yes, Proceed.",
       cancelButtonText: "Nuh, Stay!",
-        onOk: async () => {
-          await Logout({
-            onRequest: () => {
-              onLoading(true);
-            },
-            onResponse: () => {
-              onLoading(false);
-            },
-            onClear: () => {
-              clearUserData();
-            },
-          });
-        },
-        show: true,
+      onOk: async () => {
+        await Logout({
+          onRequest: () => {
+            onLoading(true);
+          },
+          onResponse: () => {
+            onLoading(false);
+          },
+          onClear: () => {
+            clearUserData();
+          },
+        });
+      },
+      show: true,
     }));
   };
 
@@ -125,7 +125,7 @@ const Header = ({
   const { data: ids, isLoading: gettingIds } = useApiQuery<any>(
     ["auth/getIds"],
     `${"auth/getIds"}/${userData?.better_auth_userId}`,
-    getIds
+    getIds,
   );
 
   useEffect(() => {
@@ -167,6 +167,33 @@ const Header = ({
       });
     }
   }, [ids]);
+
+  const { setDrawerProps } = useContext(UtilContext);
+
+  useEffect(() => {
+    setDrawerProps((prev) => ({
+      ...prev,
+      open: false,
+      title: titles?.header,
+      width: 500,
+      footer: (
+        <Button
+          type="primary"
+          htmlType="button"
+          className="rounded-sm! flex w-full"
+          size="large"
+          onClick={() => form.submit()}
+          loading={loading}
+        >
+          {titles?.button}
+        </Button>
+      ),
+      onClose: () => {
+        form.resetFields();
+        setDrawerProps((prev) => ({ ...prev, open: false }));
+      },
+    }));
+  }, []);
 
   return (
     <>
@@ -216,10 +243,14 @@ const Header = ({
                         header: "Change Password",
                         button: "Update Password",
                       });
-                      setOpenDrawer(true);
-                      setDrawerView(
-                        <ChangePassword form={form} onLoading={setLoading} />
-                      );
+                      setDrawerProps((prev) => ({
+                        ...prev,
+                        open: true,
+                        children: (
+                          <ChangePassword form={form} onLoading={setLoading} />
+                        ),
+                        title: "Change Password",
+                      }));
                     }}
                     className="w-full text-left block px-4 py-2 text-sm   font-medium cursor-pointer"
                   >
@@ -239,32 +270,6 @@ const Header = ({
           </div>
         </div>
       </header>
-
-      {openDrawer && (
-        <Drawer
-          title={titles?.header}
-          open
-          onClose={() => {
-            form.resetFields();
-            setOpenDrawer(false);
-          }}
-          width={500}
-          footer={
-            <Button
-              type="primary"
-              htmlType="button"
-              className="rounded-sm! flex w-full"
-              size="large"
-              onClick={() => form.submit()}
-              loading={loading}
-            >
-              {titles?.button}
-            </Button>
-          }
-        >
-          {drawerView}
-        </Drawer>
-      )}
     </>
   );
 };

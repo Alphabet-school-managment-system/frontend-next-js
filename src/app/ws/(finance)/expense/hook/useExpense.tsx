@@ -1,4 +1,7 @@
-import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
+import {
+  FieldConfig,
+  FieldType,
+} from "@/components/forms/FormGenerator";
 import dayjs from "dayjs";
 
 export const enum ExpenseType {

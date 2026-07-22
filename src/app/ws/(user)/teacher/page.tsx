@@ -3,10 +3,10 @@
 import { useTeacher } from "./hook/useTeacher";
 import dynamic from "next/dynamic";
 import TableSkeleton from "@/components/forms/TableSkeleton";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Teacher } from "@/types";
 import { UserDetailPage } from "@/components/common/userDetailPage";
-import { Drawer } from "@/components/common/Drawer";
+import { UtilContext } from "@/store/utilContext";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -20,19 +20,17 @@ export default function Home() {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | undefined>();
   const [reloadKey, setReloadKey] = useState(0);
 
-  return (
-    <>
-      {openDrawer.detail && (
-        <Drawer
-          title="Teacher Information"
-          open
-          onClose={() => {
-            setOpenDrawer((pre) => ({ ...pre, detail: false }));
-            setSelectedTeacher(undefined);
-          }}
-          width={550}
-          footer={null}
-        >
+  const { setDrawerProps } = useContext(UtilContext);
+
+  useEffect(() => {
+    if (openDrawer.detail) {
+      setDrawerProps((prev) => ({
+        ...prev,
+        open: true,
+        title: "Teacher Information",
+        width: 550,
+        footer: null,
+        children: (
           <UserDetailPage
             data={selectedTeacher}
             userType="teacher"
@@ -42,10 +40,24 @@ export default function Home() {
               if (refetch) {
                 setReloadKey((prev) => prev + 1);
               }
+              setDrawerProps((prev) => ({ ...prev, open: false }));
+            }}
+            onClick={() => {
+              setSelectedTeacher(selectedTeacher);
+              setOpenDrawer((pre) => ({ detail: true, children: true }));
             }}
           />
-        </Drawer>
-      )}
+        ),
+        onClose: () => {
+          setOpenDrawer((pre) => ({ ...pre, detail: false }));
+          setDrawerProps((prev) => ({ ...prev, open: false }));
+        },
+      }));
+    }
+  }, [openDrawer]);
+
+  return (
+    <>
       <List
         columns={getTableColumns({
           onClick: (teacher) => {

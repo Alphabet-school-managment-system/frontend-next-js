@@ -3,17 +3,20 @@
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { FeeType, useFee } from "../hook/useFee";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getFileUrl, ReceiptPreview } from "../../expense/new/page";
 import { IdsContext } from "@/store/idsContext";
 import { Form } from "antd";
+import { Student, StudentWithEnrollment } from "@/types";
+import { UtilContext } from "@/store/utilContext";
+import { OnFormValuesChangeProps } from "@/components/forms/FormGenerator";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 export default function Home() {
   const { getFormFields } = useFee();
@@ -24,7 +27,14 @@ export default function Home() {
     otherType?: FeeType;
   }>({});
 
+  const { formData, setFormData } = useContext(UtilContext);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (formData?.allValues) {
+      form.setFieldsValue(formData.allValues);
+    }
+  }, [formData]);
 
   return (
     <div className="">
@@ -44,7 +54,6 @@ export default function Home() {
                 otherType: undefined,
               }));
               form.setFieldValue("other_type", undefined);
-              form.resetFields(["other_type"]);
             }
           },
           onOtherTypeChange: (value) => {
@@ -63,6 +72,12 @@ export default function Home() {
           },
           type: feeTypes.type,
           other_type: feeTypes.otherType,
+          onStudentSelect: async (student: StudentWithEnrollment) => {
+            form.setFieldValue("student_id", student?.id);
+          },
+          onClear: async () => {
+            form.setFieldValue("student_id", undefined);
+          },
         })}
         title="Create new Fee"
         apiRoute="fee"
@@ -70,6 +85,12 @@ export default function Home() {
           academic_year_id: Ids?.academicYearId,
         }}
         leftContent={<ReceiptPreview previewImage={previewImage} />}
+        formInstance={form}
+        onValuesChange={({ allValues }: OnFormValuesChangeProps) => {
+          setFormData((prev: any) => ({
+            allValues,
+          }));
+        }}
       />
     </div>
   );

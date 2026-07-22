@@ -2,7 +2,7 @@
 
 import { useApiQuery } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
-import { Fee } from "@/types";
+import { Fee, Student } from "@/types";
 import { FeeType, useFee } from "../../hook/useFee";
 import dynamic from "next/dynamic";
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
@@ -13,13 +13,16 @@ import {
   ConfirmationModalContext,
   ConfirmationModalPropsType,
 } from "@/store/confirmationModalContext";
+import { Form } from "antd";
+import { UtilContext } from "@/store/utilContext";
+import { OnFormValuesChangeProps } from "@/components/forms/FormGenerator";
 
 const FormGenerator = dynamic(
   () => import("@/components/forms/FormGenerator"),
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 
 export default function Update() {
@@ -27,6 +30,9 @@ export default function Update() {
   const { getFormFields } = useFee();
   const [data, setData] = useState<any>(null);
   const [previewImage, setPreviewImage] = useState("");
+  const [form] = Form.useForm();
+  const { formData, setFormData } = useContext(UtilContext);
+
   const [feeTypes, setFeeTypes] = useState<{
     type?: FeeType;
     otherType?: FeeType;
@@ -34,11 +40,11 @@ export default function Update() {
   const { data: result, isLoading } = useApiQuery<Fee>(
     [],
     `fee/${id}`,
-    Boolean(id)
+    Boolean(id),
   );
 
   const { setConfirmationModalProps: setcmProps } = useContext(
-    ConfirmationModalContext
+    ConfirmationModalContext,
   );
 
   useEffect(() => {
@@ -55,9 +61,17 @@ export default function Update() {
     }
   }, [result]);
 
+  useEffect(() => {
+    if (formData) {
+      form.setFieldsValue(formData.allValues);
+      setData(formData.allValues);
+    }
+  }, [formData]);
+
   return (
     <div className="">
       <FormGenerator
+        formInstance={form}
         columns={2}
         fields={getFormFields({
           onFileChange: async (fileList) =>
@@ -113,6 +127,13 @@ export default function Update() {
             }
           },
           includeId: true,
+          onStudentSelect: async (student: Student) => {
+            form.setFieldValue("student_id", student?.id);
+          },
+          onClear: async () => {
+            form.setFieldValue("student_id", undefined);
+          },
+          SearchInputOptions: [data?.enrollment?.student],
         })}
         title="Update Fee Information"
         apiRoute="fee"
@@ -124,6 +145,11 @@ export default function Update() {
         isFetching={isLoading}
         isCreate={false}
         leftContent={<ReceiptPreview previewImage={previewImage} />}
+        onValuesChange={({ allValues }: OnFormValuesChangeProps) => {
+          setFormData((prev: any) => ({
+            allValues,
+          }));
+        }}
       />
     </div>
   );

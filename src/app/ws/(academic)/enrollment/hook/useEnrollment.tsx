@@ -1,13 +1,12 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
-import { ColumnsType } from "antd/es/table";
-import { Icon } from "@iconify-icon/react";
 import { AcademicYear, levels_of_education, Setting, Student } from "@/types";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApiQuery } from "@/hooks/useApi";
 import { IdsType } from "@/store/idsContext";
 import dayjs from "dayjs";
 import { useUtils } from "@/hooks/useUtils";
+import { columnType } from "@/components/list";
 
 export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
   const { data: AcademicYear, isLoading: gettingAcademicYear } =
@@ -57,8 +56,9 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     return { message: "", status: false };
   };
 
-  const getTableColumns = (): ColumnsType<any> => {
-    const { getGradeLabel } = useUtils();
+  const getTableColumns = (): columnType[] => {
+    const { getGradeLabel, getFormattedIds } = useUtils();
+
     return [
       {
         title: "Full Name",
@@ -67,54 +67,12 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
         render: (_: string, record: any) => (
           <UserProfileInfo
             full_name={`${record?.student?.first_name} ${record?.student?.middle_name} ${record?.student?.last_name}`}
+            subTitle={getFormattedIds(
+              record?.student?.student_registration_number,
+            )}
             photoUrl={record?.student?.photoUrl}
-            link={`/ws/student/${record?.student?.id}/detail`}
+            link={undefined}
           />
-        ),
-      },
-
-      {
-        title: "Phone #",
-        dataIndex: "phone",
-        key: "phone",
-        render: (_: string, record: any) => (
-          <div className="flex items-center gap-2">
-            <Icon
-              icon="mdi:phone"
-              width={20}
-              height={20}
-              className="text-gray-700"
-            />
-            <span className="text-sm">{record?.student?.phone || "-"}</span>
-          </div>
-        ),
-      },
-      {
-        title: "Email",
-        dataIndex: "email",
-        key: "email",
-        render: (_: string, record: any) => {
-          return (
-            <div className="flex items-center gap-2">
-              <Icon
-                icon="mdi:email"
-                width={20}
-                height={20}
-                className="text-gray-700"
-              />
-              <span className="text-sm">{record?.student?.email || "-"}</span>
-            </div>
-          );
-        },
-      },
-      {
-        title: "Stream",
-        dataIndex: "stream",
-        key: "stream",
-        render: (val: string) => (
-          <span className="text-sm border px-2 py-1 rounded bg-amber-50">
-            {val.replace(/_/g, " ") || "-"}
-          </span>
         ),
       },
       {
@@ -135,6 +93,24 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
           <span className="text-sm">{val || "Not Assigned"}</span>
         ),
       },
+      {
+        title: "Stream",
+        dataIndex: "stream",
+        key: "stream",
+        render: (val: string) => (
+          <span className="text-sm border px-2 py-1 rounded bg-amber-50">
+            {val?.replace(/_/g, " ") || "N/A"}
+          </span>
+        ),
+      },
+      {
+        title: "Transferred From (school or branch)",
+        dataIndex: "transferredFrom",
+        key: "transferredFrom",
+        render: (val: string) => (
+          <span className="text-sm">{val || "-- Not Transferd --"}</span>
+        ),
+      },
     ];
   };
 
@@ -146,18 +122,34 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
     includeId = false,
     isTransferredValue = false,
     onStreamSelect = () => {},
+    SearchInputOptions,
+    showStreamField,
+    onIsTransferredValueChange = (value: boolean) => {},
   }: {
     onStudentSelect: (student: Student) => void;
-    onGradeSelect: (grade: string) => void;
+    onGradeSelect: (value: string) => void;
     onClear: () => void;
     levels_of_education: levels_of_education[];
     includeId?: boolean;
     isTransferredValue?: boolean;
     onStreamSelect?: (stream: string) => void;
+    SearchInputOptions?: Student[];
+    showStreamField?: boolean;
+    onIsTransferredValueChange?: (value: boolean) => void;
   }): FieldConfig[] => {
-    const [isTransferred, setIsTransferred] =
-      useState<boolean>(isTransferredValue);
-    const { getGrades } = useUtils();
+    const [isTransferred, setIsTransferred] = useState<boolean>(false);
+    const [showStreamFieldOption, setShowStreamFieldOption] =
+      useState<boolean>(false);
+
+    const { getGrades, getStreams, getGradeDetail } = useUtils();
+
+    useEffect(() => {
+      showStreamField && setShowStreamFieldOption(showStreamField);
+    }, [showStreamField]);
+
+    useEffect(() => {
+      setIsTransferred(isTransferredValue);
+    }, [isTransferredValue]);
 
     const fields = [
       {
@@ -165,7 +157,12 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
         label: "Student",
         type: FieldType.searchInput,
         placeholder: "Select student",
-        rules: [{ required: true, message: "" }],
+        rules: [
+          {
+            required: true,
+            message: "",
+          },
+        ],
         searchInputProps: {
           apiRoute: "student",
           placeholder: "Search student by name",
@@ -176,6 +173,7 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
           onClear: () => {
             onClear();
           },
+          incomingOptions: SearchInputOptions,
         },
       },
       {
@@ -184,24 +182,46 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
         type: FieldType.Select,
         placeholder: "Select Grade",
         selectProps: {
-          onChange: (value: string) => {
+          onChange: async (value: string) => {
             onGradeSelect(value);
+            setShowStreamFieldOption(
+              getGradeDetail({ value })?.hasStream ?? false,
+            );
           },
+          allowSearch: true,
         },
-        options: getGrades(),
+        options: getGrades({ returnSingleValue: true }),
         rules: [{ required: true, message: "" }],
       },
+      ...(showStreamFieldOption
+        ? [
+            {
+              name: "stream",
+              label: "Stream",
+              type: FieldType.Select,
+              placeholder: "Select Stream",
+              selectProps: {
+                onChange: (value: string) => {
+                  onStreamSelect(value);
+                },
+              },
+              options: getStreams(),
+              rules: [{ required: true, message: "" }],
+            },
+          ]
+        : []),
       {
         name: "isTransferred",
         label: "Transfer option",
         type: FieldType.checkbox,
         rules: [{ required: false, message: "" }],
         checkboxTypeProps: {
-          onChange: (checked: boolean | ((prevState: boolean) => boolean)) => {
+          onChange: (checked: boolean) => {
             setIsTransferred(checked);
+            onIsTransferredValueChange && onIsTransferredValueChange(checked);
           },
           checked: isTransferred,
-          label: "Is the student transferred from other school?",
+          label: "Is the student transferred from other school or branch?",
         },
       },
       {
@@ -209,29 +229,13 @@ export const useEnrollment = ({ Ids }: { Ids: IdsType }) => {
         label: "Transferred from",
         type: FieldType.Input,
         disabled: isTransferred ? false : true,
-        placeholder: "Enter previous school name transferred from",
+        placeholder: "Enter previous school or branch name transferred from",
         rules: [
           {
             required: isTransferred,
-            message: "please enter the previous school name",
+            message: "please specify the name",
           },
         ],
-      },
-      {
-        name: "stream",
-        label: "Stream",
-        type: FieldType.Select,
-        placeholder: "Select Stream",
-        selectProps: {
-          onChange: (value: string) => {
-            onStreamSelect(value);
-          },
-        },
-        options: [
-          { label: "Natural Sciences", value: "Natural_Sciences" },
-          { label: "Social Sciences", value: "Social_Sciences" },
-        ],
-        rules: [{ required: false, message: "" }],
       },
       {
         name: "note",

@@ -114,7 +114,7 @@ export const leaveRequestSchema = z.object({
 });
 export type LeaveRequestInput = z.infer<typeof leaveRequestSchema>;
 
-// LibraryBook
+// LibraryItem
 export const libraryBookSchema = z.object({
   branch_id: z.string().uuid().optional().nullable(),
   title: z.string(),

@@ -1,12 +1,12 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useState } from "react";
-import { Drawer } from "@/components/common/Drawer";
+import { useContext, useEffect, useState } from "react";
 import TableSkeleton from "@/components/forms/TableSkeleton";
 import { Parent } from "@/types";
 import { useParent } from "./hook/useParent";
 import { ParentChildrenDrawer } from "./ParentChildrenDrawer";
 import { UserDetailPage } from "../../../../components/common/userDetailPage";
+import { UtilContext } from "@/store/utilContext";
 
 const List = dynamic(() => import("@/components/list/index"), {
   ssr: false,
@@ -22,32 +22,30 @@ export default function Home() {
   const [selectedParent, setSelectedParent] = useState<Parent | undefined>();
   const [reloadKey, setReloadKey] = useState(0);
 
-  return (
-    <>
-      {openDrawer.children && (
-        <Drawer
-          title="Children Information"
-          open
-          onClose={() => {
-            setOpenDrawer((pre) => ({ detail: true, children: false }));
-          }}
-          width={600}
-          footer={null}
-        >
-          <ParentChildrenDrawer parent={selectedParent} />
-        </Drawer>
-      )}
-      {openDrawer.detail && (
-        <Drawer
-          title="Parent Information"
-          open
-          onClose={() => {
-            setOpenDrawer((pre) => ({ ...pre, detail: false }));
-            setSelectedParent(undefined);
-          }}
-          width={600}
-          footer={null}
-        >
+  const { setDrawerProps } = useContext(UtilContext);
+
+  useEffect(() => {
+    if (openDrawer.children) {
+      setDrawerProps((prev) => ({
+        ...prev,
+        open: true,
+        title: "Children Information",
+        width: 600,
+        footer: null,
+        children: <ParentChildrenDrawer parent={selectedParent} />,
+        onClose: () => {
+          setOpenDrawer((pre) => ({ detail: true, children: false }));
+          setDrawerProps((prev) => ({ ...prev, open: false }));
+        },
+      }));
+    } else if (openDrawer.detail) {
+      setDrawerProps((prev) => ({
+        ...prev,
+        open: true,
+        title: "Parent Information",
+        width: 600,
+        footer: null,
+        children: (
           <UserDetailPage
             data={selectedParent}
             userType="parent"
@@ -57,14 +55,26 @@ export default function Home() {
               if (refetch) {
                 setReloadKey((prev) => prev + 1);
               }
+              setDrawerProps((prev) => ({ ...prev, open: false }));
             }}
             onClick={() => {
               setSelectedParent(selectedParent);
               setOpenDrawer((pre) => ({ detail: true, children: true }));
             }}
           />
-        </Drawer>
-      )}
+        ),
+        onClose: () => {
+          setOpenDrawer((pre) => ({ ...pre, detail: false }));
+          setDrawerProps((prev) => ({ ...prev, open: false }));
+        },
+      }));
+    } else {
+      setDrawerProps((prev) => ({ ...prev, open: false }));
+    }
+  }, [openDrawer]);
+
+  return (
+    <>
       <List
         columns={getTableColumns({
           onShowChildren: (parent) => {

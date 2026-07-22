@@ -1,4 +1,3 @@
-import { Drawer } from "@/components/common/Drawer";
 import { Select } from "@/components/common/Select";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import {
@@ -13,6 +12,7 @@ import { Button, Card, Col, Form, Input, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Icon } from "@iconify-icon/react";
+import { UtilContext } from "@/store/utilContext";
 
 const Index = ({
   onLoading,
@@ -35,7 +35,6 @@ const Index = ({
     }));
   }, []);
 
-  const [openDrawer, setOpenDrawer] = useState(false);
   const [isEditBranch, setIsEditBranch] = useState(false);
   const [id, setId] = useState<string | undefined>("");
   const { Ids, setIds } = useContext(IdsContext);
@@ -119,7 +118,6 @@ const Index = ({
 
   const handleDrawerClose = () => {
     branchForm.resetFields();
-    setOpenDrawer(false);
     setIsEditBranch(false);
   };
 
@@ -138,13 +136,72 @@ const Index = ({
     }
   };
 
+  const { setDrawerProps } = useContext(UtilContext);
+
+  useEffect(() => {
+    setDrawerProps((prev) => ({
+      ...prev,
+      open: false,
+      title: isEditBranch ? "Edit Branch" : "Create Branch",
+      width: 500,
+      footer: (
+        <Button
+          type="primary"
+          htmlType="button"
+          className="rounded-sm! flex w-full"
+          size="large"
+          onClick={() => branchForm.submit()}
+        >
+          {isEditBranch ? "Save Changes" : "Create"}
+        </Button>
+      ),
+      children: (
+        <Form layout="vertical" form={branchForm} onFinish={handleSubmit}>
+          <Form.Item label="id" name="id" hidden>
+            <Input hidden />
+          </Form.Item>
+          <Form.Item label="school_id" name="school_id" hidden>
+            <Input hidden />
+          </Form.Item>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: "" }]}
+          >
+            <Input placeholder="Enter Branch name" size="large" />
+          </Form.Item>
+          <Form.Item label="location" name="location" className="md:col-span-2">
+            <Input.TextArea
+              rows={4}
+              placeholder="Write branch address"
+              size="large"
+            />
+          </Form.Item>
+        </Form>
+      ),
+      onClose: () => {
+        handleDrawerClose();
+        setDrawerProps((prev) => ({ ...prev, open: false }));
+      },
+    }));
+  }, []);
+
   return (
     <div>
       <Card
         variant="borderless"
         title="Branches"
         extra={
-          <Button icon={<PlusOutlined />} onClick={() => setOpenDrawer(true)}>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => {
+              console.log(
+                "%csrc/app/ws/setting/branch.tsx:198 kaka",
+                "color: #007acc;",
+              );
+              setDrawerProps((prev) => ({ ...prev, open: true }));
+            }}
+          >
             Add Branch
           </Button>
         }
@@ -213,7 +270,7 @@ const Index = ({
                           if (changingCurrentBranch) return;
                           branchForm.setFieldsValue(branch);
                           setIsEditBranch(true);
-                          setOpenDrawer(true);
+                          setDrawerProps((prev) => ({ ...prev, open: true }));
                         }}
                       />,
                       !branch?.isDefault ? (
@@ -276,55 +333,6 @@ const Index = ({
             })}
         </Row>
       </Card>
-
-      {openDrawer && (
-        <Drawer
-          title={isEditBranch ? "Edit Branch" : "Create Branch"}
-          open
-          onClose={() => {
-            handleDrawerClose();
-          }}
-          width={500}
-          footer={
-            <Button
-              type="primary"
-              htmlType="button"
-              className="!rounded-sm flex w-full"
-              size="large"
-              onClick={() => branchForm.submit()}
-            >
-              {isEditBranch ? "Save Changes" : "Create"}
-            </Button>
-          }
-        >
-          <Form layout="vertical" form={branchForm} onFinish={handleSubmit}>
-            <Form.Item label="id" name="id" hidden>
-              <Input hidden />
-            </Form.Item>
-            <Form.Item label="school_id" name="school_id" hidden>
-              <Input hidden />
-            </Form.Item>
-            <Form.Item
-              label="Name"
-              name="name"
-              rules={[{ required: true, message: "" }]}
-            >
-              <Input placeholder="Enter Branch name" size="large" />
-            </Form.Item>
-            <Form.Item
-              label="location"
-              name="location"
-              className="md:col-span-2"
-            >
-              <Input.TextArea
-                rows={4}
-                placeholder="Write branch address"
-                size="large"
-              />
-            </Form.Item>
-          </Form>
-        </Drawer>
-      )}
     </div>
   );
 };

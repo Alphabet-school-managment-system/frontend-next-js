@@ -1,65 +1,45 @@
+import { UtilContext } from "@/store/utilContext";
 import { Button, Drawer as MainDrawer } from "antd";
-import { DrawerStyles } from "antd/es/drawer/DrawerPanel";
+import { useContext } from "react";
 
-export const Drawer = ({
-  title,
-  isEdit,
-  onClose,
-  form,
-  children,
-  open,
-  width = 400,
-  buttonTitle,
-  buttonDanger = false,
-  loading,
-  footer,
-  styles,
-  className,
-}: {
-  title: string | React.ReactNode;
-  isEdit?: boolean;
-  onClose: () => void;
-  form?: any;
-  children: React.ReactNode;
-  open: boolean;
-  width?: number | string;
-  buttonTitle?: string;
-  buttonDanger?: boolean;
-  loading?: boolean;
-  footer?: React.ReactNode | null;
-  styles?: DrawerStyles;
-  className?: string;
-}) => {
+export const Drawer = () => {
+  const { drawerProps, setDrawerProps } = useContext(UtilContext);
   return (
     <MainDrawer
-      title={title}
-      open={open}
+      title={drawerProps.title}
+      open={drawerProps.open}
       onClose={() => {
-        onClose();
+        setDrawerProps((prev) => ({ ...prev, open: false }));
       }}
-      styles={styles && styles}
+      styles={drawerProps.styles && drawerProps.styles}
       footer={
-        footer !== undefined ? footer : (
+        drawerProps.footer !== undefined ? (
+          drawerProps.footer
+        ) : (
           <Button
             htmlType="button"
             className="h-10 w-full"
             type="primary"
             onClick={() => {
-              form.submit();
+              drawerProps.form.submit();
             }}
-            loading={loading}
+            loading={drawerProps.loading}
             size="large"
-            danger={buttonDanger}
+            danger={drawerProps.buttonDanger}
           >
-            {buttonTitle ? buttonTitle : isEdit ? "Save Changes" : "Create"}
+            {drawerProps.buttonTitle
+              ? drawerProps.buttonTitle
+              : drawerProps.isEdit
+                ? "Save Changes"
+                : "Create"}
           </Button>
         )
       }
       maskClosable={false}
-      width={width}
-      className={className}
+      width={drawerProps.width}
+      className={drawerProps.className}
     >
-      {children}
+      {drawerProps.children}
     </MainDrawer>
   );
 };

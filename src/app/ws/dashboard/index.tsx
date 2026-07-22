@@ -24,7 +24,7 @@ const Index = () => {
         teachers={data?.teachers}
         attendanceToday={data?.attendanceToday}
       />
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between gap-4 mt-4">
         <Chart
           type={"bar"}
           HeaderText={"Yearly Expense Summary"}

@@ -1,5 +1,6 @@
 import UserProfileInfo from "@/components/common/UserProfileInfo";
 import { FieldConfig, FieldType } from "@/components/forms/FormGenerator";
+import { useUtils } from "@/hooks/useUtils";
 import { Sex } from "@/types/enums";
 import { Icon } from "@iconify-icon/react";
 import dayjs from "dayjs";
@@ -18,6 +19,7 @@ export const get_formatted_sex = (sex?: Sex) => {
 };
 
 export const useStudent = () => {
+  const { getFormattedIds } = useUtils();
   const getTableColumns = ({
     onClick,
   }: {
@@ -40,7 +42,7 @@ export const useStudent = () => {
         title: "Registration #",
         dataIndex: "student_registration_number",
         key: "student_registration_number",
-        render: (val: number) => `STU-${String(val).padStart(6, "0")}`,
+        render: (val: number) => getFormattedIds(String(val)),
       },
       {
         title: "Sex",

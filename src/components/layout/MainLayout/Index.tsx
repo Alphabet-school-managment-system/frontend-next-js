@@ -5,6 +5,7 @@ import Sidebar from "./SideBar";
 import { NavigationItem, useMainLayout, type MenuItem } from "./useMainLayout";
 import { Spin } from "antd";
 import { usePathname } from "next/navigation";
+import { Drawer } from "@/components/common/Drawer";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ interface LayoutProps {
 
 const Index: React.FC<LayoutProps> = ({ children }) => {
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(
-    null
+    null,
   );
 
   const { navItems: menuItems } = useMainLayout();
@@ -55,6 +56,7 @@ const Index: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <Spin spinning={isLoading} size="large">
+      <Drawer />
       <div className="flex h-screen bg-gray-300">
         <Sidebar
           activeKey={selectedMenuItem?.key}

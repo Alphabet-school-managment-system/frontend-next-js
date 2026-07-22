@@ -3,10 +3,12 @@
 import { FormSkeleton } from "@/components/forms/FormSkeleton";
 import dynamic from "next/dynamic";
 import { ExpenseType, useExpense } from "../hook/useExpense";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Form, GetProp, Image, UploadFile, UploadProps } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { IdsContext } from "@/store/idsContext";
+import { OnFormValuesChangeProps } from "@/components/forms/FormGenerator";
+import { UtilContext } from "@/store/utilContext";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -68,7 +70,7 @@ const FormGenerator = dynamic(
   {
     ssr: false,
     loading: () => <FormSkeleton />,
-  }
+  },
 );
 
 export default function Home() {
@@ -80,7 +82,14 @@ export default function Home() {
   }>({});
 
   const { Ids } = useContext(IdsContext);
+  const { formData, setFormData } = useContext(UtilContext);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (formData) {
+      form.setFieldsValue(formData.allValues);
+    }
+  }, [formData]);
 
   return (
     <FormGenerator
@@ -126,6 +135,11 @@ export default function Home() {
       }}
       leftContent={<ReceiptPreview previewImage={previewImage} />}
       formInstance={form}
+      onValuesChange={({ allValues }: OnFormValuesChangeProps) => {
+        setFormData((prev: any) => ({
+          allValues,
+        }));
+      }}
     />
   );
 }

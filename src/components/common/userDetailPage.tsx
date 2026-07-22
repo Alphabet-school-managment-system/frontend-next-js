@@ -59,7 +59,7 @@ export const UserDetailPage = ({
   const isTeacher = userType === "teacher";
   const isStudent = userType === "student";
 
-  const { ShowMessage } = useUtils();
+  const { ShowMessage, getFormattedIds } = useUtils();
   const onConfirmationRequest = useConfirmationRequest();
 
   useEffect(() => {
@@ -264,8 +264,7 @@ export const UserDetailPage = ({
       return (
         <>
           <Descriptions.Item label="Registration #" span={2}>
-            {`TEA-${String(data.teacher_registration_number).padStart(6, "0")}` ||
-              "-"}
+            {getFormattedIds(String(data.teacher_registration_number),"TEA") || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Specialization" span={2}>
             {String(data.subject_specialization).toUpperCase()}
@@ -291,8 +290,7 @@ export const UserDetailPage = ({
       return (
         <>
           <Descriptions.Item label="Registration #" span={2}>
-            {`STU-${String(data.student_registration_number).padStart(6, "0")}` ||
-              "-"}
+            {getFormattedIds(data.student_registration_number) || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Address" span={2}>
             {data.address || "N/A"}

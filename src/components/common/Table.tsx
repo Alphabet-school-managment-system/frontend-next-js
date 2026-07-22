@@ -1,7 +1,7 @@
 import { Table as MainTable, type TablePaginationConfig } from "antd";
 import { useState, type ReactElement } from "react";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input, Space } from "antd";
 import { Icon } from "@iconify-icon/react";
 import { ColumnsType } from "antd/es/table";
 
@@ -149,26 +149,32 @@ const TableHeader = ({
     <div className="flex flex-col justify-between p-4 rounded-lg shadow-main bg-white gap-2">
       <div className="flex justify-between">
         {showSearchInput ? (
-          <Input
-            placeholder={placeholder}
-            prefix={
-              <SearchOutlined
-                style={{
-                  color: "gray",
-                  marginRight: 5,
-                }}
-                width={20}
-                height={20}
-              />
-            }
-            className="text-lg"
-            size="large"
-            onKeyDown={handleEnter}
-            allowClear
-            onChange={handleChange}
-            value={value}
-            addonAfter={FilterOption && FilterOption}
-          />
+          <Space.Compact className="w-1/2! p-0! rounded-full">
+            <Input
+              placeholder={"search ...."}
+              prefix={
+                <SearchOutlined
+                  style={{
+                    color: "gray",
+                    marginRight: 5,
+                  }}
+                  width={20}
+                  height={20}
+                />
+              }
+              size="large"
+              onKeyDown={handleEnter}
+              allowClear
+              onChange={handleChange}
+              value={value}
+              className={" placeholder:text-sm text-lg w-full placeholder:text-gray-600"}
+            />
+            {FilterOption && (
+              <Space.Addon className="p-0!">
+                {FilterOption && FilterOption}
+              </Space.Addon>
+            )}
+          </Space.Compact>
         ) : (
           <div>{FilterOption && FilterOption}</div>
         )}
@@ -177,7 +183,7 @@ const TableHeader = ({
             className="flex self-center justify-center"
             onClick={() => onAddButtonClicked()}
             style={{ marginLeft: 16 }}
-            type="primary"
+            type="default"
             icon={
               <span className="flex items-center">
                 <Icon icon="gg:add" width={25} height={25} />
@@ -187,7 +193,7 @@ const TableHeader = ({
             shape="default"
             data-testid="add-button"
             data-cy="add-button"
-            aria-label="Add new item"
+            aria-label="create new item"
           >
             {addButtonTitle}
           </Button>

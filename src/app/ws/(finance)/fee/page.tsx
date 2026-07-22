@@ -25,7 +25,7 @@ export default function Home() {
         actionPrevilage={{
           edit: true,
           delete: true,
-          detail: true,
+          detail: false,
         }}
         queryBy={[
           {
